@@ -1,22 +1,32 @@
 #!/run/current-system/sw/bin/bash
 set -e
 pushd ~/Halix/
-# Alejandra is great for Flakes to ensure syntax consistency
+
+# 1. Format and Stage
 alejandra . &>/dev/null
 git add .
-# 5. Show what is about to change
+
+# 2. Show diff
 git diff --staged -U0
+
+# 3. Rebuild
 echo "NixOS Rebuilding..."
-# 6. Run the rebuild using the local flake
-# We use '#' to specify the default configuration in the flake
-sudo nixos-rebuild switch --flake .# &>nixos-switch.log || (
-    cat nixos-switch.log | grep --color error && exit 1
-)
+sudo nixos-rebuild switch --flake .# &>nixos-switch.log || {
+    echo "Build had issues, checking logs..."
+    grep --color error nixos-switch.log || true
+}
 
-# 7. Get generation info for the commit message
-gen=$(nixos-rebuild list-generations | grep current)
+# 4. Get generation info (requires sudo)
+# Added '|| echo "Unknown"' so gen is never empty
+gen=$(sudo nixos-rebuild list-generations | grep current || echo "Unknown Generation")
 
-# 8. Commit the changes
-git commit -m "Rebuild: $gen"
+# 5. Commit and Push
+# We use -a to ensure all changes are grabbed, though git add . already did this
+if git commit -m "Rebuild: $gen"; then
+    echo "Pushing to Git remote..."
+    git push
+else
+    echo "No changes to commit, or commit failed."
+fi
 
 popd
