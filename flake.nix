@@ -13,19 +13,17 @@
     };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      fresh,
-      ...
-    }@inputs:
-    {
-      nixosConfigurations.halix = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./configuration.nix
-        ];
-      };
+  outputs = {
+    self,
+    nixpkgs,
+    fresh,
+    ...
+  } @ inputs: {
+    nixosConfigurations.halix = nixpkgs.lib.nixosSystem {
+      specialArgs = {inherit inputs;};
+      modules = [
+        ./configuration.nix
+      ];
     };
+  };
 }

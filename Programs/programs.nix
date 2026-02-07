@@ -1,7 +1,8 @@
-{ pkgs, inputs, ... }:
-
 {
-
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     #./pia.nix
     ./yazi.nix
@@ -43,13 +44,12 @@
   };
 
   services.gnome.gnome-keyring.enable = true;
-programs.seahorse.enable = true;
+  programs.seahorse.enable = true;
 
-environment.variables = {
-  SSH_ASKPASS = "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
-  SSH_ASKPASS_REQUIRE = "force"; 
-};
-
+  environment.variables = {
+    SSH_ASKPASS = "${pkgs.seahorse}/libexec/seahorse/ssh-askpass";
+    SSH_ASKPASS_REQUIRE = "force";
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -68,6 +68,7 @@ environment.variables = {
     slurp
     obsidian
     keepassxc
+    ags
     #chromiumsc
 
     # --- Media & Editing ---
@@ -76,12 +77,12 @@ environment.variables = {
     vlc
     syncthing
     feh
-    
 
     # --- Terminal & Development ---
     wget
     vim
     ghostty
+    lmstudio
     zsh
     kitty
     vscode
@@ -92,6 +93,7 @@ environment.variables = {
     fuse3 # SSH file system support
     file
     bat
+    tree
     nitch # nefetch
     nixfmt # nix file formatter
     pywal16
@@ -99,6 +101,7 @@ environment.variables = {
     grim
     slurp
     wl-clipboard
+    alejandra # nix formatter
     mako
     swaybg
     inputs.fresh.packages.${pkgs.stdenv.hostPlatform.system}.default
@@ -114,8 +117,8 @@ environment.variables = {
     dig
     netcat
     qbittorrent
-    net-tools ethtool
-
+    net-tools
+    ethtool
 
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers

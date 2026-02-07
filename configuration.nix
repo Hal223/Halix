@@ -1,10 +1,11 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ./display.nix
@@ -46,7 +47,7 @@
     ccat = "/run/current-system/sw/bin/cat";
     cat = "bat";
     yy = "yazi";
-    update = "sudo nixos-rebuild switch --flake /home/hal/Halix/";
+    update = "~/Halix/Programs/rebuild.sh";
     gc-cleanup = "nix-collect-garbage --delete-older-than 7d";
     vscode = "code";
   };
@@ -95,7 +96,7 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true; # Required for wlroots-based compositors like Sway
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
     config.common.default = [
       "wlr"
       "gtk"

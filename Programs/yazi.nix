@@ -1,5 +1,8 @@
-{ pkgs, inputs,... }:
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   programs.yazi = {
     enable = true;
 
@@ -10,15 +13,18 @@
     settings.yazi = {
       open = {
         prepend_rules = [
-          { url = "*.mp4"; use = [ "vlc" "play" "reveal" ]; }
+          {
+            url = "*.mp4";
+            use = ["vlc" "play" "reveal"];
+          }
         ];
       };
       opener = {
         vlc = [
-          { 
-            run = ''vlc "$@" ''; 
-            orphan = true; 
-            for = "unix"; 
+          {
+            run = ''vlc "$@" '';
+            orphan = true;
+            for = "unix";
             desc = "vlc";
           }
         ];
@@ -30,7 +36,7 @@
         manager = {
           prepend_keymap = [
             {
-              on = [ "o" ];
+              on = ["o"];
               run = "plugin --sync smart-enter";
               desc = "CD into directory";
             }

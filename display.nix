@@ -3,8 +3,7 @@
   pkgs,
   lib,
   ...
-}:
-{
+}: {
   # 1. Enable COSMIC Desktop Environment (Epoch)
   services.displayManager.ly.enable = true;
   services.displayManager.ly.settings.default_session = "Sway";
