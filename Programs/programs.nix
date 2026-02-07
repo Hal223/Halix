@@ -69,7 +69,7 @@
     obsidian
     keepassxc
     ags
-    #chromiumsc
+    google-chrome
 
     # --- Media & Editing ---
     spotify
