@@ -1,1 +1,19 @@
-sudo: a password is required
+warning: Git tree '/home/hal/Halix' is dirty
+error:
+       … while calling the 'seq' builtin
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:361:18:
+          360|         options = checked options;
+          361|         config = checked (removeAttrs config [ "_module" ]);
+             |                  ^
+          362|         _module = checked (config._module);
+
+       … while calling the 'throw' builtin
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:333:13:
+          332|           else
+          333|             throw baseMsg
+             |             ^
+          334|         else
+
+       error: The option `programs.steam.exec' does not exist. Definition values:
+       - In `/nix/store/daxpcy9girnyh0ca1c1x6ss1bifaqwvb-source/Programs/programs.nix': "env DRI_PRIME=0 steam %U"
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.

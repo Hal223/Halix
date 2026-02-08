@@ -19,8 +19,11 @@
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
-    exec = "env DRI_PRIME=0 steam %U";
     localNetworkGameTransfers.openFirewall = true;
+  };
+  package = pkgs.steam.override {
+    extraArgs = "-tentative_argument_here"; # standard override
+    runScript = "env DRI_PRIME=0 steam";
   };
 
   # 3. Enable Syncthing as a system service (Best Practice)
