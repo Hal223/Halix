@@ -16,17 +16,18 @@ sudo nixos-rebuild switch --flake .# &>nixos-switch.log || {
     grep --color error nixos-switch.log || true
 }
 
-# 4. Get generation info (requires sudo)
-# Added '|| echo "Unknown"' so gen is never empty
-gen=$(sudo nixos-rebuild list-generations | grep current || echo "Unknown Generation")
+# 4. Get the unique Build Name (Store Path)
+# This looks for the "The new configuration is..." line in your log
+build_name=$(grep "The new configuration is" nixos-switch.log | awk '{print $NF}' || echo "unknown-build")
+# Get the generation number as a fallback/extra info
+gen=$(sudo nixos-rebuild list-generations | grep current | awk '{print $1}' || echo "current")
 
-# 5. Commit and Push
-# We use -a to ensure all changes are grabbed, though git add . already did this
-if git commit -m "Rebuild: $gen"; then
-    echo "Pushing to Git remote..."
-    git push
+# 5. Commit with Unique Build Name
+# Example: "Build: 142 - /nix/store/...-nixos-system-halix-..."
+if git commit -m "Build: $gen - $build_name"; then
+    echo "Commit successful: $build_name"
 else
-    echo "No changes to commit, or commit failed."
+    echo "No changes to commit."
 fi
 
 popd

@@ -19,6 +19,7 @@
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
+    exec = "env DRI_PRIME=0 steam %U";
     localNetworkGameTransfers.openFirewall = true;
   };
 
