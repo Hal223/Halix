@@ -34,11 +34,11 @@ error:
 
        … while evaluating the option `environment.systemPackages':
 
-       … while evaluating definitions from `/nix/store/a163rw786z4i8ylhyalhk9cg74jvizwr-source/Programs/waybar.nix':
+       … while evaluating definitions from `/nix/store/lyi0nbhxbyfsrs4v5pqcd98rc4hqi5kr-source/Programs/waybar.nix':
 
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
-       error: function 'wrapPackage' called without required argument 'pkgs'
+       error: function 'wrapPackage' called without required argument 'package'
        at /nix/store/m6fr0kcqcfr2fypf0g5dpbaaqryargl3-source/lib/default.nix:436:5:
           435|   wrapPackage =
           436|     {
