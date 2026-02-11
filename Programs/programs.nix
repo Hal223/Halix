@@ -71,6 +71,7 @@ in {
   # 4. Global Packages
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
+    swayHomeless
     firefox
     discord
     vesktop
