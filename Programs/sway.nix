@@ -44,11 +44,25 @@
 
   # 2. Use the wrapPackage function from the library
   mySway = wlib.wrapPackage {
-    inherit pkgs; # Explicitly pass pkgs here
+    inherit pkgs;
     package = pkgs.sway;
-    flags = ["--config" "${swayConfig}"];
+    # Add runtime binaries to Sway's PATH so it can find swaybg, wofi, etc.
+    runtimeInputs = with pkgs; [
+      swaybg
+      wofi
+      ghostty
+      grim
+      slurp
+      wl-clipboard
+    ];
+    flags = {
+      # Ensure there is an '=' here and a ';' at the end
+      "--config" = "${swayConfig}";
+    };
   };
 in {
   programs.sway.enable = true;
-  environment.systemPackages = [mySway];
+  environment.systemPackages = [
+    mySway
+  ];
 }
