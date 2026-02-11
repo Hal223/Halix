@@ -14,6 +14,7 @@ in {
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
+    package = swayHomeless;
   };
 
   # Install firefox.
@@ -71,7 +72,6 @@ in {
   # 4. Global Packages
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
-    swayHomeless
     firefox
     discord
     vesktop

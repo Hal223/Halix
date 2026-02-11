@@ -168,7 +168,15 @@
   # This creates a script named 'sway-homeless' (or just 'sway' if you prefer)
   # that automatically passes the config file above.
 in
-  pkgs.writeShellScriptBin "sway-homeless" ''
-    # We exec the real sway binary, passing our store-path config
-    exec ${pkgs.sway}/bin/sway -c ${swayConfig} "$@"
-  ''
+  # CHANGE 1: We use symlinkJoin to build a package that looks like real software
+  # instead of just a lone script. This helps with path precedence.
+  pkgs.symlinkJoin {
+    name = "sway-homeless-wrapper";
+    paths = [pkgs.sway]; # Include original sway files (man pages, etc)
+    buildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      # CHANGE 2: We wrap the binary named 'sway' directly
+      wrapProgram $out/bin/sway \
+        --add-flags "-c ${swayConfig}"
+    '';
+  }
