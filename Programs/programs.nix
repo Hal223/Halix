@@ -84,6 +84,7 @@
     ghostty
     lmstudio
     zsh
+    cowsay
     kitty
     vscode
     nodejs_24
