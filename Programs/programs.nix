@@ -2,11 +2,20 @@
   pkgs,
   inputs,
   ...
-}: {
+}: let
+  swayHomeless = import ./sway-homeless.nix {inherit pkgs;};
+in {
   imports = [
     ./yazi.nix
-    ./waybar.nix
+    #./waybar.nix
   ];
+
+  # enable Sway window manager
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+  };
+
   # Install firefox.
   programs.firefox.enable = true;
 

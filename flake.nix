@@ -4,9 +4,6 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    wrappers.url = "github:lassulus/wrappers";
-    wrappers.inputs.nixpkgs.follows = "nixpkgs";
-
     fresh.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
 
@@ -20,7 +17,6 @@
     self,
     nixpkgs,
     fresh,
-    wrappers,
     ...
   } @ inputs: {
     nixosConfigurations.halix = nixpkgs.lib.nixosSystem {

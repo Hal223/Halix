@@ -32,16 +32,7 @@ error:
 
        … while evaluating the option `environment.etc.dbus-1.source':
 
-       … while evaluating the option `environment.systemPackages':
-
-       … while evaluating definitions from `/nix/store/jav7q8drz6ng0wi630xxjs3f0qpychnn-source/Programs/waybar.nix':
-
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
-       error: function 'wrapPackage' called without required argument 'package'
-       at /nix/store/m6fr0kcqcfr2fypf0g5dpbaaqryargl3-source/lib/default.nix:436:5:
-          435|   wrapPackage =
-          436|     {
-             |     ^
-          437|       pkgs,
+       error: expected a set but found a list: [ «thunk» «thunk» ]
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
