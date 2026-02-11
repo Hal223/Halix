@@ -4,8 +4,7 @@
   ...
 }: let
   # Access the wrappers library from your flake inputs
-  wlib = inputs.wrappers.lib.${pkgs.stdenv.hostPlatform.system};
-
+  wlib = inputs.wrappers.lib;
   # 1. Define the actual Sway configuration content
   swayConfig = pkgs.writeText "sway-config" ''
     # --- Migrated Homeless Config ---
@@ -43,18 +42,13 @@
     }
   '';
 
-  # 2. Wrap the Sway package to use the config above [00:03:22]
+  # 2. Use the wrapPackage function from the library
   mySway = wlib.wrapPackage {
+    inherit pkgs; # Explicitly pass pkgs here
     package = pkgs.sway;
-    # Force Sway to use the Nix store config instead of ~/.config/sway
     flags = ["--config" "${swayConfig}"];
   };
 in {
-  # Enable the base system features for Sway
   programs.sway.enable = true;
-
-  # Add the wrapped version to your system packages
-  environment.systemPackages = [
-    mySway
-  ];
+  environment.systemPackages = [mySway];
 }

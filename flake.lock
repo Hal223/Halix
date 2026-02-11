@@ -98,10 +98,27 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1764667669,
+        "narHash": "sha256-7WUCZfmqLAssbDqwg9cUDAXrSoXN79eEEq17qhTNM/Y=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "418468ac9527e799809c900eda37cbff999199b6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "fresh": "fresh",
         "nixpkgs": "nixpkgs",
+        "wrappers": "wrappers",
         "yazi-plugins": "yazi-plugins"
       }
     },
@@ -134,6 +151,24 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "wrappers": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1770311206,
+        "narHash": "sha256-gzTvuaJZaymgxQC4rOZ9HlMRRWHVF2moEEaTnCG556A=",
+        "owner": "Lassulus",
+        "repo": "wrappers",
+        "rev": "241f2f7dfcac0dbb2338105bdba7f03f412c5847",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Lassulus",
+        "repo": "wrappers",
         "type": "github"
       }
     },

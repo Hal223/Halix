@@ -1,4 +1,9 @@
 warning: Git tree '/home/hal/Halix' is dirty
+warning: updating lock file "/home/hal/Halix/flake.lock":
+• Added input 'wrappers':
+    'github:Lassulus/wrappers/241f2f7dfcac0dbb2338105bdba7f03f412c5847?narHash=sha256-gzTvuaJZaymgxQC4rOZ9HlMRRWHVF2moEEaTnCG556A%3D' (2026-02-05)
+• Added input 'wrappers/nixpkgs':
+    'github:NixOS/nixpkgs/418468ac9527e799809c900eda37cbff999199b6?narHash=sha256-7WUCZfmqLAssbDqwg9cUDAXrSoXN79eEEq17qhTNM/Y%3D' (2025-12-02)
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
 error:
@@ -20,34 +25,28 @@ error:
 
        … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/top-level.nix':
 
-       … while evaluating the option `assertions':
+       … while evaluating the option `system.systemBuilderArgs':
 
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/boot/systemd.nix':
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/activatable-system.nix':
 
-       … while evaluating the option `systemd.services':
+       … while evaluating the option `system.activationScripts.etc.text':
 
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/services/logging/logrotate.nix':
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc-activation.nix':
 
-       … while evaluating the option `services.logrotate.enable':
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc.nix':
 
-       … while evaluating the option `users.groups':
+       … while evaluating the option `environment.etc.dbus-1.source':
 
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/config/resolvconf.nix':
+       … while evaluating the option `environment.systemPackages':
 
-       … while evaluating the option `networking.resolvconf.enable':
-
-       … while evaluating the option `environment.etc':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/programs/wayland/sway.nix':
-
-       … while evaluating the option `programs.sway.package':
+       … while evaluating definitions from `/nix/store/d2xxqblr8s8bhzghxc7l4b6qx9skn3hk-source/Programs/sway.nix':
 
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
-       error: attribute 'override' missing
-       at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/programs/wayland/lib.nix:10:75:
-            9|         with lib;
-           10|         naturalSort (intersectLists expectedArgs (attrNames (functionArgs pkg.override)));
-             |                                                                           ^
-           11|     in
+       error: attribute 'x86_64-linux' missing
+       at /nix/store/d2xxqblr8s8bhzghxc7l4b6qx9skn3hk-source/Programs/sway.nix:7:10:
+            6|   # Access the wrappers library from your flake inputs
+            7|   wlib = inputs.wrappers.lib.${pkgs.stdenv.hostPlatform.system};
+             |          ^
+            8|
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
