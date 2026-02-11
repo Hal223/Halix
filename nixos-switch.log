@@ -14,6 +14,15 @@ error:
              |             ^
           334|         else
 
-       error: The option `programs.steam.exec' does not exist. Definition values:
-       - In `/nix/store/daxpcy9girnyh0ca1c1x6ss1bifaqwvb-source/Programs/programs.nix': "env DRI_PRIME=0 steam %U"
+       … while evaluating the error message for definitions for `package', which is an option that does not exist
+
+       … while evaluating a definition from `/nix/store/b19gijp24cp8lkd9mnlsxqfc1jrrz1jf-source/Programs/programs.nix'
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: function 'anonymous lambda' called with unexpected argument 'runScript'
+       at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/pkgs/by-name/st/steam/package.nix:1:1:
+            1| {
+             | ^
+            2|   lib,
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.
