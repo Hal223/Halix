@@ -3,8 +3,8 @@
   pkgs,
   ...
 }: let
-  # The video highlights using the 'wrapPackage' function for a clean syntax
-  waybar-wrapped = inputs.wrappers.lib.wrapPackage pkgs.waybar {
+  # Pass 'pkgs' as the first argument to wrapPackage
+  waybar-wrapped = inputs.wrappers.lib.wrapPackage pkgs pkgs.waybar {
     # Using flags to point to the configuration
     flags = [
       "-c ${./waybar-config.json}"
