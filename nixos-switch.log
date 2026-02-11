@@ -1,39 +1,61 @@
 warning: Git tree '/home/hal/Halix' is dirty
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
-copying path '/nix/store/xsdf4r7hl94n1a1kjj02ibs611jnmadn-source' from 'https://cache.nixos.org'...
-error:
-       … while calling the 'head' builtin
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/attrsets.nix:1696:13:
-         1695|           if length values == 1 || pred here (elemAt values 1) (head values) then
-         1696|             head values
-             |             ^
-         1697|           else
-
-       … while evaluating the attribute 'value'
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:1118:7:
-         1117|     // {
-         1118|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
-             |       ^
-         1119|       inherit (res.defsFinal') highestPrio;
-
-       … while evaluating the option `system.build.toplevel':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/top-level.nix':
-
-       … while evaluating the option `system.systemBuilderArgs':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/activatable-system.nix':
-
-       … while evaluating the option `system.activationScripts.etc.text':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc-activation.nix':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc.nix':
-
-       … while evaluating the option `environment.etc.dbus-1.source':
-
-       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
-
-       error: expected a set but found a list: [ "--config" «thunk» ]
-Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
+these 21 derivations will be built:
+  /nix/store/4mnzdk2fg6jzqw4ja9y82rch320a8sqa-sway-1.11.drv
+  /nix/store/xa9483livshr7iydxh31hfq2ac8mc2l1-sway-config.drv
+  /nix/store/3md6wfka5prlx2c0d49davn70x1h3lhs-sway.drv
+  /nix/store/abljppdh3x8xwfvvsp4yb7zj6hm8ayy4-sway.drv
+  /nix/store/0la2j9cyizdbdk9dvc04spn0w2r1xph0-system-path.drv
+  /nix/store/m3bhix3hhnwnacv16p1s6k1i64hsfr9s-dbus-1.drv
+  /nix/store/1592hfqivbg1ma17b83320zxgw5cpabx-X-Restart-Triggers-dbus.drv
+  /nix/store/5fg2hifg8dsdbjm59kbwr5d7iypyrvml-desktops.drv
+  /nix/store/jsxp36w2fyidv3ny0pnms9fdvj0icpbn-unit-dbus.service.drv
+  /nix/store/bbi2rnz52zd925krczfcckm3a4q03jzb-user-units.drv
+  /nix/store/ccwfx2pazj48ilwrc2kqy9gc600i1yqf-etc-pam-environment.drv
+  /nix/store/liscr2ajsvl5hm4izrwgygj9vap23c67-set-environment.drv
+  /nix/store/8rcl4c4n5snam976ivmbfgakzc6cg1s8-unit-accounts-daemon.service.drv
+  /nix/store/fsjgk1n3002s9dqsd63zr0wnxg9np78v-unit-dbus.service.drv
+  /nix/store/yv9zq3q1azd4i1m23qnqiw54fxh2xn7y-X-Restart-Triggers-polkit.drv
+  /nix/store/g5mwlxpffqg5mmz42r8zgpsf55inznva-unit-polkit.service.drv
+  /nix/store/ni69pic4zz0sinv1pcxqj7bk1hfdl76a-system-units.drv
+  /nix/store/p4ih8nhlnv0d447nkijybqdashqqi6n0-config.ini.drv
+  /nix/store/vbw71nkw70q4f4wjl5pkcacm4wn2v8ir-etc-profile.drv
+  /nix/store/mr25kfiav18dn53nwg3i0n4hgpl0xc24-etc.drv
+  /nix/store/61w9l4qpv4zikpdljs98xl56zra9jhrm-nixos-system-halix-26.05.20251228.c0b0e0f.drv
+these 2 paths will be fetched (1.11 MiB download, 7.57 MiB unpacked):
+  /nix/store/b71g29x4vc7a7vvzrhsd6rqr5v2rylna-ShellCheck-0.11.0
+  /nix/store/13flhp6daca6s7ahvdzrsz6b5fbg1wnv-replace-2.24
+building '/nix/store/4mnzdk2fg6jzqw4ja9y82rch320a8sqa-sway-1.11.drv'...
+copying path '/nix/store/13flhp6daca6s7ahvdzrsz6b5fbg1wnv-replace-2.24' from 'https://cache.nixos.org'...
+copying path '/nix/store/b71g29x4vc7a7vvzrhsd6rqr5v2rylna-ShellCheck-0.11.0' from 'https://cache.nixos.org'...
+building '/nix/store/xa9483livshr7iydxh31hfq2ac8mc2l1-sway-config.drv'...
+building '/nix/store/5fg2hifg8dsdbjm59kbwr5d7iypyrvml-desktops.drv'...
+building '/nix/store/3md6wfka5prlx2c0d49davn70x1h3lhs-sway.drv'...
+building '/nix/store/p4ih8nhlnv0d447nkijybqdashqqi6n0-config.ini.drv'...
+building '/nix/store/ccwfx2pazj48ilwrc2kqy9gc600i1yqf-etc-pam-environment.drv'...
+building '/nix/store/liscr2ajsvl5hm4izrwgygj9vap23c67-set-environment.drv'...
+building '/nix/store/abljppdh3x8xwfvvsp4yb7zj6hm8ayy4-sway.drv'...
+building '/nix/store/vbw71nkw70q4f4wjl5pkcacm4wn2v8ir-etc-profile.drv'...
+building '/nix/store/0la2j9cyizdbdk9dvc04spn0w2r1xph0-system-path.drv'...
+building '/nix/store/yv9zq3q1azd4i1m23qnqiw54fxh2xn7y-X-Restart-Triggers-polkit.drv'...
+building '/nix/store/m3bhix3hhnwnacv16p1s6k1i64hsfr9s-dbus-1.drv'...
+building '/nix/store/8rcl4c4n5snam976ivmbfgakzc6cg1s8-unit-accounts-daemon.service.drv'...
+building '/nix/store/1592hfqivbg1ma17b83320zxgw5cpabx-X-Restart-Triggers-dbus.drv'...
+building '/nix/store/g5mwlxpffqg5mmz42r8zgpsf55inznva-unit-polkit.service.drv'...
+building '/nix/store/fsjgk1n3002s9dqsd63zr0wnxg9np78v-unit-dbus.service.drv'...
+building '/nix/store/jsxp36w2fyidv3ny0pnms9fdvj0icpbn-unit-dbus.service.drv'...
+building '/nix/store/ni69pic4zz0sinv1pcxqj7bk1hfdl76a-system-units.drv'...
+building '/nix/store/bbi2rnz52zd925krczfcckm3a4q03jzb-user-units.drv'...
+building '/nix/store/mr25kfiav18dn53nwg3i0n4hgpl0xc24-etc.drv'...
+building '/nix/store/61w9l4qpv4zikpdljs98xl56zra9jhrm-nixos-system-halix-26.05.20251228.c0b0e0f.drv'...
+stopping the following units: accounts-daemon.service
+activating the configuration...
+setting up /etc...
+reloading user units for hal...
+restarting sysinit-reactivation.target
+reloading the following units: dbus.service
+restarting the following units: polkit.service
+starting the following units: accounts-daemon.service
+the following new units were started: NetworkManager-dispatcher.service
+Done. The new configuration is /nix/store/4ji95gv5xhvhdjbx5im93f8hmi2521qq-nixos-system-halix-26.05.20251228.c0b0e0f
