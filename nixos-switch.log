@@ -34,7 +34,7 @@ error:
 
        … while evaluating the option `environment.systemPackages':
 
-       … while evaluating definitions from `/nix/store/lyi0nbhxbyfsrs4v5pqcd98rc4hqi5kr-source/Programs/waybar.nix':
+       … while evaluating definitions from `/nix/store/z2mxzz08svpc8a4k8hna3q540l8g8ijs-source/Programs/waybar.nix':
 
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
