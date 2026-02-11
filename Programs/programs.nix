@@ -4,8 +4,8 @@
   ...
 }: {
   imports = [
-    #./pia.nix
     ./yazi.nix
+    ./waybar.nix
   ];
   # Install firefox.
   programs.firefox.enable = true;
