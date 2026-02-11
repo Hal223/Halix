@@ -60,11 +60,9 @@
       "--config" = "${swayConfig}";
     };
   };
-in
-  {
-    programs.sway.enable = true;
-    environment.systemPackages = [
-      mySway
-    ];
-  }
-  d
+in {
+  programs.sway.enable = true;
+  environment.systemPackages = [
+    mySway
+  ];
+}
