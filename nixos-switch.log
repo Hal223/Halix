@@ -1,28 +1,4 @@
 warning: Git tree '/home/hal/Halix' is dirty
-error:
-       … while calling the 'seq' builtin
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:361:18:
-          360|         options = checked options;
-          361|         config = checked (removeAttrs config [ "_module" ]);
-             |                  ^
-          362|         _module = checked (config._module);
+building the system configuration...
+warning: Git tree '/home/hal/Halix' is dirty
 
-       … while calling the 'throw' builtin
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:333:13:
-          332|           else
-          333|             throw baseMsg
-             |             ^
-          334|         else
-
-       … while evaluating the error message for definitions for `package', which is an option that does not exist
-
-       … while evaluating a definition from `/nix/store/b19gijp24cp8lkd9mnlsxqfc1jrrz1jf-source/Programs/programs.nix'
-
-       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
-
-       error: function 'anonymous lambda' called with unexpected argument 'runScript'
-       at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/pkgs/by-name/st/steam/package.nix:1:1:
-            1| {
-             | ^
-            2|   lib,
-Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.

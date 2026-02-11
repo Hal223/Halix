@@ -4,9 +4,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     fresh.inputs.nixpkgs.follows = "nixpkgs";
+    wrappers.url = "github:lassulus/wrappers";
+    wrappers.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
-    #pia-vpn.url = "github:rcambrj/nix-pia-vpn";
-    #pia-vpn.inputs.nixpkgs.follows = "nixpkgs";
     yazi-plugins = {
       url = "github:yazi-rs/plugins";
       flake = false;
@@ -17,6 +17,7 @@
     self,
     nixpkgs,
     fresh,
+    wrappers,
     ...
   } @ inputs: {
     nixosConfigurations.halix = nixpkgs.lib.nixosSystem {
