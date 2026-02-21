@@ -5,10 +5,13 @@
   ...
 }: {
   # 1. Enable COSMIC Desktop Environment (Epoch)
-  services.displayManager.ly.enable = true;
-  services.displayManager.ly.settings.default_session = "Sway";
-  #services.displayManager.ly.settings.default_session = "/run/current-system/sw/share/wayland-sessions/sway.desktop";
-  services.displayManager.defaultSession = "Sway"; # Example for Sway
+  #services.displayManager.ly.enable = true;
+  #services.displayManager.ly.settings.default_session = "Sway";
+  #services.displayManager.defaultSession = "Sway"; # Example for Sway
+
+  services.displayManager.cosmic-greeter.enable = true;
+  # Enable the COSMIC desktop environment
+  services.desktopManager.cosmic.enable = true;
 
   #services.desktopManager.cosmic.enable = true;
   services.xserver.desktopManager.cinnamon.enable = true;
