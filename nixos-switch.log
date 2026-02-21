@@ -1,39 +1,40 @@
 warning: Git tree '/home/hal/Halix' is dirty
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
-error:
-       … while calling the 'head' builtin
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/attrsets.nix:1696:13:
-         1695|           if length values == 1 || pred here (elemAt values 1) (head values) then
-         1696|             head values
-             |             ^
-         1697|           else
-
-       … while evaluating the attribute 'value'
-         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:1118:7:
-         1117|     // {
-         1118|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
-             |       ^
-         1119|       inherit (res.defsFinal') highestPrio;
-
-       … while evaluating the option `system.build.toplevel':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/top-level.nix':
-
-       … while evaluating the option `system.systemBuilderArgs':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/activatable-system.nix':
-
-       … while evaluating the option `system.activationScripts.etc.text':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc-activation.nix':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc.nix':
-
-       … while evaluating the option `environment.etc.dbus-1.source':
-
-       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
-
-       error: A definition for option `environment.systemPackages."[definition 1-entry 1]"' is not of type `package'. Definition values:
-       - In `/nix/store/zxkv7mri37rv4614yjgkca7v5ip8x31p-source/Programs/steam.nix': <function>
-Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
+these 13 derivations will be built:
+  /nix/store/wspgrlkjp88gsz9slzsk8q3xgjc95hhf-steam-1.0.0.85.drv
+  /nix/store/v2qmdkcc9c506flk1g755mqamyr28rcn-system-path.drv
+  /nix/store/2q43irsf70l4qg95jf0kkrpgilggpj9n-unit-accounts-daemon.service.drv
+  /nix/store/k6x643anzybdfn681c4nr6lnfqliv25d-dbus-1.drv
+  /nix/store/hd6bns2yagkxy9gqj6fmz12awmrndj61-X-Restart-Triggers-polkit.drv
+  /nix/store/mhmdqw4gjhj4z28r460hvail41fl5i7i-unit-polkit.service.drv
+  /nix/store/4p12c5lk8lrkbjrd034s4pd3k319iypg-X-Restart-Triggers-dbus.drv
+  /nix/store/n1dxyp83psj5sjk9jgil9jrivkcqlbcv-unit-dbus.service.drv
+  /nix/store/lr8cyymh7n8wfnc3c4wndc83l2f11b4g-system-units.drv
+  /nix/store/qpsrm3fj964dsz687gbyp4qgkckg2gc1-unit-dbus.service.drv
+  /nix/store/ndbnncy5plbc8bc6w404zh4sh6yl66bq-user-units.drv
+  /nix/store/q9xx6vffy9kvmfhfi8k3sza662q24rdn-etc.drv
+  /nix/store/4d13zgg6l9qhjal69vykahs5rxwfwkda-nixos-system-halix-26.05.20251228.c0b0e0f.drv
+building '/nix/store/wspgrlkjp88gsz9slzsk8q3xgjc95hhf-steam-1.0.0.85.drv'...
+building '/nix/store/v2qmdkcc9c506flk1g755mqamyr28rcn-system-path.drv'...
+building '/nix/store/hd6bns2yagkxy9gqj6fmz12awmrndj61-X-Restart-Triggers-polkit.drv'...
+building '/nix/store/k6x643anzybdfn681c4nr6lnfqliv25d-dbus-1.drv'...
+building '/nix/store/2q43irsf70l4qg95jf0kkrpgilggpj9n-unit-accounts-daemon.service.drv'...
+building '/nix/store/4p12c5lk8lrkbjrd034s4pd3k319iypg-X-Restart-Triggers-dbus.drv'...
+building '/nix/store/mhmdqw4gjhj4z28r460hvail41fl5i7i-unit-polkit.service.drv'...
+building '/nix/store/n1dxyp83psj5sjk9jgil9jrivkcqlbcv-unit-dbus.service.drv'...
+building '/nix/store/qpsrm3fj964dsz687gbyp4qgkckg2gc1-unit-dbus.service.drv'...
+building '/nix/store/lr8cyymh7n8wfnc3c4wndc83l2f11b4g-system-units.drv'...
+building '/nix/store/ndbnncy5plbc8bc6w404zh4sh6yl66bq-user-units.drv'...
+building '/nix/store/q9xx6vffy9kvmfhfi8k3sza662q24rdn-etc.drv'...
+building '/nix/store/4d13zgg6l9qhjal69vykahs5rxwfwkda-nixos-system-halix-26.05.20251228.c0b0e0f.drv'...
+stopping the following units: accounts-daemon.service
+activating the configuration...
+setting up /etc...
+reloading user units for hal...
+restarting sysinit-reactivation.target
+reloading the following units: dbus.service
+restarting the following units: polkit.service
+starting the following units: accounts-daemon.service
+the following new units were started: NetworkManager-dispatcher.service, sysinit-reactivation.target, systemd-tmpfiles-resetup.service
+Done. The new configuration is /nix/store/9xh83sh4h5b4bf0pjh6gxisz94s9irsd-nixos-system-halix-26.05.20251228.c0b0e0f

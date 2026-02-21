@@ -8,10 +8,7 @@
 
     # 2. Declaratively override the Steam package itself
     package = pkgs.steam.override {
-      extraPkgs = pkgs:
-        with pkgs; [
-          # Add extra dependencies here if needed (e.g., openssl, nghttp2)
-        ];
+      withJava = true; # Sometimes helps with portal communication
     };
   };
 
