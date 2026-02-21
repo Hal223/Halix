@@ -32,19 +32,12 @@ error:
 
        … while evaluating the option `environment.etc.dbus-1.source':
 
-       … while evaluating the option `environment.systemPackages':
-
-       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/programs/steam.nix':
-
-       … while evaluating the option `programs.steam.package':
-
-       … while evaluating definitions from `/nix/store/ryjjwji7bh272bn2hyb92lf74gf1vlwp-source/Programs/steam.nix':
-
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
-       error: function 'anonymous lambda' called with unexpected argument 'withJava'
-       at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/pkgs/by-name/st/steam/package.nix:1:1:
-            1| {
-             | ^
-            2|   lib,
+       error: undefined variable 'java'
+       at /nix/store/297ac87rylrkck72gz7m46c3fymwlk0c-source/Programs/steam.nix:13:11:
+           12|         with pkgs; [
+           13|           java
+             |           ^
+           14|           # Add extra dependencies here if needed (e.g., openssl, nghttp2)
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.

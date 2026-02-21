@@ -10,7 +10,6 @@
     package = pkgs.steam.override {
       extraPkgs = pkgs:
         with pkgs; [
-          java
           # Add extra dependencies here if needed (e.g., openssl, nghttp2)
         ];
     };
