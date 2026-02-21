@@ -6,6 +6,7 @@
   imports = [
     ./yazi.nix
     ./sway.nix
+    ./steam.nix
   ];
 
   # enable Sway window manager
@@ -21,14 +22,6 @@
   # VPN solution moving away from PIA as hassle to config in nix 2026-01-17
   services.mullvad-vpn.enable = true;
   services.mullvad-vpn.package = pkgs.mullvad-vpn;
-
-  # 2. Enable Steam with multi-drive / networking support
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-    localNetworkGameTransfers.openFirewall = true;
-  };
 
   # 3. Enable Syncthing as a system service (Best Practice)
   services.syncthing = {
