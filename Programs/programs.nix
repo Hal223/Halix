@@ -126,7 +126,7 @@
     net-tools
     ethtool
     popsicle
-    cosmic-polkit-agent
+    polkit_gnome
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'
