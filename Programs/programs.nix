@@ -16,9 +16,6 @@
   #  package = swayHomeless;
   #};
 
-  services.udisks2.enable = true;
-  security.polkit.enable = true;
-
   # Install firefox.
   programs.firefox.enable = true;
 
@@ -124,8 +121,7 @@
     qbittorrent
     net-tools
     ethtool
-    gnome-disk-utility
-    polkit_gnome
+    popsicle
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'

@@ -3,31 +3,35 @@ set -e
 pushd ~/Halix/
 
 # 1. Format and Stage
+# Alejandra handles formatting; git add ensures nixos-rebuild sees new files
 alejandra . &>/dev/null
 git add .
 
-# 2. Show diff
+# 2. Show diff (Optional, but helpful to see what's changing)
 git diff --staged -U0
 
 # 3. Rebuild
 echo "NixOS Rebuilding..."
-sudo nixos-rebuild switch --flake .# &>nixos-switch.log || {
-    echo "Build had issues, checking logs..."
-    grep --color error nixos-switch.log || true
-}
+# Using tee allows you to see the sudo prompt and build progress
+if sudo nixos-rebuild switch --flake .# 2>&1 | tee nixos-switch.log; then
+    
+    # 4. Get the unique Build Name and Generation
+    # It's more reliable to check the actual system link than to grep a log
+    build_path=$(readlink /run/current-system)
+    gen=$(nixos-rebuild list-generations | grep current | awk '{print $1}')
 
-# 4. Get the unique Build Name (Store Path)
-# This looks for the "The new configuration is..." line in your log
-build_name=$(grep "The new configuration is" nixos-switch.log | awk '{print $NF}' || echo "unknown-build")
-# Get the generation number as a fallback/extra info
-gen=$(sudo nixos-rebuild list-generations | grep current | awk '{print $1}' || echo "current")
+    # 5. Commit with Unique Build Name
+    if git commit -m "Build: $gen - $build_path"; then
+        echo "Successfully rebuilt and committed generation $gen."
+    else
+        echo "Build successful, but no changes were detected to commit."
+    fi
 
-# 5. Commit with Unique Build Name
-# Example: "Build: 142 - /nix/store/...-nixos-system-halix-..."
-if git commit -m "Build: $gen - $build_name"; then
-    echo "Commit successful: $build_name"
 else
-    echo "No changes to commit."
+    echo "--------------------------------------------------"
+    echo "Build failed! Checking log for errors..."
+    grep --color -i "error" nixos-switch.log || true
+    exit 1
 fi
 
 popd
