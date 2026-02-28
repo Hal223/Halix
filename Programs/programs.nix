@@ -60,6 +60,15 @@
   #   enableSSHSupport = true;
   # };
 
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (subject.isInGroup("wheel") &&
+          action.id.indexOf("org.freedesktop.udisks2.modify-device") === 0) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   # 4. Global Packages
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
