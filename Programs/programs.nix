@@ -60,27 +60,6 @@
   #   enableSSHSupport = true;
   # };
 
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (subject.isInGroup("wheel") &&
-          action.id.startsWith("org.freedesktop.udisks2.")) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
-
-  systemd.user.services.polkit-gnome-authentication-agent-1 = {
-    description = "gnome-polkit-agent";
-    wantedBy = ["graphical-session.target"];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-      Restart = "on-failure";
-      RestartSec = 1;
-      TimeoutStopSec = 10;
-    };
-  };
-
   # 4. Global Packages
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
