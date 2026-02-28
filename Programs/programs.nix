@@ -16,6 +16,10 @@
   #  package = swayHomeless;
   #};
 
+  # Optional: Ensure udisks2 is running, which Popsicle uses to find drives
+  security.polkit.enable = true;
+  services.udisks2.enable = true;
+
   # Install firefox.
   programs.firefox.enable = true;
 
@@ -122,6 +126,7 @@
     net-tools
     ethtool
     popsicle
+    polkit_gnome
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'
