@@ -1,9 +1,56 @@
 warning: Git tree '/home/hal/Halix' is dirty
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
-activating the configuration...
-setting up /etc...
-reloading user units for hal...
-restarting sysinit-reactivation.target
-the following new units were started: NetworkManager-dispatcher.service
-Done. The new configuration is /nix/store/3hpxlzd0sqxhbgwwlzj91y715bsq23n9-nixos-system-halix-26.05.20251228.c0b0e0f
+error:
+       … while calling the 'head' builtin
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/attrsets.nix:1696:13:
+         1695|           if length values == 1 || pred here (elemAt values 1) (head values) then
+         1696|             head values
+             |             ^
+         1697|           else
+
+       … while evaluating the attribute 'value'
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:1118:7:
+         1117|     // {
+         1118|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       ^
+         1119|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/top-level.nix':
+
+       … while evaluating the option `system.systemBuilderArgs':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/activatable-system.nix':
+
+       … while evaluating the option `system.activationScripts.etc.text':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc-activation.nix':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc.nix':
+
+       … while evaluating the option `environment.etc."systemd/system".source':
+
+       … while evaluating the option `systemd.units."systemd-udevd.service".text':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services.systemd-udevd.unitConfig':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services.systemd-udevd.restartTriggers':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/services/hardware/udev.nix':
+
+       … while evaluating the option `environment.etc."udev/rules.d".source':
+
+       … while evaluating the option `services.udev.packages':
+
+       … while evaluating definitions from `/nix/store/js9j7wbhrdmd01wy8g0wy8k617yd2ir9-source/configuration.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The ‘gnome.gnome-disk-utility’ was moved to top-level. Please use ‘pkgs.gnome-disk-utility’ directly.
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
