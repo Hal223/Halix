@@ -1,41 +1,56 @@
 warning: Git tree '/home/hal/Halix' is dirty
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
-these 12 derivations will be built:
-  /nix/store/7rnra3gabh2sgnw0pnyiwr64r3c6nywp-system-path.drv
-  /nix/store/icpcv5haqylp1xqicyhycy0pki1p563v-X-Restart-Triggers-polkit.drv
-  /nix/store/89w3mxx3sr57b4ci5zswrd14310750vs-unit-polkit.service.drv
-  /nix/store/f5ggqdcx52naiwxiv9qnpc7rhr54dkqa-dbus-1.drv
-  /nix/store/hyjjs38184g5f2gsqa2a1wc6vcv1snzn-X-Restart-Triggers-dbus.drv
-  /nix/store/bb46q3ap2ipbj4fc4g0jqfvadwfjbgfm-unit-dbus.service.drv
-  /nix/store/d7cajkacxh1hhqyas17k6xknwv1i8yxc-unit-accounts-daemon.service.drv
-  /nix/store/rj3mfxi9jjjmvcmdfam9lg85sih3w4cb-unit-dbus.service.drv
-  /nix/store/g55h8iqa0r3ybwx8sfqk93h9ympjf4am-system-units.drv
-  /nix/store/p7cxvnrpb80rgvysar5dykgdv2h4a6m9-user-units.drv
-  /nix/store/rjd7fgn94p3x8268vfa0i2zr14clnhqq-etc.drv
-  /nix/store/hvj93dzh0x1kxd5x5z00pjb3zla02gga-nixos-system-halix-26.05.20251228.c0b0e0f.drv
-this path will be fetched (0.13 MiB download, 0.50 MiB unpacked):
-  /nix/store/mkagzalzmn5b1p68liagriq9ycpydlgi-gnome-multi-writer-3.35.90
-copying path '/nix/store/mkagzalzmn5b1p68liagriq9ycpydlgi-gnome-multi-writer-3.35.90' from 'https://cache.nixos.org'...
-building '/nix/store/7rnra3gabh2sgnw0pnyiwr64r3c6nywp-system-path.drv'...
-building '/nix/store/icpcv5haqylp1xqicyhycy0pki1p563v-X-Restart-Triggers-polkit.drv'...
-building '/nix/store/f5ggqdcx52naiwxiv9qnpc7rhr54dkqa-dbus-1.drv'...
-building '/nix/store/d7cajkacxh1hhqyas17k6xknwv1i8yxc-unit-accounts-daemon.service.drv'...
-building '/nix/store/hyjjs38184g5f2gsqa2a1wc6vcv1snzn-X-Restart-Triggers-dbus.drv'...
-building '/nix/store/89w3mxx3sr57b4ci5zswrd14310750vs-unit-polkit.service.drv'...
-building '/nix/store/bb46q3ap2ipbj4fc4g0jqfvadwfjbgfm-unit-dbus.service.drv'...
-building '/nix/store/rj3mfxi9jjjmvcmdfam9lg85sih3w4cb-unit-dbus.service.drv'...
-building '/nix/store/p7cxvnrpb80rgvysar5dykgdv2h4a6m9-user-units.drv'...
-building '/nix/store/g55h8iqa0r3ybwx8sfqk93h9ympjf4am-system-units.drv'...
-building '/nix/store/rjd7fgn94p3x8268vfa0i2zr14clnhqq-etc.drv'...
-building '/nix/store/hvj93dzh0x1kxd5x5z00pjb3zla02gga-nixos-system-halix-26.05.20251228.c0b0e0f.drv'...
-stopping the following units: accounts-daemon.service
-activating the configuration...
-setting up /etc...
-reloading user units for hal...
-restarting sysinit-reactivation.target
-reloading the following units: dbus.service
-restarting the following units: polkit.service
-starting the following units: accounts-daemon.service
-the following new units were started: NetworkManager-dispatcher.service
-Done. The new configuration is /nix/store/b7p1v3cfzbgs5wlcinpcz2qvjajmqcvi-nixos-system-halix-26.05.20251228.c0b0e0f
+error:
+       … while calling the 'head' builtin
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/attrsets.nix:1696:13:
+         1695|           if length values == 1 || pred here (elemAt values 1) (head values) then
+         1696|             head values
+             |             ^
+         1697|           else
+
+       … while evaluating the attribute 'value'
+         at /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/lib/modules.nix:1118:7:
+         1117|     // {
+         1118|       value = addErrorContext "while evaluating the option `${showOption loc}':" value;
+             |       ^
+         1119|       inherit (res.defsFinal') highestPrio;
+
+       … while evaluating the option `system.build.toplevel':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/top-level.nix':
+
+       … while evaluating the option `system.systemBuilderArgs':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/activation/activatable-system.nix':
+
+       … while evaluating the option `system.activationScripts.etc.text':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc-activation.nix':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/etc/etc.nix':
+
+       … while evaluating the option `environment.etc."systemd/system".source':
+
+       … while evaluating the option `systemd.units."systemd-udevd.service".text':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services.systemd-udevd.unitConfig':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/system/boot/systemd.nix':
+
+       … while evaluating the option `systemd.services.systemd-udevd.restartTriggers':
+
+       … while evaluating definitions from `/nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/nixos/modules/services/hardware/udev.nix':
+
+       … while evaluating the option `environment.etc."udev/rules.d".source':
+
+       … while evaluating the option `services.udev.packages':
+
+       … while evaluating definitions from `/nix/store/js9j7wbhrdmd01wy8g0wy8k617yd2ir9-source/configuration.nix':
+
+       (stack trace truncated; use '--show-trace' to show the full, detailed trace)
+
+       error: The ‘gnome.gnome-disk-utility’ was moved to top-level. Please use ‘pkgs.gnome-disk-utility’ directly.
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
