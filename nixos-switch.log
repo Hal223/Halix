@@ -1,16 +1,9 @@
 warning: Git tree '/home/hal/Halix' is dirty
 building the system configuration...
 warning: Git tree '/home/hal/Halix' is dirty
-this derivation will be built:
-  /nix/store/5gvy1l8k7ds1idlgj8z7v697rx4ikv6j-nixos-system-halix-26.05.20251228.c0b0e0f.drv
-building '/nix/store/5gvy1l8k7ds1idlgj8z7v697rx4ikv6j-nixos-system-halix-26.05.20251228.c0b0e0f.drv'...
-stopping the following units: accounts-daemon.service
 activating the configuration...
 setting up /etc...
 reloading user units for hal...
 restarting sysinit-reactivation.target
-reloading the following units: dbus.service
-restarting the following units: polkit.service
-starting the following units: accounts-daemon.service
 the following new units were started: NetworkManager-dispatcher.service
 Done. The new configuration is /nix/store/rg07ggxn69scgmgg9q24pla7vlzgsdmi-nixos-system-halix-26.05.20251228.c0b0e0f
