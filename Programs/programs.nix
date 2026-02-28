@@ -17,6 +17,8 @@
   #};
 
   services.udisks2.enable = true;
+  security.polkit.enable = true;
+  environment.systemPackages = [pkgs.polkit_gnome];
 
   # Install firefox.
   programs.firefox.enable = true;
