@@ -127,6 +127,7 @@
     ethtool
     popsicle
     polkit_gnome
+    ventoy
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'
