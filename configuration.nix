@@ -34,6 +34,7 @@
       "networkmanager"
       "video"
       "audio"
+      "disk"
     ];
   };
 
