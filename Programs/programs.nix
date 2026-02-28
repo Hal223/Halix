@@ -18,7 +18,6 @@
 
   services.udisks2.enable = true;
   security.polkit.enable = true;
-  environment.systemPackages = [pkgs.polkit_gnome];
 
   # Install firefox.
   programs.firefox.enable = true;
@@ -126,7 +125,7 @@
     net-tools
     ethtool
     gnome-disk-utility
-
+    polkit_gnome
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'
