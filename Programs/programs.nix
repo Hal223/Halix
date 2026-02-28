@@ -16,6 +16,8 @@
   #  package = swayHomeless;
   #};
 
+  services.udisks2.enable = true;
+
   # Install firefox.
   programs.firefox.enable = true;
 
