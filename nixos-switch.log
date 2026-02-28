@@ -34,7 +34,7 @@ error:
 
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
-       error: Package ‘ventoy-1.1.07’ in /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/pkgs/by-name/ve/ventoy/package.nix:197 is marked as insecure, refusing to evaluate.
+       error: Package ‘ventoy-gtk3-1.1.07’ in /nix/store/xzl5dhddgjxp2p18h5qpkhvlkp8128j1-source/pkgs/by-name/ve/ventoy/package.nix:197 is marked as insecure, refusing to evaluate.
 
 
        Known issues:
@@ -56,23 +56,23 @@ error:
           Note: When using `nix shell`, `nix build`, `nix develop`, etc with a flake,
                 then pass `--impure` in order to allow use of environment variables.
 
-       b) for `nixos-rebuild` you can add ‘ventoy-1.1.07’ to
+       b) for `nixos-rebuild` you can add ‘ventoy-gtk3-1.1.07’ to
           `nixpkgs.config.permittedInsecurePackages` in the configuration.nix,
           like so:
 
             {
               nixpkgs.config.permittedInsecurePackages = [
-                "ventoy-1.1.07"
+                "ventoy-gtk3-1.1.07"
               ];
             }
 
        c) For `nix-env`, `nix-build`, `nix-shell` or any other Nix command you can add
-          ‘ventoy-1.1.07’ to `permittedInsecurePackages` in
+          ‘ventoy-gtk3-1.1.07’ to `permittedInsecurePackages` in
           ~/.config/nixpkgs/config.nix, like so:
 
             {
               permittedInsecurePackages = [
-                "ventoy-1.1.07"
+                "ventoy-gtk3-1.1.07"
               ];
             }
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.toplevel' --no-link' returned non-zero exit status 1.
