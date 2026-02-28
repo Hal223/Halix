@@ -63,7 +63,7 @@
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
       if (subject.isInGroup("wheel") &&
-          action.id.indexOf("org.freedesktop.udisks2.modify-device") === 0) {
+          action.id.startsWith("org.freedesktop.udisks2.")) {
         return polkit.Result.YES;
       }
     });
