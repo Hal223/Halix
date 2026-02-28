@@ -35,11 +35,8 @@
       "video"
       "audio"
       "disk"
-      "plugdev"
     ];
   };
-
-  services.udev.packages = [pkgs.gnome.gnome-disk-utility];
 
   environment.shellAliases = {
     sudo = "sudo ";
