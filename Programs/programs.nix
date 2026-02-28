@@ -121,6 +121,7 @@
     qbittorrent
     net-tools
     ethtool
+    gnome-disk-utility
 
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
