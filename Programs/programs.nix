@@ -24,13 +24,6 @@
     configDir = "/home/hal/.config/syncthing";
   };
 
-  # enable Sway window manager
-  programs.sway = {
-    enable = true;
-    wrapperFeatures.gtk = true;
-    package = swayHomeless;
-  };
-
   programs.git = {
     enable = true;
     config = {

@@ -17,9 +17,9 @@ error:
        (stack trace truncated; use '--show-trace' to show the full, detailed trace)
 
        error: undefined variable 'swayHomeless'
-       at /nix/store/34ncy1xw5ihqyrlq07hj67j935xzgzx1-source/display.nix:19:15:
-           18|     wrapperFeatures.gtk = true;
-           19|     package = swayHomeless;
+       at /nix/store/0sk7rqxa9xrinyqmy3pdsg62342sp5n5-source/Programs/programs.nix:31:15:
+           30|     wrapperFeatures.gtk = true;
+           31|     package = swayHomeless;
              |               ^
-           20|   };
+           32|   };
 Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '.#nixosConfigurations."halix".config.system.build.nixos-rebuild' --no-link' returned non-zero exit status 1.
