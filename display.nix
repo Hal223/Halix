@@ -12,6 +12,13 @@
   services.desktopManager.cosmic.enable = true;
   services.xserver.desktopManager.cinnamon.enable = true;
 
+  # enable Sway window manager
+  programs.sway = {
+    enable = true;
+    wrapperFeatures.gtk = true;
+    package = swayHomeless;
+  };
+
   environment.systemPackages = with pkgs; [
     grim # screenshot functionality
     slurp # screenshot functionality

@@ -9,13 +9,6 @@
     ./steam.nix
   ];
 
-  # enable Sway window manager
-  #programs.sway = {
-  #  enable = true;
-  #  wrapperFeatures.gtk = true;
-  #  package = swayHomeless;
-  #};
-
   # Install firefox.
   programs.firefox.enable = true;
 
@@ -121,7 +114,7 @@
     qbittorrent
     net-tools
     ethtool
-    popsicle
+    popsicle # lsbl ---- then ---- sudo popsicle ~/Downloads/pop-os_24.04_amd64_nvidia_23.iso /dev/sdc
     # --- System Utilities (Recommended for your multi-drive setup) ---
     pciutils # For 'lspci' to identify NVME controllers
     usbutils # For 'lsusb'
