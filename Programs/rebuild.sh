@@ -13,7 +13,7 @@ git diff --staged -U0
 # 3. Rebuild
 echo "NixOS Rebuilding..."
 # Using tee allows you to see the sudo prompt and build progress
-if sudo nixos-rebuild switch --flake .# 2>&1 | tee nixos-switch.log; then
+if sudo nixos-rebuild switch --flake .# 2>&1 | tee ~/nixos-switch.log; then
     
     # 4. Get the unique Build Name and Generation
     # It's more reliable to check the actual system link than to grep a log

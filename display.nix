@@ -4,11 +4,11 @@
   lib,
   ...
 }: {
-  #services.displayManager.ly.enable = true;
-  #services.displayManager.ly.settings.default_session = "Sway";
-  #services.displayManager.defaultSession = "Sway"; # Example for Sway
+  services.displayManager.ly.enable = true;
+  services.displayManager.ly.settings.default_session = "Sway";
+  services.displayManager.defaultSession = "Sway"; # Example for Sway
 
-  services.displayManager.cosmic-greeter.enable = true;
+  #services.displayManager.cosmic-greeter.enable = true;
   services.desktopManager.cosmic.enable = true;
   services.xserver.desktopManager.cinnamon.enable = true;
 
