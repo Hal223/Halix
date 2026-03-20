@@ -60,6 +60,8 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  # fixes network flapping issue
+  boot.kernelParams = ["pcie_aspm=off" "igc.EEE=0"];
 
   # Set your time zone.
   time.timeZone = "America/Denver";
