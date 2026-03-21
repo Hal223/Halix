@@ -75,6 +75,11 @@
     # You can also configure each device individually.
     # Read `man 5 sway-input` for more information about this section.
 
+    # Enable NumLock on startup
+    input type:keyboard {
+        xkb_numlock enabled
+    }
+
     ### Key bindings
     #
     # Basics:
