@@ -13,8 +13,8 @@
   programs.firefox.enable = true;
 
   # VPN solution moving away from PIA as hassle to config in nix 2026-01-17
-  services.mullvad-vpn.enable = true;
-  services.mullvad-vpn.package = pkgs.mullvad-vpn;
+  #  services.mullvad-vpn.enable = true;
+  #  services.mullvad-vpn.package = pkgs.mullvad-vpn;
 
   # 3. Enable Syncthing as a system service (Best Practice)
   services.syncthing = {
