@@ -61,6 +61,7 @@
     keepassxc
     ags
     google-chrome
+    chromium
 
     # --- Media & Editing ---
     spotify
