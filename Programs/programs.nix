@@ -101,6 +101,7 @@
     go
     gopls
     gotools
+    gcc
     inputs.fresh.packages.${pkgs.stdenv.hostPlatform.system}.default
     btop
     wofi
