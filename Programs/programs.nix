@@ -97,6 +97,10 @@
     alejandra # nix formatter
     mako
     swaybg
+
+    go
+    gopls
+    gotools
     inputs.fresh.packages.${pkgs.stdenv.hostPlatform.system}.default
     btop
     wofi
