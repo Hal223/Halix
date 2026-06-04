@@ -7,6 +7,7 @@
     ./yazi.nix
     ./sway.nix
     ./steam.nix
+    ./odysseus.nix
     ./mulvad-vpn.nix
   ];
 
@@ -32,6 +33,11 @@
         defaultBranch = "main";
       };
     };
+  };
+
+  services.odysseus = {
+    enable = true;
+    # port = 7000; # Change if port 7000 is occupied
   };
 
   services.gnome.gnome-keyring.enable = true;
