@@ -72,7 +72,7 @@ in {
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
-        WorkingDirectory = "${cfg.dataDir}/repo";
+        # WorkingDirectory = "${cfg.dataDir}/repo";
         # Injects standard libraries so pre-compiled PyPI binaries resolve correctly
         Environment = "LD_LIBRARY_PATH=${lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.glib]}:$LD_LIBRARY_PATH";
       };
