@@ -66,14 +66,14 @@ in {
         python setup.py
 
         # Start the application
-        exec python -m uvicorn app:app --host ${cfg.host} --port ${cfg.port}
+        exec python -m uvicorn app:app --host ${cfg.host} --port ${toString cfg.port}
       '';
 
       serviceConfig = {
         Type = "simple";
         Restart = "on-failure";
         WorkingDirectory = "${cfg.dataDir}/repo";
-        # Injects standard libraries so pre-compiled PyPI binaries (e.g., fastembed) resolve correctly on NixOS
+        # Injects standard libraries so pre-compiled PyPI binaries resolve correctly
         Environment = "LD_LIBRARY_PATH=${lib.makeLibraryPath [pkgs.stdenv.cc.cc.lib pkgs.zlib pkgs.glib]}:$LD_LIBRARY_PATH";
       };
     };
