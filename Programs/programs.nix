@@ -40,6 +40,11 @@
     # port = 7000; # Change if port 7000 is occupied
   };
 
+  services.ollama = {
+    enable = true;
+    # acceleration = "rocm"; # Enables Nvidia GPU acceleration
+  };
+
   services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;
 
