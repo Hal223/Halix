@@ -7,7 +7,7 @@
     ./yazi.nix
     ./sway.nix
     ./steam.nix
-    ./odysseus.nix
+    #./odysseus.nix
     ./mulvad-vpn.nix
   ];
 
@@ -35,16 +35,15 @@
     };
   };
 
-  services.odysseus = {
-    enable = true;
-    # port = 7000; # Change if port 7000 is occupied
-  };
-
-  services.ollama = {
-    enable = true;
-    #acceleration = pkgs.ollama-rocm
-    package = inputs.nixpkgs-master.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
-  };
+  # services.odysseus = {
+  #   enable = true;
+  #   # port = 7000; # Change if port 7000 is occupied
+  # };
+  # services.ollama = {
+  #   enable = true;
+  #   #acceleration = pkgs.ollama-rocm
+  #   package = inputs.nixpkgs-master.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
+  # };
 
   services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;

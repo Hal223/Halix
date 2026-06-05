@@ -1,22 +1,24 @@
 #!/run/current-system/sw/bin/bash
 set -e
-pushd ~/Halix/
+
+# Use redirection to silence pushd instead of -q for maximum compatibility
+pushd /home/hal/Halix/ 
+#> /dev/null 2>&1
 
 # 1. Format and Stage
-# Alejandra handles formatting; git add ensures nixos-rebuild sees new files
-alejandra . &>/dev/null
+alejandra . 
+#&>/dev/null
 git add .
 
-# 2. Show diff (Optional, but helpful to see what's changing)
+# 2. Show diff
 git diff --staged -U0
 
 # 3. Rebuild
 echo "NixOS Rebuilding..."
-# Using tee allows you to see the sudo prompt and build progress
+# We use the absolute path ~/ to ensure the log is always in a predictable place
 if sudo nixos-rebuild switch --flake .# 2>&1 | tee ~/nixos-switch.log; then
-    
+
     # 4. Get the unique Build Name and Generation
-    # It's more reliable to check the actual system link than to grep a log
     build_path=$(readlink /run/current-system)
     gen=$(nixos-rebuild list-generations | grep current | awk '{print $1}')
 
@@ -30,8 +32,9 @@ if sudo nixos-rebuild switch --flake .# 2>&1 | tee ~/nixos-switch.log; then
 else
     echo "--------------------------------------------------"
     echo "Build failed! Checking log for errors..."
-    grep --color -i "error" nixos-switch.log || true
+    # We use ~/nixos-switch.log here to match the 'tee' command above
+    grep --color -i "error" ~/nixos-switch.log || true
     exit 1
 fi
 
-popd
+popd > /dev/null 2>&1
