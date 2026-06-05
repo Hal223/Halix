@@ -98,6 +98,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-master": {
+      "locked": {
+        "lastModified": 1780617073,
+        "narHash": "sha256-PiWWAu+HBbHQcLK9fNXmZrJ3FyoTrG0V8m7/GCH/yk0=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "33b2b54a5d8d22770c69714abb5b208157472341",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "master",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1764667669,
@@ -118,6 +134,7 @@
       "inputs": {
         "fresh": "fresh",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-master": "nixpkgs-master",
         "wrappers": "wrappers",
         "yazi-plugins": "yazi-plugins"
       }

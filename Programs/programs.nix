@@ -42,7 +42,8 @@
 
   services.ollama = {
     enable = true;
-    # acceleration = "rocm"; # Enables Nvidia GPU acceleration
+    #acceleration = pkgs.ollama-rocm
+    package = inputs.nixpkgs-master.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
   };
 
   services.gnome.gnome-keyring.enable = true;

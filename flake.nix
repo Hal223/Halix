@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-
+    nixpkgs-master.url = "github:nixos/nixpkgs/master";
     wrappers.url = "github:Lassulus/wrappers";
 
     fresh.inputs.nixpkgs.follows = "nixpkgs";
