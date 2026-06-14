@@ -35,6 +35,7 @@
       "video"
       "audio"
       "disk"
+      "docker"
     ];
   };
 

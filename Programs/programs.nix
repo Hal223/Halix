@@ -1,19 +1,19 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   imports = [
     ./yazi.nix
     ./sway.nix
     ./steam.nix
-    #./odysseus.nix
-    ./mulvad-vpn.nix
+    #./mulvad-vpn.nix
   ];
 
   # Install firefox.
   programs.firefox.enable = true;
-
+  virtualisation.docker.enable = true;
   # 3. Enable Syncthing as a system service (Best Practice)
   services.syncthing = {
     enable = true;
@@ -35,15 +35,11 @@
     };
   };
 
-  # services.odysseus = {
-  #   enable = true;
-  #   # port = 7000; # Change if port 7000 is occupied
-  # };
-  # services.ollama = {
-  #   enable = true;
-  #   #acceleration = pkgs.ollama-rocm
-  #   package = inputs.nixpkgs-master.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
-  # };
+  services.ollama = {
+    enable = true;
+    #acceleration = pkgs.ollama-rocm
+    package = inputs.nixpkgs-master.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
+  };
 
   services.gnome.gnome-keyring.enable = true;
   programs.seahorse.enable = true;
