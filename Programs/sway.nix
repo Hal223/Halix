@@ -9,12 +9,24 @@
   wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
     #!/bin/sh
 
-    # Use flock to prevent concurrent executions causing rapid loops
+    # Use flock to serialize executions
     LOCKFILE="/tmp/wallpaper-switcher.lock"
     exec 9> "$LOCKFILE"
-    if ! ${pkgs.util-linux}/bin/flock -n 9; then
+    # Wait up to 5 seconds for the lock to prevent dropping intentional runs
+    if ! ${pkgs.util-linux}/bin/flock -w 5 9; then
       exit 0
     fi
+
+    # Debounce: after acquiring lock, check if we ran in the last 2 seconds
+    LAST_RUN_FILE="/tmp/wallpaper-switcher.time"
+    NOW=$(date +%s)
+    if [ -f "$LAST_RUN_FILE" ]; then
+      LAST_RUN=$(cat "$LAST_RUN_FILE")
+      if [ $(($NOW - $LAST_RUN)) -lt 2 ]; then
+        exit 0
+      fi
+    fi
+    echo "$NOW" > "$LAST_RUN_FILE"
 
     WP_DIR="$HOME/Pictures/Wallpapers/"
     if [ ! -d "$WP_DIR" ]; then
