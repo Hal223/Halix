@@ -5,15 +5,47 @@
 }: let
   # Access the wrappers library from your flake inputs
   wlib = inputs.wrappers.lib;
-  # 1. Define the actual Sway configuration content
+  # 1. Define a script to randomly select wallpaper, generate pywal colors, and reload waybar
+  wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
+    #!/bin/sh
+    WP_DIR="$HOME/Pictures/Wallpapers/"
+    if [ ! -d "$WP_DIR" ]; then
+      exit 0
+    fi
+    WP=$(find "$WP_DIR" -type f | shuf -n1)
+    if [ -n "$WP" ]; then
+      ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
+      swaymsg "output * bg \"$WP\" fill"
+    fi
+
+    # Reload waybar CSS
+    killall -SIGUSR2 waybar
+
+    # Apply new sway colors without reloading sway config
+    if [ -f ~/.cache/wal/colors-sway ]; then
+      grep -v "^#" ~/.cache/wal/colors-sway | while read -r line; do
+        if [ -n "$line" ]; then
+          swaymsg "$line"
+        fi
+      done
+    fi
+  '';
+
+  # 2. Define the actual Sway configuration content
   swayConfig = pkgs.writeText "sway-config" ''
     exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
     exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
-    # Import pywal colors
-    #include ~/.cache/wal/colors-sway
-    #exec_always ~/.config/sway/scripts/wallpaper.sh
-    exec_always swaymsg "output * bg $(find ~/Pictures/Wallpapers/ -type f | shuf -n1) fit"
+    # Create pywal cache dir and dummy files to prevent sway errors on first start
+    exec mkdir -p ~/.cache/wal
+    exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css
+
+    # Import pywal colors for window borders
+    include ~/.cache/wal/colors-sway
+
+    # Run wallpaper switcher and start Waybar
+    exec_always ${wallpaperSwitcher}
+    exec start-waybar
 
     ### Variables
     #
@@ -244,22 +276,7 @@
         bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
 
     #
-    # Status Bar:
-    #
-    # Read `man 5 sway-bar` for more information about this section.
-    bar {
-        position top
 
-        # When the status_command prints a new line to stdout, swaybar updates.
-        # The default just shows the current date and time.
-        status_command while date +'%Y-%m-%d %X'; do sleep 1; done
-
-        colors {
-            statusline #ffffff
-            background #323232
-            inactive_workspace #32323200 #32323200 #5c5c5c
-        }
-    }
   '';
 
   # 2. Use the wrapPackage function from the library

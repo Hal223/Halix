@@ -7,6 +7,7 @@
   imports = [
     ./yazi.nix
     ./sway.nix
+    ./waybar.nix
     ./steam.nix
     ./mulvad-vpn.nix
   ];
