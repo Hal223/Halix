@@ -16,17 +16,6 @@
       exit 0
     fi
 
-    # Debounce: check if we ran in the last 2 seconds
-    LAST_RUN_FILE="/tmp/wallpaper-switcher.time"
-    NOW=$(date +%s)
-    if [ -f "$LAST_RUN_FILE" ]; then
-      LAST_RUN=$(cat "$LAST_RUN_FILE")
-      if [ $(($NOW - $LAST_RUN)) -lt 2 ]; then
-        exit 0
-      fi
-    fi
-    echo "$NOW" > "$LAST_RUN_FILE"
-
     WP_DIR="$HOME/Pictures/Wallpapers/"
     if [ ! -d "$WP_DIR" ]; then
       exit 0
@@ -61,6 +50,11 @@
 
     # Restart waybar completely instead of just reloading CSS
     killall waybar || true
+
+    # Release the lock before starting long-running background processes
+    # so they don't inherit the open file descriptor and keep the lock held.
+    exec 9>&-
+
     # Start it in the background
     start-waybar &
 
