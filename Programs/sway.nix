@@ -8,18 +8,45 @@
   # 1. Define a script to randomly select wallpaper, generate pywal colors, and reload waybar
   wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
     #!/bin/sh
+
+    # Use flock to prevent concurrent executions causing rapid loops
+    LOCKFILE="/tmp/wallpaper-switcher.lock"
+    exec 9> "$LOCKFILE"
+    if ! ${pkgs.util-linux}/bin/flock -n 9; then
+      exit 0
+    fi
+
     WP_DIR="$HOME/Pictures/Wallpapers/"
     if [ ! -d "$WP_DIR" ]; then
       exit 0
     fi
-    WP=$(find "$WP_DIR" -type f | shuf -n1)
+
+    # Avoid selecting the exact same wallpaper again if possible
+    CURRENT_WP_FILE="/tmp/current_wallpaper"
+    CURRENT_WP=""
+    if [ -f "$CURRENT_WP_FILE" ]; then
+      CURRENT_WP=$(cat "$CURRENT_WP_FILE")
+    fi
+
+    if [ -n "$CURRENT_WP" ]; then
+      WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
+    else
+      WP=$(find "$WP_DIR" -type f | shuf -n1)
+    fi
+
+    # Fallback in case only one wallpaper exists
+    if [ -z "$WP" ]; then
+      WP=$(find "$WP_DIR" -type f | shuf -n1)
+    fi
+
     if [ -n "$WP" ]; then
+      echo "$WP" > "$CURRENT_WP_FILE"
       ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
       swaymsg "output * bg \"$WP\" fill"
     fi
 
     # Reload waybar CSS
-    killall -SIGUSR2 waybar
+    killall -SIGUSR2 waybar || true
 
     # Apply new sway colors without reloading sway config
     if [ -f ~/.cache/wal/colors-sway ]; then
