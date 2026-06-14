@@ -102,8 +102,8 @@
 
     ### Output configuration
     #
-    # Default wallpaper (more resolutions are available in /run/current-system/sw/share/backgrounds/sway/)
-    output * bg /run/current-system/sw/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+    # Default background color (off-black) to prevent bright flashes before pywal loads a wallpaper
+    output * bg #111111 solid_color
     #
     # Example configuration:
     #
