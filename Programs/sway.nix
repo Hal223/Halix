@@ -67,6 +67,17 @@
           swaymsg "$line"
         fi
       done
+
+      # Apply colors to borders immediately
+      if [ -f ~/.cache/wal/colors.sh ]; then
+        . ~/.cache/wal/colors.sh
+        swaymsg "client.focused $color5 $color5 $color0 $color5 $color5"
+        swaymsg "client.focused_inactive $color1 $color1 $color5 $color1 $color1"
+        swaymsg "client.unfocused $color1 $color1 $color5 $color1 $color1"
+        swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
+        swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
+        swaymsg "client.background $background"
+      fi
     fi
   '';
 
@@ -81,6 +92,12 @@
 
     # Import pywal colors for window borders
     include ~/.cache/wal/colors-sway
+    client.focused $color5 $color5 $color0 $color5 $color5
+    client.focused_inactive $color1 $color1 $color5 $color1 $color1
+    client.unfocused $color1 $color1 $color5 $color1 $color1
+    client.urgent $color2 $color2 $color0 $color2 $color2
+    client.placeholder $color0 $color0 $color5 $color0 $color0
+    client.background $background
 
     # Run wallpaper switcher and start Waybar
     exec_always ${wallpaperSwitcher}
