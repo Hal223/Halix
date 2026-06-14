@@ -123,7 +123,7 @@
     set $up k
     set $right l
     # Your preferred terminal emulator
-    set $term foot
+    set $term ghostty
     # Your preferred application launcher
     set $menu wofi --show drun
 
