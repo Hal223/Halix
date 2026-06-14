@@ -7,78 +7,93 @@
   wlib = inputs.wrappers.lib;
   # 1. Define a script to randomly select wallpaper, generate pywal colors, and reload waybar
   wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
-    #!/bin/sh
+        #!/bin/sh
 
-    # Use flock to serialize executions
-    LOCKFILE="/tmp/wallpaper-switcher.lock"
-    exec 9> "$LOCKFILE"
-    # Wait up to 5 seconds for the lock to prevent dropping intentional runs
-    if ! ${pkgs.util-linux}/bin/flock -w 5 9; then
-      exit 0
-    fi
-
-    # Debounce: after acquiring lock, check if we ran in the last 2 seconds
-    LAST_RUN_FILE="/tmp/wallpaper-switcher.time"
-    NOW=$(date +%s)
-    if [ -f "$LAST_RUN_FILE" ]; then
-      LAST_RUN=$(cat "$LAST_RUN_FILE")
-      if [ $(($NOW - $LAST_RUN)) -lt 2 ]; then
-        exit 0
-      fi
-    fi
-    echo "$NOW" > "$LAST_RUN_FILE"
-
-    WP_DIR="$HOME/Pictures/Wallpapers/"
-    if [ ! -d "$WP_DIR" ]; then
-      exit 0
-    fi
-
-    # Avoid selecting the exact same wallpaper again if possible
-    CURRENT_WP_FILE="/tmp/current_wallpaper"
-    CURRENT_WP=""
-    if [ -f "$CURRENT_WP_FILE" ]; then
-      CURRENT_WP=$(cat "$CURRENT_WP_FILE")
-    fi
-
-    if [ -n "$CURRENT_WP" ]; then
-      WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
-    else
-      WP=$(find "$WP_DIR" -type f | shuf -n1)
-    fi
-
-    # Fallback in case only one wallpaper exists
-    if [ -z "$WP" ]; then
-      WP=$(find "$WP_DIR" -type f | shuf -n1)
-    fi
-
-    if [ -n "$WP" ]; then
-      echo "$WP" > "$CURRENT_WP_FILE"
-      ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
-      swaymsg "output * bg \"$WP\" fill"
-    fi
-
-    # Reload waybar CSS
-    killall -SIGUSR2 waybar || true
-
-    # Apply new sway colors without reloading sway config
-    if [ -f ~/.cache/wal/colors-sway ]; then
-      grep -v "^#" ~/.cache/wal/colors-sway | while read -r line; do
-        if [ -n "$line" ]; then
-          swaymsg "$line"
+        # Use flock to serialize executions and instantly reject overlapping runs
+        LOCKFILE="/tmp/wallpaper-switcher.lock"
+        exec 9> "$LOCKFILE"
+        if ! ${pkgs.util-linux}/bin/flock -n 9; then
+          exit 0
         fi
-      done
 
-      # Apply colors to borders immediately
-      if [ -f ~/.cache/wal/colors.sh ]; then
-        . ~/.cache/wal/colors.sh
-        swaymsg "client.focused $color5 $color5 $color0 $color5 $color5"
-        swaymsg "client.focused_inactive $color1 $color1 $color5 $color1 $color1"
-        swaymsg "client.unfocused $color1 $color1 $color5 $color1 $color1"
-        swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
-        swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
-        swaymsg "client.background $background"
-      fi
-    fi
+        # Debounce: check if we ran in the last 2 seconds
+        LAST_RUN_FILE="/tmp/wallpaper-switcher.time"
+        NOW=$(date +%s)
+        if [ -f "$LAST_RUN_FILE" ]; then
+          LAST_RUN=$(cat "$LAST_RUN_FILE")
+          if [ $(($NOW - $LAST_RUN)) -lt 2 ]; then
+            exit 0
+          fi
+        fi
+        echo "$NOW" > "$LAST_RUN_FILE"
+
+        WP_DIR="$HOME/Pictures/Wallpapers/"
+        if [ ! -d "$WP_DIR" ]; then
+          exit 0
+        fi
+
+        # Avoid selecting the exact same wallpaper again if possible
+        CURRENT_WP_FILE="/tmp/current_wallpaper"
+        CURRENT_WP=""
+        if [ -f "$CURRENT_WP_FILE" ]; then
+          CURRENT_WP=$(cat "$CURRENT_WP_FILE")
+        fi
+
+        if [ -n "$CURRENT_WP" ]; then
+          WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
+        else
+          WP=$(find "$WP_DIR" -type f | shuf -n1)
+        fi
+
+        # Fallback in case only one wallpaper exists
+        if [ -z "$WP" ]; then
+          WP=$(find "$WP_DIR" -type f | shuf -n1)
+        fi
+
+        if [ -n "$WP" ]; then
+          echo "$WP" > "$CURRENT_WP_FILE"
+          ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
+
+          # Persist for sway reloads to prevent default wallpaper flashes
+          echo "output * bg \"$WP\" fill" > ~/.cache/wal/sway-bg
+          swaymsg "output * bg \"$WP\" fill"
+        fi
+
+        # Reload waybar CSS
+        killall -SIGUSR2 waybar || true
+
+        # Generate sway variables from pywal colors and apply them
+        if [ -f ~/.cache/wal/colors.sh ]; then
+          . ~/.cache/wal/colors.sh
+          cat <<EOF > ~/.cache/wal/colors-sway
+    set \$color0 $color0
+    set \$color1 $color1
+    set \$color2 $color2
+    set \$color3 $color3
+    set \$color4 $color4
+    set \$color5 $color5
+    set \$color6 $color6
+    set \$color7 $color7
+    set \$color8 $color8
+    set \$color9 $color9
+    set \$color10 $color10
+    set \$color11 $color11
+    set \$color12 $color12
+    set \$color13 $color13
+    set \$color14 $color14
+    set \$color15 $color15
+    set \$background $background
+    set \$foreground $foreground
+    EOF
+
+          # Apply colors to borders immediately
+          swaymsg "client.focused $color5 $color5 $color0 $color5 $color5"
+          swaymsg "client.focused_inactive $color1 $color1 $color5 $color1 $color1"
+          swaymsg "client.unfocused $color1 $color1 $color5 $color1 $color1"
+          swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
+          swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
+          swaymsg "client.background $background"
+        fi
   '';
 
   # 2. Define the actual Sway configuration content
@@ -88,7 +103,7 @@
 
     # Create pywal cache dir and dummy files to prevent sway errors on first start
     exec mkdir -p ~/.cache/wal
-    exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css
+    exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css ~/.cache/wal/sway-bg
 
     # Import pywal colors for window borders
     include ~/.cache/wal/colors-sway
@@ -121,6 +136,7 @@
     #
     # Default background color (off-black) to prevent bright flashes before pywal loads a wallpaper
     output * bg #111111 solid_color
+    include ~/.cache/wal/sway-bg
     #
     # Example configuration:
     #

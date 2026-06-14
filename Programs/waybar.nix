@@ -3,18 +3,27 @@
     {
       "layer": "top",
       "position": "top",
-      "height": 34,
+      "height": 36,
       "spacing": 4,
+      "margin-top": 6,
+      "margin-left": 10,
+      "margin-right": 10,
       "modules-left": ["sway/workspaces", "sway/mode"],
       "modules-center": ["sway/window"],
       "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "clock", "tray"],
       "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
-        "format": "{name}"
+        "format": "{name}",
+        "tooltip": false
+      },
+      "sway/window": {
+        "max-length": 50,
+        "tooltip": false
       },
       "clock": {
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format": "{:%I:%M %p}",
         "format-alt": "{:%Y-%m-%d}"
       },
       "cpu": {
@@ -31,10 +40,10 @@
       },
       "network": {
         "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
+        "format-ethernet": "",
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "format-linked": "",
+        "format-disconnected": "⚠",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
       },
       "pulseaudio": {
@@ -42,7 +51,7 @@
         "format-bluetooth": "{volume}% {icon} {format_source}",
         "format-bluetooth-muted": " {icon} {format_source}",
         "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
+        "format-source": "",
         "format-source-muted": "",
         "format-icons": {
           "headphone": "",
@@ -54,6 +63,9 @@
           "default": ["", "", ""]
         },
         "on-click": "pwvucontrol"
+      },
+      "tray": {
+        "spacing": 8
       }
     }
   '';
@@ -64,68 +76,93 @@
     * {
       border: none;
       border-radius: 0;
-      font-family: "FiraCode Nerd Font", monospace;
+      font-family: "FiraCode Nerd Font", sans-serif;
       font-size: 14px;
+      min-height: 0;
     }
 
     window#waybar {
-      background-color: @background;
+      background-color: transparent;
       color: @foreground;
-      transition-property: background-color;
-      transition-duration: .5s;
     }
 
     window#waybar.hidden {
       opacity: 0.2;
     }
 
+    /* Module background pills */
+    #workspaces,
+    #mode,
+    #window,
+    #pulseaudio,
+    #network,
+    #cpu,
+    #memory,
+    #temperature,
+    #clock,
+    #tray {
+      background-color: alpha(@background, 0.85);
+      color: @foreground;
+      border-radius: 12px;
+      padding: 2px 14px;
+      margin: 0 4px;
+      box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;
+    }
+
+    #workspaces {
+      padding: 2px 6px;
+    }
+
     #workspaces button {
-      padding: 0 10px;
+      padding: 0 8px;
       background-color: transparent;
       color: @foreground;
-      border-bottom: 3px solid transparent;
+      border-radius: 8px;
+      margin: 4px 2px;
+      transition: all 0.3s ease;
     }
 
     #workspaces button:hover {
-      background: rgba(0, 0, 0, 0.2);
+      background-color: alpha(@color2, 0.4);
+      box-shadow: none;
+      text-shadow: none;
     }
 
     #workspaces button.focused {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-bottom: 3px solid @color2;
+      background-color: @color2;
+      color: @background;
     }
 
     #workspaces button.urgent {
       background-color: @color1;
+      color: @foreground;
     }
 
     #mode {
       background-color: @color4;
-      border-bottom: 3px solid @foreground;
-    }
-
-    #clock,
-    #battery,
-    #cpu,
-    #memory,
-    #temperature,
-    #network,
-    #pulseaudio,
-    #tray,
-    #mode {
-      padding: 0 10px;
-      color: @foreground;
-      background-color: @background;
-      border-bottom: 3px solid @color2;
-      margin: 0 2px;
+      color: @background;
+      font-weight: bold;
     }
 
     #window {
-      color: @foreground;
+      font-weight: bold;
+      color: @color5;
     }
 
-    .modules-left > widget:first-child > #workspaces {
-      margin-left: 0;
+    /* Distinctive colors for system modules utilizing Pywal scheme */
+    #cpu { color: @color3; }
+    #memory { color: @color4; }
+    #temperature { color: @color5; }
+    #network { color: @color6; }
+    #pulseaudio { color: @color7; }
+
+    #clock {
+      color: @color2;
+      font-weight: bold;
+    }
+
+    #tray {
+      background-color: alpha(@background, 0.85);
     }
   '';
 
