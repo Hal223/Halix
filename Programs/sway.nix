@@ -49,7 +49,7 @@
     fi
 
     # Restart waybar completely instead of just reloading CSS
-    killall waybar || true
+    killall .waybar-wrapped start-waybar || true
 
     # Release the lock before starting long-running background processes
     # so they don't inherit the open file descriptor and keep the lock held.
