@@ -23,19 +23,6 @@
     configDir = "/home/hal/.config/syncthing";
   };
 
-  programs.git = {
-    enable = true;
-    config = {
-      user = {
-        name = "Holden Prather";
-        email = "jprather223@gmail.com";
-      };
-      init = {
-        defaultBranch = "main";
-      };
-    };
-  };
-
   services.ollama = {
     enable = true;
     #acceleration = pkgs.ollama-rocm
@@ -78,24 +65,13 @@
     syncthing
     feh
 
-    # --- Terminal & Development ---
-    wget
-    vim
-    ghostty
+    # --- Development & System Tools ---
     lmstudio
-    zsh
-    cowsay
-    kitty
     vscode
     nodejs_24
     python315
-    gh
     sshfs
     fuse3 # SSH file system support
-    file
-    bat
-    tree
-    nitch # nefetch
     nixfmt # nix file formatter
     pywal16
     swaybg
@@ -104,14 +80,12 @@
     wl-clipboard
     alejandra # nix formatter
     mako
-    swaybg
 
     go
     gopls
     gotools
     gcc
     inputs.fresh.packages.${pkgs.stdenv.hostPlatform.system}.default
-    btop
     wofi
     # Sound
     pwvucontrol
