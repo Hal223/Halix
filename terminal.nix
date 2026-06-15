@@ -32,10 +32,6 @@
     cowsay
   ];
 
-  # Create the config file in /etc
-  programs.ghostty.settings = {
-    command = "/run/current-system/sw/bin/bash"; # Replace with your preferred shell path
-  };
   environment.shellAliases = {
     sudo = "sudo ";
     ll = "ls -l";
