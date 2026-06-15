@@ -49,7 +49,7 @@
 
   programs.bash = {
     interactiveShellInit = ''
-      ${pkgs.neofetch}/bin/nitch
+      /run/current-system/sw/bin/nitch
     '';
   };
 }
