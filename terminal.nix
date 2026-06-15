@@ -4,16 +4,9 @@
   ...
 }: {
   # Create the config file in /etc
-  environment.etc."ghostty/config".text = ''
-    command = ${pkgs.bash}/bin/bash
-  '';
-
-  # Force Ghostty to read the config by symlinking it to your home directory
-  systemd.tmpfiles.rules = [
-    "d /home/hal/.config/ghostty 0755 hal users - -"
-    "L+ /home/hal/.config/ghostty/config - - - - /etc/ghostty/config"
-  ];
-
+  programs.ghostty.settings = {
+    command = "/run/current-system/sw/bin/fish"; # Replace with your preferred shell path
+  };
   environment.shellAliases = {
     sudo = "sudo ";
     ll = "ls -l";
