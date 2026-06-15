@@ -3,18 +3,10 @@
   pkgs,
   ...
 }: {
-  # Enable Zsh system-wide so it picks up global environments and aliases
-  programs.zsh = {
-    enable = true;
-    autosuggestions.enable = true;
-    syntaxHighlighting.enable = true;
-
-    ohMyZsh = {
-      enable = true;
-      theme = "robbyrussell"; # Try "agnoster" if you prefer a powerline-style prompt
-      plugins = ["git" "sudo"];
-    };
-  };
+  # System-wide configuration for Ghostty to explicitly use Bash
+  environment.etc."xdg/ghostty/config".text = ''
+    command = ${pkgs.bash}/bin/bash
+  '';
 
   environment.shellAliases = {
     sudo = "sudo ";
