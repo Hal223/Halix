@@ -91,7 +91,8 @@
           swaymsg "client.background $background"
 
           # Generate Ghostty theme from Pywal colors
-          cat <<EOF > ~/.cache/wal/ghostty-theme
+          mkdir -p ~/.config/ghostty/themes
+          cat <<EOF > ~/.config/ghostty/themes/pywal
     background = $background
     foreground = $foreground
     palette = 0=$color0
@@ -113,10 +114,10 @@
     EOF
 
           # Ensure Ghostty loads this theme natively
-          mkdir -p ~/.config/ghostty
           touch ~/.config/ghostty/config
-          if ! grep -q "config-file = $HOME/.cache/wal/ghostty-theme" ~/.config/ghostty/config; then
-            echo "config-file = $HOME/.cache/wal/ghostty-theme" >> ~/.config/ghostty/config
+          sed -i '/config-file.*ghostty-theme/d' ~/.config/ghostty/config
+          if ! grep -q "theme = pywal" ~/.config/ghostty/config; then
+            echo "theme = pywal" >> ~/.config/ghostty/config
           fi
         fi
   '';
@@ -128,7 +129,7 @@
 
         # Create pywal cache dir and dummy files to prevent sway errors on first start
         exec mkdir -p ~/.cache/wal
-        exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css ~/.cache/wal/sway-bg ~/.cache/wal/ghostty-theme
+        exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css ~/.cache/wal/sway-bg
 
         # Import pywal colors for window borders
         include ~/.cache/wal/colors-sway
