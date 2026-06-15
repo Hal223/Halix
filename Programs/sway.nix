@@ -7,119 +7,115 @@
   wlib = inputs.wrappers.lib;
   # 1. Define a script to randomly select wallpaper, generate pywal colors, and reload waybar
   wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
-            #!/bin/sh
+    #!/bin/sh
 
-            # Use flock to serialize executions and instantly reject overlapping runs
-            LOCKFILE="/tmp/wallpaper-switcher.lock"
-            exec 9> "$LOCKFILE"
-            if ! ${pkgs.util-linux}/bin/flock -n 9; then
-              exit 0
-            fi
+    # Use flock to serialize executions and instantly reject overlapping runs
+    LOCKFILE="/tmp/wallpaper-switcher.lock"
+    exec 9> "$LOCKFILE"
+    if ! ${pkgs.util-linux}/bin/flock -n 9; then
+      exit 0
+    fi
 
-            WP_DIR="$HOME/Pictures/Wallpapers/"
-            if [ ! -d "$WP_DIR" ]; then
-              exit 0
-            fi
+    WP_DIR="$HOME/Pictures/Wallpapers/"
+    if [ ! -d "$WP_DIR" ]; then
+      exit 0
+    fi
 
-            # Avoid selecting the exact same wallpaper again if possible
-            CURRENT_WP_FILE="/tmp/current_wallpaper"
-            CURRENT_WP=""
-            if [ -f "$CURRENT_WP_FILE" ]; then
-              CURRENT_WP=$(cat "$CURRENT_WP_FILE")
-            fi
+    # Avoid selecting the exact same wallpaper again if possible
+    CURRENT_WP_FILE="/tmp/current_wallpaper"
+    CURRENT_WP=""
+    if [ -f "$CURRENT_WP_FILE" ]; then
+      CURRENT_WP=$(cat "$CURRENT_WP_FILE")
+    fi
 
-            if [ -n "$CURRENT_WP" ]; then
-              WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
-            else
-              WP=$(find "$WP_DIR" -type f | shuf -n1)
-            fi
+    if [ -n "$CURRENT_WP" ]; then
+      WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
+    else
+      WP=$(find "$WP_DIR" -type f | shuf -n1)
+    fi
 
-            # Fallback in case only one wallpaper exists
-            if [ -z "$WP" ]; then
-              WP=$(find "$WP_DIR" -type f | shuf -n1)
-            fi
+    # Fallback in case only one wallpaper exists
+    if [ -z "$WP" ]; then
+      WP=$(find "$WP_DIR" -type f | shuf -n1)
+    fi
 
-            if [ -n "$WP" ]; then
-              echo "$WP" > "$CURRENT_WP_FILE"
-              ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
+    if [ -n "$WP" ]; then
+      echo "$WP" > "$CURRENT_WP_FILE"
+      ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
 
-              # Persist for sway reloads to prevent default wallpaper flashes
-              echo "output * bg \"$WP\" fill" > ~/.cache/wal/sway-bg
-              swaymsg "output * bg \"$WP\" fill"
-            fi
+      # Persist for sway reloads to prevent default wallpaper flashes
+      echo "output * bg \"$WP\" fill" > ~/.cache/wal/sway-bg
+      swaymsg "output * bg \"$WP\" fill"
+    fi
 
-            # Restart waybar completely instead of just reloading CSS
-            killall .waybar-wrapped start-waybar || true
+    # Restart waybar completely instead of just reloading CSS
+    killall .waybar-wrapped start-waybar || true
 
-            # Release the lock before starting long-running background processes
-            # so they don't inherit the open file descriptor and keep the lock held.
-            exec 9>&-
+    # Release the lock before starting long-running background processes
+    # so they don't inherit the open file descriptor and keep the lock held.
+    exec 9>&-
 
-            # Start it in the background
-            start-waybar &
+    # Start it in the background
+    start-waybar &
 
-            # Generate sway variables from pywal colors and apply them
-            if [ -f ~/.cache/wal/colors.sh ]; then
-              . ~/.cache/wal/colors.sh
-              cat <<EOF > ~/.cache/wal/colors-sway
-            set \$color0 $color0
-            set \$color1 $color1
-            set \$color2 $color2
-            set \$color3 $color3
-            set \$color4 $color4
-            set \$color5 $color5
-            set \$color6 $color6
-            set \$color7 $color7
-            set \$color8 $color8
-            set \$color9 $color9
-            set \$color10 $color10
-            set \$color11 $color11
-            set \$color12 $color12
-            set \$color13 $color13
-            set \$color14 $color14
-            set \$color15 $color15
-            set \$background $background
-            set \$foreground $foreground
-    EOF
+    # Generate sway variables from pywal colors and apply them
+    if [ -f ~/.cache/wal/colors.sh ]; then
+      . ~/.cache/wal/colors.sh
+      echo "set \$color0 $color0" > ~/.cache/wal/colors-sway
+      echo "set \$color1 $color1" >> ~/.cache/wal/colors-sway
+      echo "set \$color2 $color2" >> ~/.cache/wal/colors-sway
+      echo "set \$color3 $color3" >> ~/.cache/wal/colors-sway
+      echo "set \$color4 $color4" >> ~/.cache/wal/colors-sway
+      echo "set \$color5 $color5" >> ~/.cache/wal/colors-sway
+      echo "set \$color6 $color6" >> ~/.cache/wal/colors-sway
+      echo "set \$color7 $color7" >> ~/.cache/wal/colors-sway
+      echo "set \$color8 $color8" >> ~/.cache/wal/colors-sway
+      echo "set \$color9 $color9" >> ~/.cache/wal/colors-sway
+      echo "set \$color10 $color10" >> ~/.cache/wal/colors-sway
+      echo "set \$color11 $color11" >> ~/.cache/wal/colors-sway
+      echo "set \$color12 $color12" >> ~/.cache/wal/colors-sway
+      echo "set \$color13 $color13" >> ~/.cache/wal/colors-sway
+      echo "set \$color14 $color14" >> ~/.cache/wal/colors-sway
+      echo "set \$color15 $color15" >> ~/.cache/wal/colors-sway
+      echo "set \$background $background" >> ~/.cache/wal/colors-sway
+      echo "set \$foreground $foreground" >> ~/.cache/wal/colors-sway
 
-              # Apply colors to borders immediately
-              swaymsg "client.focused $color5 $color5 $color0 $color5 $color5"
-              swaymsg "client.focused_inactive $color1 $color1 $color5 $color1 $color1"
-              swaymsg "client.unfocused $color1 $color1 $color5 $color1 $color1"
-              swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
-              swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
-              swaymsg "client.background $background"
+      # Apply colors to borders immediately
+      swaymsg "client.focused $color5 $color5 $color0 $color5 $color5"
+      swaymsg "client.focused_inactive $color1 $color1 $color5 $color1 $color1"
+      swaymsg "client.unfocused $color1 $color1 $color5 $color1 $color1"
+      swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
+      swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
+      swaymsg "client.background $background"
 
-              # Generate Ghostty theme from Pywal colors
-              mkdir -p ~/.config/ghostty/themes
-              cat <<EOF > ~/.config/ghostty/themes/pywal
-        background = $background
-        foreground = $foreground
-        palette = 0=$color0
-        palette = 1=$color1
-        palette = 2=$color2
-        palette = 3=$color3
-        palette = 4=$color4
-        palette = 5=$color5
-        palette = 6=$color6
-        palette = 7=$color7
-        palette = 8=$color8
-        palette = 9=$color9
-        palette = 10=$color10
-        palette = 11=$color11
-        palette = 12=$color12
-        palette = 13=$color13
-        palette = 14=$color14
-        palette = 15=$color15
-    EOF
+      # Generate Ghostty theme from Pywal colors
+      mkdir -p ~/.config/ghostty/themes
+      echo "background = $background" > ~/.config/ghostty/themes/pywal
+      echo "foreground = $foreground" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 0=$color0" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 1=$color1" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 2=$color2" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 3=$color3" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 4=$color4" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 5=$color5" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 6=$color6" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 7=$color7" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 8=$color8" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 9=$color9" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 10=$color10" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 11=$color11" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 12=$color12" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 13=$color13" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 14=$color14" >> ~/.config/ghostty/themes/pywal
+      echo "palette = 15=$color15" >> ~/.config/ghostty/themes/pywal
 
-              # Ensure Ghostty loads this theme natively
-              touch ~/.config/ghostty/config
-              sed -i '/config-file.*ghostty-theme/d' ~/.config/ghostty/config
-              if ! grep -q "theme = pywal" ~/.config/ghostty/config; then
-                echo "theme = pywal" >> ~/.config/ghostty/config
-              fi
-            fi
+      # Ensure Ghostty loads this theme natively
+      touch ~/.config/ghostty/config
+      sed -i '/config-file.*ghostty-theme/d' ~/.config/ghostty/config
+      if ! grep -q "theme = pywal" ~/.config/ghostty/config; then
+        echo "theme = pywal" >> ~/.config/ghostty/config
+      fi
+    fi
   '';
 
   # 2. Define the actual Sway configuration content
