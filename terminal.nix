@@ -3,10 +3,16 @@
   pkgs,
   ...
 }: {
-  # System-wide configuration for Ghostty to explicitly use Bash
-  environment.etc."xdg/ghostty/config".text = ''
+  # Create the config file in /etc
+  environment.etc."ghostty/config".text = ''
     command = ${pkgs.bash}/bin/bash
   '';
+
+  # Force Ghostty to read the config by symlinking it to your home directory
+  systemd.tmpfiles.rules = [
+    "d /home/hal/.config/ghostty 0755 hal users - -"
+    "L+ /home/hal/.config/ghostty/config - - - - /etc/ghostty/config"
+  ];
 
   environment.shellAliases = {
     sudo = "sudo ";
