@@ -43,6 +43,7 @@
     cat = "bat";
     yy = "yazi";
     update = "~/Halix/Programs/rebuild.sh";
+    cleanup-old-build = "~/Halix/Programs/cleanup-old-build.sh";
     gc-cleanup = "nix-collect-garbage --delete-older-than 7d";
     vscode = "code";
   };
