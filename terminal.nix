@@ -4,7 +4,17 @@
   ...
 }: {
   # Enable Zsh system-wide so it picks up global environments and aliases
-  programs.zsh.enable = true;
+  programs.zsh = {
+    enable = true;
+    autosuggestions.enable = true;
+    syntaxHighlighting.enable = true;
+
+    ohMyZsh = {
+      enable = true;
+      theme = "robbyrussell"; # Try "agnoster" if you prefer a powerline-style prompt
+      plugins = ["git" "sudo"];
+    };
+  };
 
   environment.shellAliases = {
     sudo = "sudo ";
