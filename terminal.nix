@@ -50,9 +50,6 @@
   programs.bash = {
     interactiveShellInit = ''
       /run/current-system/sw/bin/nitch
-
-      # Apply Pywal colors to new terminal instances
-      [ -f ~/.cache/wal/sequences ] && cat ~/.cache/wal/sequences
     '';
   };
 }
