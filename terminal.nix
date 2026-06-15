@@ -46,4 +46,10 @@
     gc-cleanup = "nix-collect-garbage --delete-older-than 7d";
     vscode = "code";
   };
+
+  programs.bash = {
+    interactiveShellInit = ''
+      ${pkgs.neofetch}/bin/nitch
+    '';
+  };
 }
