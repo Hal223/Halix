@@ -3,6 +3,9 @@
   pkgs,
   ...
 }: {
+  # Enable Zsh system-wide so it picks up global environments and aliases
+  programs.zsh.enable = true;
+
   environment.shellAliases = {
     sudo = "sudo ";
     ll = "ls -l";
