@@ -87,37 +87,6 @@
       swaymsg "client.urgent $color2 $color2 $color0 $color2 $color2"
       swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
       swaymsg "client.background $background"
-
-      # Generate Ghostty config from Pywal colors
-      echo "background = $background" > ~/.cache/wal/ghostty
-      echo "foreground = $foreground" >> ~/.cache/wal/ghostty
-      echo "palette = 0=$color0" >> ~/.cache/wal/ghostty
-      echo "palette = 1=$color1" >> ~/.cache/wal/ghostty
-      echo "palette = 2=$color2" >> ~/.cache/wal/ghostty
-      echo "palette = 3=$color3" >> ~/.cache/wal/ghostty
-      echo "palette = 4=$color4" >> ~/.cache/wal/ghostty
-      echo "palette = 5=$color5" >> ~/.cache/wal/ghostty
-      echo "palette = 6=$color6" >> ~/.cache/wal/ghostty
-      echo "palette = 7=$color7" >> ~/.cache/wal/ghostty
-      echo "palette = 8=$color8" >> ~/.cache/wal/ghostty
-      echo "palette = 9=$color9" >> ~/.cache/wal/ghostty
-      echo "palette = 10=$color10" >> ~/.cache/wal/ghostty
-      echo "palette = 11=$color11" >> ~/.cache/wal/ghostty
-      echo "palette = 12=$color12" >> ~/.cache/wal/ghostty
-      echo "palette = 13=$color13" >> ~/.cache/wal/ghostty
-      echo "palette = 14=$color14" >> ~/.cache/wal/ghostty
-      echo "palette = 15=$color15" >> ~/.cache/wal/ghostty
-
-      # Ensure Ghostty loads this file natively and hot-reloads
-      mkdir -p ~/.config/ghostty
-      touch ~/.config/ghostty/config
-      sed -i '/theme.*pywal/d' ~/.config/ghostty/config
-      if ! grep -q "config-file = $HOME/.cache/wal/ghostty" ~/.config/ghostty/config; then
-        echo "config-file = $HOME/.cache/wal/ghostty" >> ~/.config/ghostty/config
-      fi
-
-      # Touch the main config to force Ghostty to detect the change
-      touch ~/.config/ghostty/config
     fi
   '';
 
@@ -128,7 +97,7 @@
 
         # Create pywal cache dir and dummy files to prevent sway errors on first start
         exec mkdir -p ~/.cache/wal
-        exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css ~/.cache/wal/sway-bg ~/.cache/wal/ghostty
+        exec touch ~/.cache/wal/colors-sway ~/.cache/wal/colors-waybar.css ~/.cache/wal/sway-bg
 
         # Import pywal colors for window borders
         include ~/.cache/wal/colors-sway
