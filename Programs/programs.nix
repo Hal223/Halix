@@ -49,6 +49,7 @@
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
     firefox
+    pywalfox-native
     discord
     vesktop
     slurp
