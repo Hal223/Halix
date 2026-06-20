@@ -5,8 +5,8 @@
   ...
 }: {
   services.displayManager.ly.enable = true;
-  services.displayManager.ly.settings.default_session = "Sway";
-  services.displayManager.defaultSession = "Sway"; # Example for Sway
+  services.displayManager.ly.settings.default_session = "sway";
+  services.displayManager.defaultSession = "sway"; # Example for Sway
 
   #services.displayManager.cosmic-greeter.enable = true;
   services.desktopManager.cosmic.enable = true;
