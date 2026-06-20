@@ -13,7 +13,25 @@
   ];
 
   # Install firefox.
-  programs.firefox.enable = true;
+  programs.firefox = {
+    enable = true;
+    nativeMessagingHosts.packages = [
+      (pkgs.runCommand "pywalfox-manifest" {} ''
+        mkdir -p $out/lib/mozilla/native-messaging-hosts
+        cat > $out/lib/mozilla/native-messaging-hosts/pywalfox.json <<EOF
+        {
+          "name": "pywalfox",
+          "description": "Pywalfox native messaging daemon",
+          "path": "${pkgs.writeShellScript "pywalfox-daemon" ''
+          exec ${pkgs.pywalfox-native}/bin/pywalfox start "$@"
+        ''}",
+          "type": "stdio",
+          "allowed_extensions": [ "pywalfox@frewacom.org" ]
+        }
+        EOF
+      '')
+    ];
+  };
   virtualisation.docker.enable = true;
   # 3. Enable Syncthing as a system service (Best Practice)
   services.syncthing = {
@@ -48,7 +66,6 @@
   # 4. Global Packages
   environment.systemPackages = with pkgs; [
     # --- Desktop & Productivity ---
-    firefox
     pywalfox-native
     discord
     vesktop
