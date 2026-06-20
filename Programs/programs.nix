@@ -105,7 +105,6 @@
     usbutils # For 'lsusb'
     smartmontools # To monitor the health of your NVME, SSD, and HDD
   ];
-  virtualisation.virtualbox.host.enable = true;
 
   # Allow unfree software (required for Steam, Discord, Spotify)
   nixpkgs.config.allowUnfree = true;
