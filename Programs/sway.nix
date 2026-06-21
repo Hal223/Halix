@@ -25,18 +25,22 @@
     CURRENT_WP_FILE="/tmp/current_wallpaper"
     CURRENT_WP=""
     if [ -f "$CURRENT_WP_FILE" ]; then
-      CURRENT_WP=$(cat "$CURRENT_WP_FILE")
+      CURRENT_WP=$(${pkgs.coreutils}/bin/cat "$CURRENT_WP_FILE")
     fi
 
-    if [ -n "$CURRENT_WP" ]; then
-      WP=$(find "$WP_DIR" -type f ! -path "$CURRENT_WP" | shuf -n1)
+    if [ "$1" = "--restore" ] && [ -n "$CURRENT_WP" ] && [ -f "$CURRENT_WP" ]; then
+      WP="$CURRENT_WP"
     else
-      WP=$(find "$WP_DIR" -type f | shuf -n1)
-    fi
+      if [ -n "$CURRENT_WP" ]; then
+        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
+      else
+        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+      fi
 
-    # Fallback in case only one wallpaper exists
-    if [ -z "$WP" ]; then
-      WP=$(find "$WP_DIR" -type f | shuf -n1)
+      # Fallback in case only one wallpaper exists
+      if [ -z "$WP" ]; then
+        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+      fi
     fi
 
     if [ -n "$WP" ]; then
@@ -47,9 +51,9 @@
 
       # Smoothly transition wallpaper using awww (formerly swww)
       # Check if awww-daemon is running, if not start it
-      if ! pgrep -x "awww-daemon" > /dev/null; then
+      if ! ${pkgs.procps}/bin/pgrep -x "awww-daemon" > /dev/null; then
         ${pkgs.swww}/bin/awww-daemon &
-        sleep 2
+        ${pkgs.coreutils}/bin/sleep 2
       fi
 
       # Try to set wallpaper, retry if it fails (daemon might still be starting)
@@ -57,15 +61,15 @@
         if ${pkgs.swww}/bin/awww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60; then
           break
         fi
-        sleep 1
+        ${pkgs.coreutils}/bin/sleep 1
       done
 
       # Kill swaybg to ensure it doesn't cover awww
-      killall swaybg || true
+      ${pkgs.psmisc}/bin/killall swaybg || true
     fi
 
     # Restart waybar completely instead of just reloading CSS
-    killall .waybar-wrapped start-waybar || true
+    ${pkgs.psmisc}/bin/killall .waybar-wrapped start-waybar waybar || true
 
     # Release the lock before starting long-running background processes
     exec 9>&-
@@ -125,7 +129,7 @@
         client.background $background
 
         # Run wallpaper transition which also starts waybar and awww
-        exec ${wallpaperTransition}
+        exec_always ${wallpaperTransition} --restore
 
         ### Variables
     #
@@ -376,6 +380,8 @@
       slurp
       wl-clipboard
       gnome-keyring
+      psmisc
+      procps
     ];
     flags = {
       # Ensure there is an '=' here and a ';' at the end
