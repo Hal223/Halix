@@ -28,19 +28,15 @@
       CURRENT_WP=$(${pkgs.coreutils}/bin/cat "$CURRENT_WP_FILE")
     fi
 
-    if [ "$1" = "--restore" ] && [ -n "$CURRENT_WP" ] && [ -f "$CURRENT_WP" ]; then
-      WP="$CURRENT_WP"
+    if [ -n "$CURRENT_WP" ]; then
+      WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
     else
-      if [ -n "$CURRENT_WP" ]; then
-        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
-      else
-        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
-      fi
+      WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+    fi
 
-      # Fallback in case only one wallpaper exists
-      if [ -z "$WP" ]; then
-        WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
-      fi
+    # Fallback in case only one wallpaper exists
+    if [ -z "$WP" ]; then
+      WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
     fi
 
     if [ -n "$WP" ]; then
@@ -51,7 +47,7 @@
 
       # Smoothly transition wallpaper using awww (formerly swww)
       # Check if awww-daemon is running, if not start it
-      if ! ${pkgs.procps}/bin/pgrep -x "awww-daemon" > /dev/null; then
+      if ! ${pkgs.procps}/bin/pgrep -f "awww-daemon" > /dev/null; then
         ${pkgs.swww}/bin/awww-daemon 9>&- &
         ${pkgs.coreutils}/bin/sleep 2
       fi
@@ -129,7 +125,7 @@
         client.background $background
 
         # Run wallpaper transition which also starts waybar and awww
-        exec_always ${wallpaperTransition} --restore
+        exec_always ${wallpaperTransition}
 
         ### Variables
     #
@@ -147,10 +143,9 @@
 
     ### Output configuration
     #
-    # Default background color (off-black) to prevent bright flashes before pywal loads a wallpaper
     # awww takes care of the background drawing
-    output * bg #111111 solid_color
     #
+
     # Example configuration:
     #
     #   output HDMI-A-1 resolution 1920x1080 position 1920,0
