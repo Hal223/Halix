@@ -8,7 +8,7 @@
     odysseus.url = "github:pewdiepie-archdaemon/odysseus/pull/1523/head";
     fresh.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
-    antigravity.url = "github:jacopone/antigravity-nix";
+    #antigravity.url = "github:jacopone/antigravity-nix";
     yazi-plugins = {
       url = "github:yazi-rs/plugins";
       flake = false;
@@ -21,7 +21,7 @@
     fresh,
     wrappers,
     odysseus,
-    antigravity,
+    #antigravity,
     ...
   } @ inputs: {
     nixosConfigurations.halix = nixpkgs.lib.nixosSystem {

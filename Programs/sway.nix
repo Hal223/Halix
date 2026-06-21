@@ -45,13 +45,13 @@
       # Generate pywal colors
       ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
 
-      # Smoothly transition wallpaper using swww
-      # Check if swww-daemon is running, if not start it
-      if ! pgrep -x "swww-daemon" > /dev/null; then
-        swww-daemon &
+      # Smoothly transition wallpaper using awww (formerly swww)
+      # Check if awww-daemon is running, if not start it
+      if ! pgrep -x "awww-daemon" > /dev/null; then
+        ${pkgs.swww}/bin/awww-daemon &
         sleep 1
       fi
-      swww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60
+      ${pkgs.swww}/bin/awww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60
     fi
 
     # Restart waybar completely instead of just reloading CSS
@@ -113,7 +113,7 @@
         client.placeholder $color0 $color0 $color5 $color0 $color0
         client.background $background
 
-        # Run wallpaper transition which also starts waybar and swww
+        # Run wallpaper transition which also starts waybar and awww
         exec ${wallpaperTransition}
 
         ### Variables
@@ -133,7 +133,7 @@
     ### Output configuration
     #
     # Default background color (off-black) to prevent bright flashes before pywal loads a wallpaper
-    # swww takes care of the background drawing
+    # awww takes care of the background drawing
     output * bg #111111 solid_color
     #
     # Example configuration:
