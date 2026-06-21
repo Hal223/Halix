@@ -10,6 +10,7 @@
     ./waybar.nix
     ./steam.nix
     ./mulvad-vpn.nix
+    ./terminal.nix
   ];
 
   # Install firefox.
@@ -85,7 +86,7 @@
 
     # --- Development & System Tools ---
     lmstudio
-    #vscode
+    vscode
     nodejs_24
     python315
     sshfs

@@ -10,7 +10,6 @@
     ./hardware-configuration.nix
     ./display.nix
     ./Programs/programs.nix # We will put your apps here
-    ./terminal.nix
   ];
 
   nix.settings.experimental-features = [
