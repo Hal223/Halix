@@ -12,6 +12,8 @@
   services.desktopManager.cosmic.enable = true;
   services.xserver.desktopManager.cinnamon.enable = true;
 
+  security.pam.services.ly.enableGnomeKeyring = true;
+
   environment.systemPackages = with pkgs; [
     grim # screenshot functionality
     slurp # screenshot functionality
