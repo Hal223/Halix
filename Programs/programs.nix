@@ -86,9 +86,9 @@
 
     # --- Development & System Tools ---
     vscode
-    antigravity-nix.packages.x86_64-linux.default # Base App
-    antigravity-nix.packages.x86_64-linux.google-antigravity-ide # IDE
-    antigravity-nix.packages.x86_64-linux.google-antigravity-cli # CLI
+    inputs.antigravity.packages.${pkgs.stdenv.hostPlatform.system}.default # Base App
+    inputs.antigravity.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-ide # IDE
+    inputs.antigravity.packages.${pkgs.stdenv.hostPlatform.system}.google-antigravity-cli # CLI
     nodejs_24
     python315
     sshfs
