@@ -52,7 +52,7 @@
       # Smoothly transition wallpaper using awww (formerly swww)
       # Check if awww-daemon is running, if not start it
       if ! ${pkgs.procps}/bin/pgrep -x "awww-daemon" > /dev/null; then
-        ${pkgs.swww}/bin/awww-daemon &
+        ${pkgs.swww}/bin/awww-daemon 9>&- &
         ${pkgs.coreutils}/bin/sleep 2
       fi
 
