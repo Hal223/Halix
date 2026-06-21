@@ -5,12 +5,12 @@
 }: let
   # Access the wrappers library from your flake inputs
   wlib = inputs.wrappers.lib;
-  # 1. Define a script to randomly select wallpaper, generate pywal colors, and reload waybar
-  wallpaperSwitcher = pkgs.writeShellScript "wallpaper-switcher" ''
+  # 1. Define a script to randomly select wallpaper, generate pywal colors, and smoothly transition
+  wallpaperTransition = pkgs.writeShellScript "wallpaper-transition" ''
     #!/bin/sh
 
     # Use flock to serialize executions and instantly reject overlapping runs
-    LOCKFILE="/tmp/wallpaper-switcher.lock"
+    LOCKFILE="/tmp/wallpaper-transition.lock"
     exec 9> "$LOCKFILE"
     if ! ${pkgs.util-linux}/bin/flock -n 9; then
       exit 0
@@ -41,21 +41,26 @@
 
     if [ -n "$WP" ]; then
       echo "$WP" > "$CURRENT_WP_FILE"
+
+      # Generate pywal colors
       ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
 
-      # Persist for sway reloads to prevent default wallpaper flashes
-      echo "output * bg \"$WP\" fill" > ~/.cache/wal/sway-bg
-      swaymsg "output * bg \"$WP\" fill"
+      # Smoothly transition wallpaper using swww
+      # Check if swww-daemon is running, if not start it
+      if ! pgrep -x "swww-daemon" > /dev/null; then
+        swww-daemon &
+        sleep 1
+      fi
+      swww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60
     fi
 
     # Restart waybar completely instead of just reloading CSS
     killall .waybar-wrapped start-waybar || true
 
     # Release the lock before starting long-running background processes
-    # so they don't inherit the open file descriptor and keep the lock held.
     exec 9>&-
 
-    # Start it in the background
+    # Start waybar in the background
     start-waybar &
 
     # Generate sway variables from pywal colors and apply them
@@ -108,8 +113,8 @@
         client.placeholder $color0 $color0 $color5 $color0 $color0
         client.background $background
 
-        # Run wallpaper switcher which also starts waybar
-        exec_always ${wallpaperSwitcher}
+        # Run wallpaper transition which also starts waybar and swww
+        exec ${wallpaperTransition}
 
         ### Variables
     #
@@ -128,8 +133,8 @@
     ### Output configuration
     #
     # Default background color (off-black) to prevent bright flashes before pywal loads a wallpaper
+    # swww takes care of the background drawing
     output * bg #111111 solid_color
-    include ~/.cache/wal/sway-bg
     #
     # Example configuration:
     #
@@ -199,6 +204,9 @@
 
         # Reload the configuration file
         bindsym $mod+Shift+c reload
+
+        # Smoothly transition to a new wallpaper and Pywal theme
+        bindsym $mod+Shift+w exec ${wallpaperTransition}
 
         # Exit sway (logs you out of your Wayland session)
         bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
@@ -350,7 +358,7 @@
     package = pkgs.sway;
     # Add runtime binaries to Sway's PATH so it can find swaybg, wofi, etc.
     runtimeInputs = with pkgs; [
-      swaybg
+      swww
       wofi
       ghostty
       grim
