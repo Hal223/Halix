@@ -49,9 +49,19 @@
       # Check if awww-daemon is running, if not start it
       if ! pgrep -x "awww-daemon" > /dev/null; then
         ${pkgs.swww}/bin/awww-daemon &
-        sleep 1
+        sleep 2
       fi
-      ${pkgs.swww}/bin/awww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60
+
+      # Try to set wallpaper, retry if it fails (daemon might still be starting)
+      for i in 1 2 3 4 5; do
+        if ${pkgs.swww}/bin/awww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 90 --transition-fps 60; then
+          break
+        fi
+        sleep 1
+      done
+
+      # Kill swaybg to ensure it doesn't cover awww
+      killall swaybg || true
     fi
 
     # Restart waybar completely instead of just reloading CSS
