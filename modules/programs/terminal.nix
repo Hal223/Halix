@@ -43,7 +43,7 @@
     cat = "bat";
     yy = "yazi";
     update = "~/Halix/scripts/rebuild.sh";
-    upgrade = "nix flake update --flake ~/Halix";
+    upgrade = "sudo nix flake update --flake ~/Halix";
     cleanup-old-build = "~/Halix/scripts/cleanup-old-build.sh";
     gc-cleanup = "nix-collect-garbage --delete-older-than 7d";
     vscode = "code";
