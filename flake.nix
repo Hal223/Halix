@@ -27,7 +27,7 @@
     nixosConfigurations.halix = nixpkgs.lib.nixosSystem {
       specialArgs = {inherit inputs;};
       modules = [
-        ./configuration.nix
+        ./hosts/halix/configuration.nix
         odysseus.nixosModules.default
       ];
     };
