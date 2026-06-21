@@ -85,8 +85,10 @@
     feh
 
     # --- Development & System Tools ---
-    lmstudio
     vscode
+    antigravity-nix.packages.x86_64-linux.default # Base App
+    antigravity-nix.packages.x86_64-linux.google-antigravity-ide # IDE
+    antigravity-nix.packages.x86_64-linux.google-antigravity-cli # CLI
     nodejs_24
     python315
     sshfs
