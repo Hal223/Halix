@@ -5,6 +5,7 @@
 }: let
   # Access the wrappers library from your flake inputs
   wlib = inputs.wrappers.lib;
+  wofiTheme = import ./wofi.nix {inherit pkgs;};
   # 1. Define a script to randomly select wallpaper, generate pywal colors, and smoothly transition
   wallpaperTransition = pkgs.writeShellScript "wallpaper-transition" ''
     #!/bin/sh
@@ -139,7 +140,7 @@
     # Your preferred terminal emulator
     set $term ghostty
     # Your preferred application launcher
-    set $menu wofi --show drun
+    set $menu wofi --show drun --conf ${wofiTheme.config} --style ${wofiTheme.style}
 
     ### Output configuration
     #
