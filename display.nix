@@ -21,5 +21,14 @@
 
   # Enable the gnome-keyring secrets vault.
   # Will be exposed through DBus to programs willing to store secrets.
-  services.gnome.gnome-keyring.enable = true;
+  #services.gnome.gnome-keyring.enable = true;
+
+  # In /etc/nixos/configuration.nix or home.nix
+  environment.systemPackages = with pkgs; [
+    xdg-utils # Essential for opening external URLs/links
+    gnome-keyring # Or use 'pass' or 'kwallet' depending on your desktop
+  ];
+
+  # For Home Manager users:
+  services.gnome-keyring.enable = true;
 }
