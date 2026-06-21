@@ -108,7 +108,8 @@
   # 2. Define the actual Sway configuration content
   swayConfig = pkgs.writeText "sway-config" ''
         exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-        exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+        exec dbus-update-activation-environment --systemd --all
+        exec gnome-keyring-daemon --start --components=secrets
 
         # Create pywal cache dir and dummy files to prevent sway errors on first start
         exec mkdir -p ~/.cache/wal
@@ -374,6 +375,7 @@
       grim
       slurp
       wl-clipboard
+      gnome-keyring
     ];
     flags = {
       # Ensure there is an '=' here and a ';' at the end
