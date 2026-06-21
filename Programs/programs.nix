@@ -9,7 +9,7 @@
     ./sway.nix
     ./waybar.nix
     ./steam.nix
-    #./mulvad-vpn.nix
+    ./mulvad-vpn.nix
   ];
 
   # Install firefox.
