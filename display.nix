@@ -20,8 +20,4 @@
     gnome-keyring # Or use 'pass' or 'kwallet' depending on your desktop
     xdg-utils # Essential for opening external URLs/links
   ];
-
-  # Enable the gnome-keyring secrets vault.
-  # Will be exposed through DBus to programs willing to store secrets.
-  #services.gnome.gnome-keyring.enable = true;
 }

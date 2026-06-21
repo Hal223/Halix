@@ -87,6 +87,9 @@
     # --- Development & System Tools ---
     lmstudio
     vscode
+    google-antigravity
+    google-antigravity-ide
+    antigravity-cli
     nodejs_24
     python315
     sshfs
