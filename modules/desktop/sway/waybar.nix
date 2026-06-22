@@ -10,7 +10,7 @@
       "margin-right": 10,
       "modules-left": ["sway/workspaces", "sway/mode"],
       "modules-center": ["sway/window"],
-      "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "clock", "tray"],
+      "modules-right": ["custom/theme", "pulseaudio", "network", "cpu", "memory", "temperature", "clock", "tray"],
       "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -66,6 +66,11 @@
       },
       "tray": {
         "spacing": 8
+      },
+      "custom/theme": {
+        "format": "",
+        "on-click": "theme-manager",
+        "tooltip": "Theme Manager"
       }
     }
   '';
@@ -100,6 +105,7 @@
     #memory,
     #temperature,
     #clock,
+    #custom-theme,
     #tray {
       background-color: alpha(@background, 0.85);
       color: @foreground;
@@ -155,6 +161,7 @@
     #temperature { color: @color5; }
     #network { color: @color6; }
     #pulseaudio { color: @color7; }
+    #custom-theme { color: @color8; }
 
     #clock {
       color: @color2;

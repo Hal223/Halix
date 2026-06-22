@@ -17,26 +17,39 @@
       exit 0
     fi
 
-    WP_DIR="$HOME/Pictures/Wallpapers/"
-    if [ ! -d "$WP_DIR" ]; then
-      exit 0
-    fi
-
-    # Avoid selecting the exact same wallpaper again if possible
     CURRENT_WP_FILE="/tmp/current_wallpaper"
     CURRENT_WP=""
     if [ -f "$CURRENT_WP_FILE" ]; then
       CURRENT_WP=$(${pkgs.coreutils}/bin/cat "$CURRENT_WP_FILE")
     fi
 
-    if [ -n "$CURRENT_WP" ]; then
-      WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
+    WP=""
+    WP_DIR=""
+    # Process arguments
+    if [ -n "$1" ]; then
+      if [ -f "$1" ]; then
+        WP="$1"
+      elif [ -d "$1" ]; then
+        WP_DIR="$1"
+        if [ -n "$CURRENT_WP" ]; then
+          WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
+        else
+          WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+        fi
+      fi
     else
-      WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+      WP_DIR="$HOME/Pictures/Wallpapers/"
+      if [ -d "$WP_DIR" ]; then
+        if [ -n "$CURRENT_WP" ]; then
+          WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f ! -path "$CURRENT_WP" | ${pkgs.coreutils}/bin/shuf -n1)
+        else
+          WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
+        fi
+      fi
     fi
 
-    # Fallback in case only one wallpaper exists
-    if [ -z "$WP" ]; then
+    # Fallback in case only one wallpaper exists or random selection failed
+    if [ -z "$WP" ] && [ -d "$WP_DIR" ]; then
       WP=$(${pkgs.findutils}/bin/find "$WP_DIR" -type f | ${pkgs.coreutils}/bin/shuf -n1)
     fi
 
@@ -104,6 +117,70 @@
       swaymsg "client.placeholder $color0 $color0 $color5 $color0 $color0"
       swaymsg "client.background $background"
     fi
+  '';
+
+  # 1.5 Define theme manager using wofi
+  themeManager = pkgs.writeShellScriptBin "theme-manager" ''
+    #!/bin/sh
+    THEME_DIR="$HOME/.config/halix-themes"
+    CURRENT_WP_FILE="/tmp/current_wallpaper"
+    mkdir -p "$THEME_DIR"
+
+    # Define menu options
+    OPTIONS="1. Apply Theme\n2. Save Current Theme\n3. Rename Theme\n4. Delete Theme\n5. Random Wallpaper"
+
+    CHOICE=$(echo -e "$OPTIONS" | wofi --show dmenu --prompt "Theme Manager" --conf ${wofiTheme.config} --style ${wofiTheme.style} | cut -d'.' -f1)
+
+    case "$CHOICE" in
+      1)
+        # Apply Theme
+        THEMES=$(ls -1 "$THEME_DIR" 2>/dev/null)
+        if [ -z "$THEMES" ]; then
+          echo "No saved themes." | wofi --show dmenu --prompt "Error" --conf ${wofiTheme.config} --style ${wofiTheme.style}
+          exit 0
+        fi
+        SELECTED=$(echo "$THEMES" | wofi --show dmenu --prompt "Select Theme" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+        if [ -n "$SELECTED" ] && [ -f "$THEME_DIR/$SELECTED" ]; then
+          TARGET=$(cat "$THEME_DIR/$SELECTED")
+          exec ${wallpaperTransition} "$TARGET"
+        fi
+        ;;
+      2)
+        # Save Current Theme
+        if [ -f "$CURRENT_WP_FILE" ]; then
+          CURRENT_WP=$(cat "$CURRENT_WP_FILE")
+          NAME=$(echo "" | wofi --show dmenu --prompt "Enter Theme Name" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+          if [ -n "$NAME" ]; then
+            echo "$CURRENT_WP" > "$THEME_DIR/$NAME"
+          fi
+        fi
+        ;;
+      3)
+        # Rename Theme
+        THEMES=$(ls -1 "$THEME_DIR" 2>/dev/null)
+        if [ -z "$THEMES" ]; then exit 0; fi
+        SELECTED=$(echo "$THEMES" | wofi --show dmenu --prompt "Select Theme to Rename" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+        if [ -n "$SELECTED" ] && [ -f "$THEME_DIR/$SELECTED" ]; then
+          NEW_NAME=$(echo "" | wofi --show dmenu --prompt "Enter New Name for $SELECTED" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+          if [ -n "$NEW_NAME" ]; then
+            mv "$THEME_DIR/$SELECTED" "$THEME_DIR/$NEW_NAME"
+          fi
+        fi
+        ;;
+      4)
+        # Delete Theme
+        THEMES=$(ls -1 "$THEME_DIR" 2>/dev/null)
+        if [ -z "$THEMES" ]; then exit 0; fi
+        SELECTED=$(echo "$THEMES" | wofi --show dmenu --prompt "Select Theme to Delete" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+        if [ -n "$SELECTED" ] && [ -f "$THEME_DIR/$SELECTED" ]; then
+          rm "$THEME_DIR/$SELECTED"
+        fi
+        ;;
+      5)
+        # Random Wallpaper
+        exec ${wallpaperTransition}
+        ;;
+    esac
   '';
 
   # 2. Define the actual Sway configuration content
@@ -378,6 +455,7 @@
       gnome-keyring
       psmisc
       procps
+      themeManager
     ];
     flags = {
       # Ensure there is an '=' here and a ';' at the end
@@ -388,5 +466,6 @@ in {
   programs.sway.enable = true;
   environment.systemPackages = [
     mySway
+    themeManager
   ];
 }
