@@ -68,7 +68,7 @@
 
       # Try to set wallpaper, retry if it fails (daemon might still be starting)
       for i in 1 2 3 4 5; do
-        if ${pkgs.swww}/bin/awww img "$WP" --transition-type wipe --transition-angle 30 --transition-step 120 --transition-duration 0.8 --transition-fps 60 --filter Bilinear; then
+        if ${pkgs.swww}/bin/awww img "$WP" --transition-type wave --transition-angle 30 --transition-step 120 --transition-duration 0.8 --transition-fps 60 --filter Bilinear; then
           break
         fi
         ${pkgs.coreutils}/bin/sleep 1

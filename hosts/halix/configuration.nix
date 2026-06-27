@@ -36,7 +36,6 @@
     ../../modules/programs/yazi.nix
     ../../modules/programs/steam.nix
     ../../modules/programs/terminal.nix
-    ../../modules/programs/thunar.nix
   ];
 
   nix.settings.experimental-features = [

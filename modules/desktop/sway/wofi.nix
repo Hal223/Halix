@@ -21,7 +21,7 @@
     }
 
     window {
-      background-color: alpha(@background, 0.85);
+      background-color: @background;
       color: @foreground;
       border: 2px solid @color2;
       border-radius: 12px;
@@ -37,7 +37,7 @@
       border: 1px solid alpha(@foreground, 0.2);
       border-radius: 8px;
       padding: 8px 12px;
-      background-color: alpha(@color0, 0.5);
+      background-color: @color0;
       color: @foreground;
     }
 
