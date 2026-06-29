@@ -4,6 +4,9 @@
   inputs,
   ...
 }: {
+  # Fix vscode error
+  programs.direnv.enable = true;
+
   environment.systemPackages = with pkgs; [
     vscode
     antigravity
