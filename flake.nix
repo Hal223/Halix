@@ -24,12 +24,22 @@
     #antigravity,
     ...
   } @ inputs: {
-    nixosConfigurations.halix = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/halix/configuration.nix
-        odysseus.nixosModules.default
-      ];
+    nixosConfigurations = {
+      halix = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/halix/configuration.nix
+          odysseus.nixosModules.default
+        ];
+      };
+
+      template = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/template/configuration.nix
+          odysseus.nixosModules.default
+        ];
+      };
     };
   };
 }
