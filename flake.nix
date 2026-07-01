@@ -33,6 +33,14 @@
         ];
       };
 
+      halix-laptop = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs;};
+        modules = [
+          ./hosts/halix-laptop/configuration.nix
+          odysseus.nixosModules.default
+        ];
+      };
+      
       template = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules = [
