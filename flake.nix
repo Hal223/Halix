@@ -37,7 +37,7 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/halix-laptop/configuration.nix
-          odysseus.nixosModules.default
+          #odysseus.nixosModules.default
         ];
       };
       
