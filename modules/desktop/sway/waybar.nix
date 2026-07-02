@@ -10,7 +10,7 @@
       "margin-right": 10,
       "modules-left": ["sway/workspaces", "sway/mode"],
       "modules-center": ["sway/window"],
-      "modules-right": ["custom/theme", "pulseaudio", "network", "cpu", "memory", "temperature", "clock", "tray"],
+      "modules-right": ["custom/theme", "pulseaudio", "network", "cpu", "memory", "temperature", "group/power", "clock", "tray"],
       "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -20,6 +20,40 @@
       "sway/window": {
         "max-length": 50,
         "tooltip": false
+      },
+      "group/power": {
+        "orientation": "inherit",
+        "drawer": {
+          "transition-duration": 500,
+          "children-class": "not-power",
+          "transition-left-to-right": true
+        },
+        "modules": [
+          "battery",
+          "power-profiles-daemon"
+        ]
+      },
+      "battery": {
+        "states": {
+          "warning": 30,
+          "critical": 15
+        },
+        "format": "{capacity}% {icon} ",
+        "format-charging": "{capacity}%  ",
+        "format-plugged": "{capacity}%  ",
+        "format-alt": "{time} {icon} ",
+        "format-icons": ["", "", "", "", ""]
+      },
+      "power-profiles-daemon": {
+        "format": "{icon}",
+        "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+        "tooltip": true,
+        "format-icons": {
+          "default": "⚡",
+          "performance": "⚡",
+          "balanced": "⚖️",
+          "power-saver": "🍃"
+        }
       },
       "clock": {
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
@@ -86,6 +120,13 @@
       min-height: 0;
     }
 
+    @keyframes blink {
+      to {
+        background-color: @background;
+        color: @foreground;
+      }
+    }
+
     window#waybar {
       background-color: transparent;
       color: @foreground;
@@ -104,6 +145,7 @@
     #cpu,
     #memory,
     #temperature,
+    #power,
     #clock,
     #custom-theme,
     #tray {
@@ -159,6 +201,15 @@
     #cpu { color: @color3; }
     #memory { color: @color4; }
     #temperature { color: @color5; }
+    #battery { color: @color2; padding-right: 4px; }
+    #battery.charging { color: @color3; }
+    #battery.warning:not(.charging) { color: @color1; }
+    #battery.critical:not(.charging) { color: @color1; animation-name: blink; animation-duration: 0.5s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
+    #power-profiles-daemon { 
+      color: @color6; 
+      padding-left: 10px;
+      padding-right: 10px;
+    }
     #network { color: @color6; }
     #pulseaudio { color: @color7; }
     #custom-theme { color: @color8; }

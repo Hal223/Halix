@@ -32,7 +32,7 @@
     cowsay
   ];
 
-  environment.shelles = {
+  environment.shellAliases = {
     sudo = "sudo ";
     ll = "ls -l";
     l = "ls -alh";

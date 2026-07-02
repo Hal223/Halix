@@ -13,6 +13,7 @@
       url = "github:yazi-rs/plugins";
       flake = false;
     };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
 
   outputs = {
@@ -21,6 +22,7 @@
     fresh,
     wrappers,
     odysseus,
+    nixos-hardware,
     #antigravity,
     ...
   } @ inputs: {

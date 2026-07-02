@@ -1,11 +1,15 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
     # Include the results of the hardware scan (generate on the target machine using: nixos-generate-config)
     ./hardware-configuration.nix
+    
+    # ThinkPad P52s/T480 hardware quirks and optimizations
+    inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480
 
     # Core system settings
     ../../modules/core/boot.nix
@@ -51,4 +55,9 @@
 
   # Change this to the version of NixOS installed on the new machine
   system.stateVersion = "26.05";
+
+  # Performance and thermals for Intel 8th Gen ThinkPads
+  services.throttled.enable = true;
+  services.power-profiles-daemon.enable = true;
+  services.tlp.enable = false;
 }
