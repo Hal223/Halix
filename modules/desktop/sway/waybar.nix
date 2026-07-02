@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}: let
   waybarConfig = pkgs.writeText "waybar-config" ''
     {
       "layer": "top",
@@ -29,8 +34,8 @@
           "transition-left-to-right": true
         },
         "modules": [
-          "battery",
-          "power-profiles-daemon"
+          "battery"${lib.optionalString (config.networking.hostName == "halix-laptop") ''        ,
+                  "power-profiles-daemon"''}
         ]
       },
       "battery": {
@@ -205,8 +210,8 @@
     #battery.charging { color: @color3; }
     #battery.warning:not(.charging) { color: @color1; }
     #battery.critical:not(.charging) { color: @color1; animation-name: blink; animation-duration: 0.5s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
-    #power-profiles-daemon { 
-      color: @color6; 
+    #power-profiles-daemon {
+      color: @color6;
       padding-left: 10px;
       padding-right: 10px;
     }

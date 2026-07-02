@@ -42,7 +42,7 @@
           #odysseus.nixosModules.default
         ];
       };
-      
+
       template = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules = [

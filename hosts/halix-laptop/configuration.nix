@@ -7,7 +7,7 @@
   imports = [
     # Include the results of the hardware scan (generate on the target machine using: nixos-generate-config)
     ./hardware-configuration.nix
-    
+
     # ThinkPad P52s/T480 hardware quirks and optimizations
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480
 

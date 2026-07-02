@@ -16,7 +16,7 @@ git diff --staged -U0
 # 3. Rebuild
 echo "NixOS Rebuilding..."
 # We use the absolute path ~/ to ensure the log is always in a predictable place
-if sudo nixos-rebuild switch --flake .# 2>&1 | tee ~/nixos-switch.log; then
+if sudo nixos-rebuild switch --flake .#$(hostname) 2>&1 | tee ~/nixos-switch.log; then
 
     # 4. Get the unique Build Name and Generation
     build_path=$(readlink /run/current-system)

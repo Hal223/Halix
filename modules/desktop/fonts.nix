@@ -16,10 +16,10 @@
     fontconfig = {
       enable = true;
       defaultFonts = {
-        serif = [ "Noto Serif" "Noto Color Emoji" ];
-        sansSerif = [ "Noto Sans" "Noto Color Emoji" ];
-        monospace = [ "FiraCode Nerd Font Mono" "Noto Color Emoji" ];
-        emoji = [ "Noto Color Emoji" ];
+        serif = ["Noto Serif" "Noto Color Emoji"];
+        sansSerif = ["Noto Sans" "Noto Color Emoji"];
+        monospace = ["FiraCode Nerd Font Mono" "Noto Color Emoji"];
+        emoji = ["Noto Color Emoji"];
       };
     };
   };
