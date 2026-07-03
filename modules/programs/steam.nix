@@ -12,22 +12,7 @@
         with pkgs; [
           # Add extra dependencies here if needed (e.g., openssl, nghttp2)
         ];
+      extraProfile = "export DBUS_FATAL_WARNINGS=0";
     };
   };
-
-  # 3. Use an overlay to fix the .desktop file globally
-  # This ensures the COSMIC menu uses the correct environment variables
-  nixpkgs.overlays = [
-    (final: prev: {
-      steam = prev.steam.overrideAttrs (oldAttrs: {
-        postInstall =
-          (oldAttrs.postInstall or "")
-          + ''
-            substituteInPlace $out/share/applications/steam.desktop \
-              --replace "Exec=/usr/bin/steam" "Exec=env DBUS_FATAL_WARNINGS=0 steam" \
-              --replace "Exec=steam" "Exec=env DBUS_FATAL_WARNINGS=0 steam"
-          '';
-      });
-    })
-  ];
 }
