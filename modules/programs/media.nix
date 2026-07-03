@@ -5,6 +5,7 @@
 }: {
   environment.systemPackages = with pkgs; [
     discord
+    vesktop
     spotify
     audacity
     vlc
