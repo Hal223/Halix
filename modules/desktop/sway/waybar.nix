@@ -11,18 +11,40 @@
 
     WOFI_CMD="wofi --show dmenu --conf ${wofiTheme.config} --style ${wofiTheme.style}"
 
-    function main_menu() {
-        local options="  Manage WiFi\n  Manage Ethernet\n  Toggle WiFi\n  Toggle Ethernet\n  Static IP / DHCP\n  Exit"
-        local choice=$(echo -e "$options" | $WOFI_CMD --prompt "Network Menu")
+    function get_wifi_state() {
+        if [ "$(nmcli -t -f WIFI radio)" = "enabled" ]; then echo "[ON]"; else echo "[OFF]"; fi
+    }
 
-        case "$choice" in
-            "  Manage WiFi") manage_wifi ;;
-            "  Manage Ethernet") manage_ethernet ;;
-            "  Toggle WiFi") toggle_wifi ;;
-            "  Toggle Ethernet") toggle_ethernet ;;
-            "  Static IP / DHCP") manage_ip ;;
-            *) exit 0 ;;
-        esac
+    function get_eth_state() {
+        local dev=$(nmcli -t -f DEVICE,TYPE,STATE device | awk -F':' '$2=="ethernet"{print $1; exit}')
+        if [ -n "$dev" ]; then
+            local state=$(nmcli -t -f DEVICE,STATE device | awk -F':' -v dev="$dev" '$1==dev{print $2}')
+            if [ "$state" = "connected" ]; then echo "[ON]"; else echo "[OFF]"; fi
+        else
+            echo "[OFF]"
+        fi
+    }
+
+    function get_bt_state() {
+        if bluetoothctl show | grep -q "Powered: yes"; then echo "[ON]"; else echo "[OFF]"; fi
+    }
+
+    function main_menu() {
+        local wifi_st=$(get_wifi_state)
+        local eth_st=$(get_eth_state)
+        local bt_st=$(get_bt_state)
+
+        local options="  Manage WiFi\n  Manage Ethernet\n  Manage Bluetooth\n  Toggle WiFi $wifi_st\n  Toggle Ethernet $eth_st\n  Toggle Bluetooth $bt_st\n  Static IP / DHCP\n  Exit"
+        local choice=$(echo -e "$options" | $WOFI_CMD --prompt "Network & Bluetooth")
+
+        if [[ "$choice" == "  Manage WiFi" ]]; then manage_wifi
+        elif [[ "$choice" == "  Manage Ethernet" ]]; then manage_ethernet
+        elif [[ "$choice" == "  Manage Bluetooth" ]]; then manage_bt
+        elif [[ "$choice" == "  Toggle WiFi"* ]]; then toggle_wifi
+        elif [[ "$choice" == "  Toggle Ethernet"* ]]; then toggle_ethernet
+        elif [[ "$choice" == "  Toggle Bluetooth"* ]]; then toggle_bt
+        elif [[ "$choice" == "  Static IP / DHCP" ]]; then manage_ip
+        else exit 0; fi
     }
 
     function manage_wifi() {
@@ -119,6 +141,37 @@
             nmcli connection modify "$con" ipv4.addresses "$ip" ipv4.gateway "$gw" ipv4.dns "$dns" ipv4.method manual
             nmcli connection up id "$con"
         fi
+    }
+
+    function toggle_bt() {
+        if bluetoothctl show | grep -q "Powered: yes"; then
+            bluetoothctl power off
+        else
+            bluetoothctl power on
+        fi
+        main_menu
+    }
+
+    function manage_bt() {
+        local devices=$(bluetoothctl devices | awk '{print $2 " " substr($0, index($0,$3))}')
+        if [ -z "$devices" ]; then
+            echo "No Bluetooth devices found." | $WOFI_CMD --prompt "Info"
+            main_menu
+            return
+        fi
+        local choice=$(echo -e "$devices" | $WOFI_CMD --prompt "Select BT Device")
+        if [ -z "$choice" ]; then main_menu; return; fi
+
+        local mac=$(echo "$choice" | awk '{print $1}')
+        local action=$(echo -e "Connect\nDisconnect\nPair\nRemove" | $WOFI_CMD --prompt "Action for $mac")
+
+        case "$action" in
+            "Connect") bluetoothctl connect "$mac" ;;
+            "Disconnect") bluetoothctl disconnect "$mac" ;;
+            "Pair") bluetoothctl pair "$mac" ;;
+            "Remove") bluetoothctl remove "$mac" ;;
+        esac
+        main_menu
     }
 
     main_menu
