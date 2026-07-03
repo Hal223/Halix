@@ -219,6 +219,9 @@
     # Your preferred application launcher
     set $menu wofi --show drun --conf ${wofiTheme.config} --style ${wofiTheme.style}
 
+    # Allow XWayland apps (like Steam) to take focus when activating from tray
+    focus_on_window_activation focus
+
     ### Output configuration
     #
     # awww takes care of the background drawing
