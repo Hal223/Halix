@@ -183,11 +183,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1783058228,
-        "narHash": "sha256-gKHiJnu8EHHv8qfZyQsm59vBAQH0fiBqXvWMbvLlVh4=",
+        "lastModified": 1783105496,
+        "narHash": "sha256-opW36HAdHKPybCYBJldNyYakHVp6g+5fZC+CfTOGijM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "d0cf5f1e17693e2a4e9a64d7429439a605279190",
+        "rev": "a263060feafdfdb5d1d70b53b04d5bb810b13cf1",
         "type": "github"
       },
       "original": {
@@ -330,11 +330,11 @@
     "yazi-plugins": {
       "flake": false,
       "locked": {
-        "lastModified": 1782934433,
-        "narHash": "sha256-SLfwFGOcmlZIUqlSSMk7dEEUZQbKqPMidknS3vtFzPo=",
+        "lastModified": 1783106169,
+        "narHash": "sha256-G7n+3SSRC2iASqDfOkm9kYUnFAgvpAGvxWr8+O7/Q6E=",
         "owner": "yazi-rs",
         "repo": "plugins",
-        "rev": "65559fd3edc33cb0fd24ec92874c763fa5f68e3e",
+        "rev": "cf2c6d8ef37f70824ad09eee0ee13e40a35dbdaa",
         "type": "github"
       },
       "original": {
