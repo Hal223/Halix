@@ -14,7 +14,15 @@
 
   xdg.portal = {
     enable = true;
-    wlr.enable = true; # Required for wlroots-based compositors like Sway
+    wlr = {
+      enable = true; # Required for wlroots-based compositors like Sway
+      settings = {
+        screencast = {
+          chooser_type = "simple";
+          chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+        };
+      };
+    };
     extraPortals = [pkgs.xdg-desktop-portal-gtk];
     config.common.default = [
       "wlr"
