@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   # 1. Enable Steam with multi-drive / networking support
   programs.steam = {
     enable = true;
@@ -18,4 +22,23 @@
       '';
     };
   };
+
+  # 3. Force Steam to open its window when launched from Wofi and fix tray icon
+  environment.systemPackages = with pkgs; [
+    (writeShellScriptBin "steam-launcher" ''
+      export DBUS_FATAL_WARNINGS=0
+      export GDK_BACKEND=x11
+
+      if [ -z "$1" ]; then
+        exec steam steam://store
+      else
+        exec steam "$@"
+      fi
+    '')
+    (lib.hiPrio (runCommand "steam-desktop-override" {} ''
+      mkdir -p $out/share/applications
+      cp ${steam}/share/applications/steam.desktop $out/share/applications/steam.desktop
+      sed -i 's/^Exec=steam %U/Exec=steam-launcher %U/' $out/share/applications/steam.desktop
+    ''))
+  ];
 }
