@@ -4,6 +4,125 @@
   lib,
   ...
 }: let
+  wofiTheme = import ./wofi.nix {inherit pkgs;};
+
+  wofiNetworkManager = pkgs.writeShellScriptBin "wofi-network-manager" ''
+    #!/usr/bin/env bash
+
+    WOFI_CMD="wofi --show dmenu --conf ${wofiTheme.config} --style ${wofiTheme.style}"
+
+    function main_menu() {
+        local options="  Manage WiFi\n  Manage Ethernet\n  Toggle WiFi\n  Toggle Ethernet\n  Static IP / DHCP\n  Exit"
+        local choice=$(echo -e "$options" | $WOFI_CMD --prompt "Network Menu")
+
+        case "$choice" in
+            "  Manage WiFi") manage_wifi ;;
+            "  Manage Ethernet") manage_ethernet ;;
+            "  Toggle WiFi") toggle_wifi ;;
+            "  Toggle Ethernet") toggle_ethernet ;;
+            "  Static IP / DHCP") manage_ip ;;
+            *) exit 0 ;;
+        esac
+    }
+
+    function manage_wifi() {
+        nmcli radio wifi on
+        nmcli device wifi rescan > /dev/null 2>&1
+
+        local wifis=$(nmcli -t -f IN-USE,SSID,SECURITY,BARS device wifi list | grep -v '^\*::' | sed 's/\\://g' | awk -F':' '{
+            in_use=$1; ssid=$2; sec=$3; bars=$4;
+            if(ssid != "") {
+                prefix="  "
+                if (in_use == "*") prefix="* "
+                print prefix ssid "  (" sec ")  " bars
+            }
+        }')
+
+        if [ -z "$wifis" ]; then
+            echo "No WiFi networks found." | $WOFI_CMD --prompt "Info"
+            main_menu
+            return
+        fi
+
+        local choice=$(echo -e "󰌌  Manual Entry\n$wifis" | $WOFI_CMD --prompt "Select WiFi")
+        if [ -z "$choice" ]; then main_menu; return; fi
+
+        local ssid=""
+        if [ "$choice" = "󰌌  Manual Entry" ]; then
+            ssid=$(echo "" | $WOFI_CMD --prompt "Enter SSID")
+        else
+            ssid=$(echo "$choice" | sed -E 's/^[* ] //; s/  \(.*//')
+        fi
+        if [ -z "$ssid" ]; then main_menu; return; fi
+
+        local known=$(nmcli -t -f NAME connection show | grep -x "$ssid")
+        if [ -n "$known" ]; then
+            nmcli connection up id "$ssid"
+        else
+            local pass=$(echo "" | wofi --show dmenu --password --prompt "Password for $ssid" --conf ${wofiTheme.config} --style ${wofiTheme.style})
+            if [ -n "$pass" ]; then
+                nmcli device wifi connect "$ssid" password "$pass"
+            else
+                nmcli device wifi connect "$ssid"
+            fi
+        fi
+    }
+
+    function manage_ethernet() {
+        local eth_cons=$(nmcli -t -f NAME,TYPE connection show | awk -F':' '$2=="802-3-ethernet"{print $1}')
+        if [ -z "$eth_cons" ]; then
+            echo "No Ethernet connections found." | $WOFI_CMD --prompt "Info"
+            main_menu
+            return
+        fi
+        local choice=$(echo -e "$eth_cons" | $WOFI_CMD --prompt "Select Ethernet Connection")
+        if [ -n "$choice" ]; then
+            local action=$(echo -e "Up\nDown" | $WOFI_CMD --prompt "Action for $choice")
+            if [ "$action" = "Up" ]; then nmcli connection up id "$choice";
+            elif [ "$action" = "Down" ]; then nmcli connection down id "$choice"; fi
+        fi
+        main_menu
+    }
+
+    function toggle_wifi() {
+        local state=$(nmcli -t -f WIFI radio)
+        if [ "$state" = "enabled" ]; then nmcli radio wifi off; else nmcli radio wifi on; fi
+        main_menu
+    }
+
+    function toggle_ethernet() {
+        local dev=$(nmcli -t -f DEVICE,TYPE,STATE device | awk -F':' '$2=="ethernet"{print $1; exit}')
+        if [ -z "$dev" ]; then echo "No Ethernet device found." | $WOFI_CMD --prompt "Info"; main_menu; return; fi
+        local state=$(nmcli -t -f DEVICE,STATE device | awk -F':' -v dev="$dev" '$1==dev{print $2}')
+        if [ "$state" = "connected" ]; then nmcli device disconnect "$dev"; else nmcli device connect "$dev"; fi
+        main_menu
+    }
+
+    function manage_ip() {
+        local cons=$(nmcli -t -f NAME,TYPE connection show --active)
+        if [ -z "$cons" ]; then echo "No active connections." | $WOFI_CMD --prompt "Info"; main_menu; return; fi
+        local con=$(echo -e "$cons" | awk -F':' '{print $1}' | $WOFI_CMD --prompt "Select Connection")
+        if [ -z "$con" ]; then main_menu; return; fi
+
+        local mode=$(echo -e "DHCP\nStatic IP" | $WOFI_CMD --prompt "Configuration for $con")
+        if [ "$mode" = "DHCP" ]; then
+            nmcli connection modify "$con" ipv4.method auto
+            nmcli connection up id "$con"
+        elif [ "$mode" = "Static IP" ]; then
+            local ip=$(echo "" | $WOFI_CMD --prompt "Enter IP (e.g. 192.168.1.50/24)")
+            if [ -z "$ip" ]; then main_menu; return; fi
+            local gw=$(echo "" | $WOFI_CMD --prompt "Enter Gateway (e.g. 192.168.1.1)")
+            if [ -z "$gw" ]; then main_menu; return; fi
+            local dns=$(echo "" | $WOFI_CMD --prompt "Enter DNS (e.g. 8.8.8.8)")
+            if [ -z "$dns" ]; then main_menu; return; fi
+
+            nmcli connection modify "$con" ipv4.addresses "$ip" ipv4.gateway "$gw" ipv4.dns "$dns" ipv4.method manual
+            nmcli connection up id "$con"
+        fi
+    }
+
+    main_menu
+  '';
   waybarConfig = pkgs.writeText "waybar-config" ''
     {
       "layer": "top",
@@ -83,7 +202,8 @@
         "tooltip-format": "{ifname} via {gwaddr}",
         "format-linked": "",
         "format-disconnected": "⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+        "format-alt": "{ifname}: {ipaddr}/{cidr}",
+        "on-click": "wofi-network-manager"
       },
       "pulseaudio": {
         "format": "{volume}% {icon} {format_source}",
@@ -245,5 +365,6 @@ in {
   environment.systemPackages = [
     pkgs.waybar
     startWaybar
+    wofiNetworkManager
   ];
 }
