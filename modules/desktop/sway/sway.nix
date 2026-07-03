@@ -185,7 +185,7 @@
 
   # 2. Define the actual Sway configuration content
   swayConfig = pkgs.writeText "sway-config" ''
-        exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+        exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP DISPLAY XAUTHORITY
         exec dbus-update-activation-environment --systemd --all
         exec gnome-keyring-daemon --start --components=pkcs11,secrets,ssh
 

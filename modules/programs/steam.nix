@@ -29,7 +29,7 @@
       export DBUS_FATAL_WARNINGS=0
       export GDK_BACKEND=x11
 
-      if [ -z "$1" ]; then
+      if [ -z "$1" ] || [ "$1" = "%U" ] || [ "$1" = "%u" ]; then
         exec steam steam://store
       else
         exec steam "$@"
