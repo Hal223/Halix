@@ -5,7 +5,7 @@ import Audio from 'resource:///com/github/Aylur/ags/service/audio.js';
 import Network from 'resource:///com/github/Aylur/ags/service/network.js';
 import Battery from 'resource:///com/github/Aylur/ags/service/battery.js';
 
-import { swayWorkspaces, windowTitle } from '../variables/sway.js';
+import { swayWorkspaces, windowTitle, appIcons } from '../variables/sway.js';
 import { cpu, ram, temp, time } from '../variables/system.js';
 import { IS_LAPTOP } from '../vars.js';
 
@@ -22,10 +22,16 @@ function Workspaces() {
                     else if (w.urgent) className += ' urgent';
                     else className += ' occupied';
                 }
+                let labelText = `${i}`;
+                if (w && w.apps && w.apps.length > 0) {
+                    const icons = w.apps.map(app => appIcons[app] || appIcons['default']).join(' ');
+                    labelText = `${i}  ${icons}`;
+                }
+                
                 return Widget.Button({
                     class_name: className,
                     on_clicked: () => Utils.execAsync(['swaymsg', 'workspace', `${i}`]).catch(print),
-                    child: Widget.Label(`${i}`),
+                    child: Widget.Label(labelText),
                 });
             });
         }),

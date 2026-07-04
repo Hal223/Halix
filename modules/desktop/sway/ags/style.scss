@@ -39,33 +39,34 @@ window {
 }
 
 .workspace label {
-    font-size: 0;
-    min-width: 6px;
-    min-height: 6px;
-    border-radius: 10px;
+    font-size: 14px;
+    padding: 2px 10px;
+    border-radius: 12px;
     margin: 0 4px;
     transition: all 0.3s ease;
-    background-color: rgba($foreground, 0.2);
+    background-color: rgba($foreground, 0.1);
+    color: rgba($foreground, 0.6);
 }
 
 .workspace:hover label {
-    background-color: rgba($foreground, 0.5);
+    background-color: rgba($foreground, 0.2);
+    color: $foreground;
 }
 
 .workspace.occupied label {
-    background-color: rgba($foreground, 0.8);
-    min-width: 10px;
-    min-height: 10px;
+    background-color: rgba($foreground, 0.15);
+    color: $foreground;
 }
 
 .workspace.focused label {
     background-color: $color2;
-    min-width: 28px;
-    min-height: 10px;
+    color: $background;
+    font-weight: bold;
 }
 
 .workspace.urgent label {
     background-color: $color1;
+    color: $background;
 }
 
 .window-title {
