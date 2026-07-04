@@ -183,23 +183,60 @@ window {
     padding-bottom: 4px;
 }
 
-.device-selector {
-    margin-bottom: 8px;
+.device-dropdown {
+    margin-bottom: 12px;
+    margin-top: 6px;
+}
+
+.dropdown-header {
+    background-color: rgba($color2, 0.15);
+    color: $color5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.dropdown-header:hover {
+    background-color: rgba($color2, 0.25);
+}
+
+.dropdown-icon {
+    font-size: 16px;
+    margin-right: 12px;
+    color: $color2;
+}
+
+.dropdown-active-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: $foreground;
+}
+
+.dropdown-arrow {
+    font-size: 14px;
+    color: $color5;
+    margin-left: 8px;
+}
+
+.dropdown-list {
+    background-color: rgba($background, 0.6);
+    border-radius: 8px;
+    padding: 6px;
     margin-top: 4px;
 }
 
-.device-btn {
+.dropdown-item {
     background-color: transparent;
     color: $foreground;
-    padding: 6px 8px;
+    padding: 8px 12px;
     border-radius: 6px;
     transition: all 0.2s ease;
 }
-.device-btn:hover {
+.dropdown-item:hover {
     background-color: rgba($foreground, 0.1);
 }
 
-.device-btn label {
+.dropdown-item label {
     font-size: 13px;
 }
 

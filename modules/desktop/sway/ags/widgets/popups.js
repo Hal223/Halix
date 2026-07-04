@@ -3,6 +3,7 @@ import Widget from 'resource:///com/github/Aylur/ags/widget.js';
 import Utils from 'resource:///com/github/Aylur/ags/utils.js';
 import Audio from 'resource:///com/github/Aylur/ags/service/audio.js';
 import Network from 'resource:///com/github/Aylur/ags/service/network.js';
+import Variable from 'resource:///com/github/Aylur/ags/variable.js';
 
 const VolumeSlider = (type = 'speaker') => Widget.Box({
     class_name: 'audio-slider-box',
@@ -42,35 +43,74 @@ const VolumeSlider = (type = 'speaker') => Widget.Box({
     ]
 });
 
-const DeviceSelector = (type = 'speakers') => Widget.Box({
-    vertical: true,
-    class_name: 'device-selector',
-    children: Audio.bind(type).transform(devices => devices.map(
-        device => Widget.Button({
-            class_name: 'device-btn',
-            on_clicked: () => {
-                if (type === 'speakers') Audio.speaker = device;
-                else Audio.microphone = device;
-            },
-            child: Widget.Box({
-                children: [
-                    Widget.Label({
-                        label: (device.description || device.name || 'Unknown').substring(0, 40),
-                        truncate: 'end',
-                        hexpand: true,
-                        xalign: 0,
-                    }),
-                    Widget.Label({
-                        class_name: 'active-indicator',
-                        label: '',
-                        visible: Audio.bind(type === 'speakers' ? 'speaker' : 'microphone')
-                            .transform(active => active?.id === device.id),
-                    })
-                ]
+const DeviceDropdown = (type = 'speakers') => {
+    const show = Variable(false);
+    const audioProp = type === 'speakers' ? 'speaker' : 'microphone';
+    const icon = type === 'speakers' ? '' : '';
+
+    return Widget.Box({
+        vertical: true,
+        class_name: 'device-dropdown',
+        children: [
+            Widget.Button({
+                class_name: 'dropdown-header',
+                on_clicked: () => show.value = !show.value,
+                child: Widget.Box({
+                    children: [
+                        Widget.Label({ class_name: 'dropdown-icon', label: icon }),
+                        Widget.Label({
+                            hexpand: true,
+                            xalign: 0,
+                            class_name: 'dropdown-active-name',
+                        }).hook(Audio, self => {
+                            const active = Audio[audioProp];
+                            self.label = active ? (active.description || active.name).substring(0, 30) : 'None';
+                        }),
+                        Widget.Label({
+                            class_name: 'dropdown-arrow',
+                        }).hook(show, self => {
+                            self.label = show.value ? '' : '';
+                        }),
+                    ]
+                })
+            }),
+            Widget.Revealer({
+                reveal_child: show.bind(),
+                transition: 'slide_down',
+                transition_duration: 200,
+                child: Widget.Box({
+                    vertical: true,
+                    class_name: 'dropdown-list',
+                    children: Audio.bind(type).transform(devices => devices.map(
+                        device => Widget.Button({
+                            class_name: 'dropdown-item',
+                            on_clicked: () => {
+                                Audio[audioProp] = device;
+                                show.value = false;
+                            },
+                            child: Widget.Box({
+                                children: [
+                                    Widget.Label({
+                                        label: (device.description || device.name || 'Unknown').substring(0, 40),
+                                        truncate: 'end',
+                                        hexpand: true,
+                                        xalign: 0,
+                                    }),
+                                    Widget.Label({
+                                        class_name: 'active-indicator',
+                                        label: '',
+                                        visible: Audio.bind(audioProp)
+                                            .transform(active => active?.id === device.id),
+                                    })
+                                ]
+                            })
+                        })
+                    ))
+                })
             })
-        })
-    )),
-});
+        ]
+    });
+};
 
 const AppVolumeSlider = (stream) => Widget.Box({
     class_name: 'app-mixer-item',
@@ -141,11 +181,11 @@ export function AudioPopup() {
                         children: [
                             Widget.Label({ label: 'Playback', class_name: 'audio-section-title', xalign: 0 }),
                             VolumeSlider('speaker'),
-                            DeviceSelector('speakers'),
+                            DeviceDropdown('speakers'),
                             
                             Widget.Label({ label: 'Recording', class_name: 'audio-section-title', xalign: 0 }),
                             VolumeSlider('microphone'),
-                            DeviceSelector('microphones'),
+                            DeviceDropdown('microphones'),
                             
                             Widget.Label({ label: 'Applications', class_name: 'audio-section-title', xalign: 0 }),
                             AppMixer(),
