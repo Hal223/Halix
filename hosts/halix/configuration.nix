@@ -20,7 +20,7 @@
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix
     ../../modules/desktop/sway/sway.nix
-    ../../modules/desktop/sway/waybar.nix
+    ../../modules/desktop/sway/ags.nix
 
     # Services
     ../../modules/services/docker.nix

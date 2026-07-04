@@ -78,14 +78,14 @@
       ${pkgs.psmisc}/bin/killall swaybg || true
     fi
 
-    # Restart waybar completely instead of just reloading CSS
-    ${pkgs.psmisc}/bin/killall .waybar-wrapped start-waybar waybar || true
+    # Restart AGS completely instead of just reloading CSS
+    ${pkgs.psmisc}/bin/killall .ags-wrapped start-ags ags || true
 
     # Release the lock before starting long-running background processes
     exec 9>&-
 
-    # Start waybar in the background
-    start-waybar &
+    # Start AGS in the background
+    start-ags &
 
     # Generate sway variables from pywal colors and apply them
     if [ -f ~/.cache/wal/colors.sh ]; then
