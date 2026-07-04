@@ -1,0 +1,70 @@
+@import url("file:///home/hal/.cache/wal/colors-waybar.css");
+
+* {
+    font-family: "FiraCode Nerd Font", sans-serif;
+    font-size: 14px;
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+}
+
+window {
+    background-color: transparent;
+}
+
+.module {
+    background-color: alpha(@background, 0.85);
+    color: @foreground;
+    border-radius: 12px;
+    padding: 2px 14px;
+    margin: 6px 4px 0 4px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;
+}
+
+.workspaces {
+    padding: 2px 6px;
+}
+
+.workspace {
+    padding: 0 8px;
+    background-color: transparent;
+    color: @foreground;
+    border-radius: 8px;
+    margin: 4px 2px;
+    transition: all 0.3s ease;
+}
+.workspace:hover {
+    background-color: alpha(@color2, 0.4);
+}
+.workspace.focused {
+    background-color: @color2;
+    color: @background;
+}
+.workspace.urgent {
+    background-color: @color1;
+    color: @foreground;
+}
+
+.window-title {
+    font-weight: bold;
+    color: @color5;
+}
+
+.cpu { color: @color3; }
+.memory { color: @color4; }
+.temp { color: @color5; }
+.network { color: @color6; }
+.audio { color: @color7; }
+.theme { color: @color8; }
+
+.battery { color: @color2; padding-right: 4px; }
+.battery.charging { color: @color3; }
+.battery.warning { color: @color1; }
+.battery.critical {
+    color: @color1;
+}
+
+.clock {
+    color: @color2;
+    font-weight: bold;
+}
