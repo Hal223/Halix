@@ -85,7 +85,7 @@
     exec 9>&-
 
     # Start AGS in the background
-    start-ags &
+    PATH="/run/wrappers/bin:/run/current-system/sw/bin:$PATH" start-ags &
 
     # Generate sway variables from pywal colors and apply them
     if [ -f ~/.cache/wal/colors.sh ]; then
