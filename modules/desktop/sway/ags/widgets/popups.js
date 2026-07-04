@@ -159,7 +159,7 @@ export function AudioPopup() {
     return Widget.Window({
         name: 'audio-popup',
         anchor: ['top', 'right'],
-        margins: [10, 10],
+        margins: [4, 250],
         keymode: 'on-demand',
         visible: false,
         child: Widget.Box({
@@ -172,25 +172,21 @@ export function AudioPopup() {
                         Widget.Label({ class_name: 'popup-title', label: 'Audio Settings' }),
                     ]
                 }),
-                Widget.Scrollable({
-                    class_name: 'audio-scrollable',
-                    hscroll: 'never',
-                    vscroll: 'automatic',
-                    child: Widget.Box({
-                        vertical: true,
-                        children: [
-                            Widget.Label({ label: 'Playback', class_name: 'audio-section-title', xalign: 0 }),
-                            VolumeSlider('speaker'),
-                            DeviceDropdown('speakers'),
-                            
-                            Widget.Label({ label: 'Recording', class_name: 'audio-section-title', xalign: 0 }),
-                            VolumeSlider('microphone'),
-                            DeviceDropdown('microphones'),
-                            
-                            Widget.Label({ label: 'Applications', class_name: 'audio-section-title', xalign: 0 }),
-                            AppMixer(),
-                        ]
-                    })
+                Widget.Box({
+                    class_name: 'audio-content',
+                    vertical: true,
+                    children: [
+                        Widget.Label({ label: 'Playback', class_name: 'audio-section-title', xalign: 0 }),
+                        VolumeSlider('speaker'),
+                        DeviceDropdown('speakers'),
+                        
+                        Widget.Label({ label: 'Recording', class_name: 'audio-section-title', xalign: 0 }),
+                        VolumeSlider('microphone'),
+                        DeviceDropdown('microphones'),
+                        
+                        Widget.Label({ label: 'Applications', class_name: 'audio-section-title', xalign: 0 }),
+                        AppMixer(),
+                    ]
                 }),
                 Widget.Button({
                     class_name: 'popup-btn',
