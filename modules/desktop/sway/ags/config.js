@@ -18,11 +18,22 @@ const swayWorkspaces = Variable(JSON.parse(Utils.exec('swaymsg -t get_workspaces
 function Workspaces() {
     return Widget.Box({
         class_name: 'workspaces module',
-        children: swayWorkspaces.bind().transform(ws => ws.sort((a,b) => a.num - b.num).map(w => Widget.Button({
-            class_name: w.focused ? 'workspace focused' : (w.urgent ? 'workspace urgent' : 'workspace'),
-            on_clicked: () => Utils.execAsync(['swaymsg', 'workspace', w.name]).catch(print),
-            child: Widget.Label(`${w.name}`),
-        }))),
+        children: swayWorkspaces.bind().transform(ws => {
+            return Array.from({ length: 10 }, (_, i) => i + 1).map(i => {
+                const w = ws.find(workspace => workspace.num === i);
+                let className = 'workspace';
+                if (w) {
+                    if (w.focused) className += ' focused';
+                    else if (w.urgent) className += ' urgent';
+                    else className += ' occupied';
+                }
+                return Widget.Button({
+                    class_name: className,
+                    on_clicked: () => Utils.execAsync(['swaymsg', 'workspace', `${i}`]).catch(print),
+                    child: Widget.Label(`${i}`),
+                });
+            });
+        }),
     });
 }
 
