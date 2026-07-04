@@ -162,3 +162,73 @@ window {
     background-color: $color2;
     color: $background;
 }
+
+/* Audio Popup Extensions */
+.audio-popup-window {
+    min-width: 320px;
+}
+
+.audio-scrollable {
+    min-height: 200px;
+    max-height: 450px;
+    padding-right: 8px;
+}
+
+.audio-section-title {
+    color: $color5;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba($foreground, 0.1);
+    padding-bottom: 4px;
+}
+
+.device-selector {
+    margin-bottom: 8px;
+    margin-top: 4px;
+}
+
+.device-btn {
+    background-color: transparent;
+    color: $foreground;
+    padding: 6px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+.device-btn:hover {
+    background-color: rgba($foreground, 0.1);
+}
+
+.device-btn label {
+    font-size: 13px;
+}
+
+.active-indicator {
+    color: $color2;
+    font-size: 16px;
+    margin-left: 8px;
+}
+
+.app-mixer {
+    margin-bottom: 8px;
+    margin-top: 4px;
+}
+
+.app-mixer-item {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba($foreground, 0.05);
+}
+
+.app-icon {
+    font-size: 24px;
+    margin-right: 12px;
+    color: $color4;
+}
+
+.app-name {
+    font-size: 13px;
+    color: $foreground;
+    margin-bottom: 6px;
+}
+
