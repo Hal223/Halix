@@ -4,6 +4,15 @@
   lib,
   ...
 }: let
+  patchedAgs = pkgs.ags_1.overrideAttrs (old: {
+    postInstall =
+      (old.postInstall or "")
+      + ''
+        sed -i 's/Repository.prepend_search_path/Repository.dup_default().prepend_search_path/g' $out/bin/ags || true
+        sed -i 's/Repository.prepend_library_path/Repository.dup_default().prepend_library_path/g' $out/bin/ags || true
+      '';
+  });
+
   agsConfigDir = pkgs.runCommand "ags-config" {} ''
         mkdir -p $out
 
@@ -121,11 +130,11 @@
     fi
 
     # Start AGS with our custom config directory
-    ${pkgs.ags}/bin/ags -c ${agsConfigDir}/config.js
+    ${patchedAgs}/bin/ags -c ${agsConfigDir}/config.js
   '';
 in {
   environment.systemPackages = [
-    pkgs.ags
+    patchedAgs
     startAgs
   ];
 }
