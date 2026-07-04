@@ -113,6 +113,26 @@
         "type": "github"
       }
     },
+    "home-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783134515,
+        "narHash": "sha256-qMoZazubXlXUD9k/syJ/aiWC4X4g73mwVmZ7Z4+rdpM=",
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "rev": "b885baad531fa3d3beae2ba9a0712d22974d8016",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "home-manager",
+        "type": "github"
+      }
+    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -183,11 +203,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1783105496,
-        "narHash": "sha256-opW36HAdHKPybCYBJldNyYakHVp6g+5fZC+CfTOGijM=",
+        "lastModified": 1783195841,
+        "narHash": "sha256-Pz5dV/KE6w+yTUbm86TTzWNR1VdxGqMg1S3I12/q318=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a263060feafdfdb5d1d70b53b04d5bb810b13cf1",
+        "rev": "a3c65bbcef40b8ce1cec13d742ebd26f1faf342b",
         "type": "github"
       },
       "original": {
@@ -199,11 +219,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1782723713,
-        "narHash": "sha256-oPXCU/SSUokcGaJREHibG1CBX3+s/W7orDWQOZDsEeQ=",
+        "lastModified": 1782959384,
+        "narHash": "sha256-xnJJk+ct+D2+wdRxj1wk36w5zV9RVESwRqcklPdt3fM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "b5aa0fbd538984f6e3d201be0005b4463d8b09f8",
+        "rev": "65179426c83bb3f6bc14898b42ea1c6f01d374b0",
         "type": "github"
       },
       "original": {
@@ -269,6 +289,7 @@
     "root": {
       "inputs": {
         "fresh": "fresh",
+        "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-master": "nixpkgs-master",
@@ -330,11 +351,11 @@
     "yazi-plugins": {
       "flake": false,
       "locked": {
-        "lastModified": 1783106169,
-        "narHash": "sha256-G7n+3SSRC2iASqDfOkm9kYUnFAgvpAGvxWr8+O7/Q6E=",
+        "lastModified": 1783150617,
+        "narHash": "sha256-vRElXxEe2Am7p6SoxJ7g8GSaka7/4/yZ2zfiOOqUR2I=",
         "owner": "yazi-rs",
         "repo": "plugins",
-        "rev": "cf2c6d8ef37f70824ad09eee0ee13e40a35dbdaa",
+        "rev": "5d461d85908338371b9433ab6c29707bee3a813b",
         "type": "github"
       },
       "original": {

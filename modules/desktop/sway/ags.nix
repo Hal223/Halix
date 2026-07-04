@@ -13,21 +13,6 @@
       '';
   });
 
-  agsVars = pkgs.writeText "vars.js" ''
-    export const JQ_PATH = "${pkgs.jq}/bin/jq";
-    export const IS_LAPTOP = ${
-      if config.networking.hostName == "halix-laptop"
-      then "true"
-      else "false"
-    };
-  '';
-
-  agsConfigDir = pkgs.runCommand "ags-config" {} ''
-    mkdir -p $out
-    cp -r ${./ags}/* $out/
-    cp ${agsVars} $out/vars.js
-  '';
-
   startAgs = pkgs.writeShellScriptBin "start-ags" ''
     #!/bin/sh
     # Ensure pywal has generated colors before starting AGS
@@ -37,8 +22,8 @@
       touch ~/.cache/wal/colors-waybar.css
     fi
 
-    # Start AGS with our custom config directory
-    ${patchedAgs}/bin/ags -c ${agsConfigDir}/config.js
+    # Start AGS using the configuration managed by Home Manager
+    ${patchedAgs}/bin/ags -c ~/.config/ags/config.js
   '';
 in {
   environment.systemPackages = [
