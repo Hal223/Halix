@@ -1,4 +1,4 @@
-@import url("file:///home/hal/.cache/wal/colors-waybar.css");
+@import url("file:///home/hal/.cache/wal/colors.scss");
 
 * {
     font-family: "FiraCode Nerd Font", sans-serif;
@@ -13,8 +13,8 @@ window {
 }
 
 .module {
-    background-color: alpha(@background, 0.85);
-    color: @foreground;
+    background-color: rgba($background, 0.85);
+    color: $foreground;
     border-radius: 12px;
     padding: 2px 14px;
     margin: 6px 4px 0 4px;
@@ -28,51 +28,51 @@ window {
 .workspace {
     padding: 0 8px;
     background-color: transparent;
-    color: @foreground;
+    color: $foreground;
     border-radius: 8px;
     margin: 4px 2px;
     transition: all 0.3s ease;
 }
 .workspace:hover {
-    background-color: alpha(@color2, 0.4);
+    background-color: rgba($color2, 0.4);
 }
 .workspace.focused {
-    background-color: @color2;
-    color: @background;
+    background-color: $color2;
+    color: $background;
 }
 .workspace.urgent {
-    background-color: @color1;
-    color: @foreground;
+    background-color: $color1;
+    color: $foreground;
 }
 
 .window-title {
     font-weight: bold;
-    color: @color5;
+    color: $color5;
 }
 
-.cpu { color: @color3; }
-.memory { color: @color4; }
-.temp { color: @color5; }
-.network { color: @color6; }
-.audio { color: @color7; }
-.theme { color: @color8; }
+.cpu { color: $color3; }
+.memory { color: $color4; }
+.temp { color: $color5; }
+.network { color: $color6; }
+.audio { color: $color7; }
+.theme { color: $color8; }
 
-.battery { color: @color2; padding-right: 4px; }
-.battery.charging { color: @color3; }
-.battery.warning { color: @color1; }
+.battery { color: $color2; padding-right: 4px; }
+.battery.charging { color: $color3; }
+.battery.warning { color: $color1; }
 .battery.critical {
-    color: @color1;
+    color: $color1;
 }
 
 .clock {
-    color: @color2;
+    color: $color2;
     font-weight: bold;
 }
 
 /* Popup Styles */
 .popup-window {
-    background-color: alpha(@background, 0.95);
-    border: 2px solid @color2;
+    background-color: rgba($background, 0.95);
+    border: 2px solid $color2;
     border-radius: 12px;
     padding: 16px;
     min-width: 250px;
@@ -81,12 +81,12 @@ window {
 
 .popup-header {
     margin-bottom: 12px;
-    border-bottom: 1px solid alpha(@foreground, 0.2);
+    border-bottom: 1px solid rgba($foreground, 0.2);
     padding-bottom: 8px;
 }
 
 .popup-title {
-    color: @color5;
+    color: $color5;
     font-weight: bold;
     font-size: 16px;
 }
@@ -97,12 +97,12 @@ window {
 
 .mute-btn {
     background-color: transparent;
-    color: @color7;
+    color: $color7;
     font-size: 18px;
     padding-right: 12px;
 }
 .mute-btn:hover {
-    color: @color2;
+    color: $color2;
 }
 
 .audio-slider {
@@ -111,32 +111,31 @@ window {
 .audio-slider trough {
     min-height: 8px;
     border-radius: 4px;
-    background-color: alpha(@foreground, 0.2);
+    background-color: rgba($foreground, 0.2);
 }
 .audio-slider highlight {
     border-radius: 4px;
-    background-color: @color7;
+    background-color: $color7;
 }
 
 .audio-percent {
-    color: @foreground;
+    color: $foreground;
     min-width: 40px;
-    text-align: right;
 }
 
 .network-status-box label {
-    color: @color6;
+    color: $color6;
     font-size: 15px;
 }
 
 .popup-btn {
-    background-color: alpha(@color2, 0.2);
-    color: @foreground;
+    background-color: rgba($color2, 0.2);
+    color: $foreground;
     border-radius: 8px;
     padding: 8px;
     transition: all 0.2s ease;
 }
 .popup-btn:hover {
-    background-color: @color2;
-    color: @background;
+    background-color: $color2;
+    color: $background;
 }
