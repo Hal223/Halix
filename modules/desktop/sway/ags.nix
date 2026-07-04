@@ -24,8 +24,7 @@
 
   agsConfigDir = pkgs.runCommand "ags-config" {} ''
     mkdir -p $out
-    cp ${./ags/config.js} $out/config.js
-    cp ${./ags/style.scss} $out/style.scss
+    cp -r ${./ags}/* $out/
     cp ${agsVars} $out/vars.js
   '';
 
