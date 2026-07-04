@@ -25,7 +25,7 @@
   agsConfigDir = pkgs.runCommand "ags-config" {} ''
     mkdir -p $out
     cp ${./ags/config.js} $out/config.js
-    cp ${./ags/style.css} $out/style.css
+    cp ${./ags/style.scss} $out/style.scss
     cp ${agsVars} $out/vars.js
   '';
 
@@ -45,5 +45,6 @@ in {
   environment.systemPackages = [
     patchedAgs
     startAgs
+    pkgs.dart-sass
   ];
 }
