@@ -4,7 +4,7 @@
   ...
 }: {
   imports = [
-    ../../modules/home/ags.nix
+    ../../modules/home/ags
   ];
 
   home.username = "hal";

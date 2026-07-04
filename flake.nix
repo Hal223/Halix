@@ -38,12 +38,6 @@
           ./hosts/halix/configuration.nix
           odysseus.nixosModules.default
           home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {inherit inputs;};
-            home-manager.users.hal = import ./hosts/halix/home.nix;
-          }
         ];
       };
 
@@ -53,12 +47,6 @@
           ./hosts/halix-laptop/configuration.nix
           #odysseus.nixosModules.default
           home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {inherit inputs;};
-            home-manager.users.hal = import ./hosts/halix-laptop/home.nix;
-          }
         ];
       };
 

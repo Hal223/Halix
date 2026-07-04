@@ -1,19 +1,14 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
 
     # Core system settings
-    ../../modules/core/boot.nix
-    ../../modules/core/networking.nix
-    ../../modules/core/locale.nix
-    ../../modules/core/users.nix
-    ../../modules/core/audio.nix
-    ../../modules/core/services.nix
-    ../../modules/core/security.nix
+    ../../modules/core
 
     # Desktop & Wayland
     ../../modules/desktop/wayland.nix
@@ -47,4 +42,9 @@
 
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.05";
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.extraSpecialArgs = {inherit inputs;};
+  home-manager.users.hal = import ./home.nix;
 }

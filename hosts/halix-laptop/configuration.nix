@@ -12,13 +12,7 @@
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480
 
     # Core system settings
-    ../../modules/core/boot.nix
-    ../../modules/core/networking.nix
-    ../../modules/core/locale.nix
-    ../../modules/core/users.nix
-    ../../modules/core/audio.nix
-    ../../modules/core/services.nix
-    ../../modules/core/security.nix
+    ../../modules/core
 
     # Desktop & Wayland (Comment/Uncomment depending on needs)
     ../../modules/desktop/wayland.nix
@@ -55,6 +49,11 @@
 
   # Change this to the version of NixOS installed on the new machine
   system.stateVersion = "26.05";
+
+  home-manager.useGlobalPkgs = true;
+  home-manager.useUserPackages = true;
+  home-manager.extraSpecialArgs = {inherit inputs;};
+  home-manager.users.hal = import ./home.nix;
 
   # Performance and thermals for Intel 8th Gen ThinkPads
   services.throttled.enable = true;
