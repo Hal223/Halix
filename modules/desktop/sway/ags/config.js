@@ -94,7 +94,7 @@ function SysStats() {
 function NetworkWidget() {
     return Widget.Button({
         class_name: 'network module',
-        on_clicked: () => Utils.execAsync(['wofi-network-manager']).catch(print),
+        on_clicked: () => App.toggleWindow('network-popup'),
         child: Widget.Label().hook(Network, self => {
             if (Network.primary === 'wifi' && Network.wifi) {
                 self.label = `${Network.wifi.ssid} `;
@@ -111,7 +111,7 @@ function NetworkWidget() {
 function AudioWidget() {
     return Widget.Button({
         class_name: 'audio module',
-        on_clicked: () => Utils.execAsync(['pwvucontrol']).catch(print),
+        on_clicked: () => App.toggleWindow('audio-popup'),
         child: Widget.Box({
             spacing: 8,
             children: [
@@ -220,10 +220,116 @@ function Bar(monitor = 0) {
     });
 }
 
+function AudioPopup() {
+    return Widget.Window({
+        name: 'audio-popup',
+        anchor: ['top', 'right'],
+        margins: [10, 10],
+        keymode: 'on-demand',
+        visible: false,
+        child: Widget.Box({
+            class_name: 'popup-window',
+            vertical: true,
+            children: [
+                Widget.Box({
+                    class_name: 'popup-header',
+                    children: [
+                        Widget.Label({ class_name: 'popup-title', label: 'Audio Settings' }),
+                    ]
+                }),
+                Widget.Box({
+                    class_name: 'audio-slider-box',
+                    children: [
+                        Widget.Button({
+                            class_name: 'mute-btn',
+                            on_clicked: () => Audio.speaker.is_muted = !Audio.speaker.is_muted,
+                            child: Widget.Label().hook(Audio, self => {
+                                self.label = Audio.speaker?.stream?.is_muted ? '' : '';
+                            }, 'speaker-changed'),
+                        }),
+                        Widget.Slider({
+                            class_name: 'audio-slider',
+                            hexpand: true,
+                            draw_value: false,
+                            on_change: ({ value }) => Audio.speaker.volume = value,
+                            setup: self => self.hook(Audio, () => {
+                                self.value = Audio.speaker?.volume || 0;
+                            }, 'speaker-changed'),
+                        }),
+                        Widget.Label({
+                            class_name: 'audio-percent',
+                            setup: self => self.hook(Audio, () => {
+                                self.label = `${Math.round((Audio.speaker?.volume || 0) * 100)}%`;
+                            }, 'speaker-changed'),
+                        })
+                    ]
+                }),
+                Widget.Button({
+                    class_name: 'popup-btn',
+                    on_clicked: () => {
+                        App.closeWindow('audio-popup');
+                        Utils.execAsync(['pwvucontrol']).catch(print);
+                    },
+                    child: Widget.Label('Advanced Settings'),
+                })
+            ],
+        }),
+    });
+}
+
+function NetworkPopup() {
+    return Widget.Window({
+        name: 'network-popup',
+        anchor: ['top', 'right'],
+        margins: [10, 10],
+        keymode: 'on-demand',
+        visible: false,
+        child: Widget.Box({
+            class_name: 'popup-window',
+            vertical: true,
+            children: [
+                Widget.Box({
+                    class_name: 'popup-header',
+                    children: [
+                        Widget.Label({ class_name: 'popup-title', label: 'Network Settings' }),
+                    ]
+                }),
+                Widget.Box({
+                    class_name: 'network-status-box',
+                    children: [
+                        Widget.Label().hook(Network, self => {
+                            let icon = '⚠';
+                            let text = 'Disconnected';
+                            if (Network.primary === 'wifi' && Network.wifi) {
+                                icon = '';
+                                text = Network.wifi.ssid || 'Connected';
+                            } else if (Network.primary === 'wired' && Network.wired) {
+                                icon = '';
+                                text = 'Wired Connection';
+                            }
+                            self.label = `${icon}   ${text}`;
+                        }),
+                    ]
+                }),
+                Widget.Button({
+                    class_name: 'popup-btn',
+                    on_clicked: () => {
+                        App.closeWindow('network-popup');
+                        Utils.execAsync(['wofi-network-manager']).catch(print);
+                    },
+                    child: Widget.Label('Network Manager'),
+                })
+            ]
+        }),
+    });
+}
+
 export default {
     style: App.configDir + '/style.css',
     windows: [
         Bar(0),
         Bar(1),
+        AudioPopup(),
+        NetworkPopup(),
     ],
 };

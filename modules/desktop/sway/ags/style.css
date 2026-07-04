@@ -68,3 +68,75 @@ window {
     color: @color2;
     font-weight: bold;
 }
+
+/* Popup Styles */
+.popup-window {
+    background-color: alpha(@background, 0.95);
+    border: 2px solid @color2;
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 250px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 4px 12px;
+}
+
+.popup-header {
+    margin-bottom: 12px;
+    border-bottom: 1px solid alpha(@foreground, 0.2);
+    padding-bottom: 8px;
+}
+
+.popup-title {
+    color: @color5;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.audio-slider-box, .network-status-box {
+    margin-bottom: 16px;
+}
+
+.mute-btn {
+    background-color: transparent;
+    color: @color7;
+    font-size: 18px;
+    padding-right: 12px;
+}
+.mute-btn:hover {
+    color: @color2;
+}
+
+.audio-slider {
+    margin: 0 8px;
+}
+.audio-slider trough {
+    min-height: 8px;
+    border-radius: 4px;
+    background-color: alpha(@foreground, 0.2);
+}
+.audio-slider highlight {
+    border-radius: 4px;
+    background-color: @color7;
+}
+
+.audio-percent {
+    color: @foreground;
+    min-width: 40px;
+    text-align: right;
+}
+
+.network-status-box label {
+    color: @color6;
+    font-size: 15px;
+}
+
+.popup-btn {
+    background-color: alpha(@color2, 0.2);
+    color: @foreground;
+    border-radius: 8px;
+    padding: 8px;
+    transition: all 0.2s ease;
+}
+.popup-btn:hover {
+    background-color: @color2;
+    color: @background;
+}
