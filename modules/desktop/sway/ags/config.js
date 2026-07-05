@@ -2,6 +2,7 @@ import App from 'resource:///com/github/Aylur/ags/app.js';
 import Utils from 'resource:///com/github/Aylur/ags/utils.js';
 import { Bar } from './widgets/bar.js';
 import { AudioPopup, NetworkPopup } from './widgets/popups.js';
+import { DateMenu } from './widgets/datemenu.js';
 
 const scss = App.configDir + '/style.scss';
 const css = '/tmp/ags-style.css';
@@ -81,5 +82,6 @@ export default {
         Bar(1),
         AudioPopup(),
         NetworkPopup(),
+        DateMenu(),
     ],
 };

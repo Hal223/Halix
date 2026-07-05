@@ -269,3 +269,160 @@ window {
     margin-bottom: 6px;
 }
 
+/* DateMenu Popup Extensions */
+.datemenu-window {
+    min-width: 350px;
+    padding: 16px;
+}
+
+.calendar {
+    color: $foreground;
+    padding: 8px;
+    margin-bottom: 12px;
+}
+
+.calendar .header {
+    color: $color5;
+    font-size: 16px;
+    font-weight: bold;
+    padding-bottom: 12px;
+}
+
+.calendar .day-name {
+    color: $color4;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.calendar .day {
+    padding: 6px;
+    border-radius: 50%;
+}
+
+.calendar .day:hover {
+    background-color: rgba($foreground, 0.1);
+}
+
+.calendar .day:active {
+    background-color: $color2;
+    color: $background;
+}
+
+.calendar .day.today {
+    background-color: rgba($color5, 0.2);
+    color: $color5;
+    font-weight: bold;
+}
+
+.calendar .day.today:active {
+    background-color: $color5;
+    color: $background;
+}
+
+.separator {
+    min-height: 1px;
+    background-color: rgba($foreground, 0.1);
+    margin: 8px 0;
+}
+
+.notification-header {
+    margin-top: 8px;
+    margin-bottom: 12px;
+}
+
+.notification-title {
+    color: $color5;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.clear-notifications-btn {
+    background-color: rgba($color1, 0.1);
+    color: $color1;
+    border-radius: 8px;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.clear-notifications-btn:hover {
+    background-color: $color1;
+    color: $background;
+}
+
+.notification-scrollable {
+    min-height: 200px;
+    max-height: 400px;
+}
+
+.notification-list {
+    margin-right: 4px; /* for scrollbar */
+}
+
+.notification {
+    background-color: rgba($background, 0.6);
+    border: 1px solid rgba($foreground, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.notification:hover {
+    background-color: rgba($background, 0.8);
+    border-color: rgba($foreground, 0.2);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px;
+}
+
+.notification-icon {
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 32px;
+    color: $color4;
+    margin-right: 12px;
+}
+
+.notification-summary {
+    color: $color5;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.notification-body {
+    color: $foreground;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.notification-close {
+    background-color: transparent;
+    color: rgba($foreground, 0.5);
+    border-radius: 50%;
+    padding: 4px;
+    margin-left: 8px;
+}
+
+.notification-close:hover {
+    background-color: rgba($color1, 0.2);
+    color: $color1;
+}
+
+.notification-actions {
+    margin-top: 10px;
+    border-top: 1px solid rgba($foreground, 0.05);
+    padding-top: 8px;
+}
+
+.notification-action-button {
+    background-color: rgba($color2, 0.1);
+    color: $color2;
+    border-radius: 6px;
+    padding: 6px;
+    margin: 0 4px;
+    transition: all 0.2s ease;
+}
+
+.notification-action-button:hover {
+    background-color: $color2;
+    color: $background;
+}

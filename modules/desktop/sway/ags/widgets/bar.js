@@ -129,8 +129,9 @@ function BatteryWidget() {
 }
 
 function Clock() {
-    return Widget.Box({
+    return Widget.Button({
         class_name: 'clock module',
+        on_clicked: () => App.toggleWindow('datemenu'),
         child: Widget.Label({ label: time.bind() }),
     });
 }
