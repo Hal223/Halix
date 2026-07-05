@@ -281,42 +281,27 @@ window {
     margin-bottom: 12px;
 }
 
-.calendar .header {
+.calendar header {
     color: $color5;
     font-size: 16px;
     font-weight: bold;
     padding-bottom: 12px;
 }
 
-.calendar .day-name {
+.calendar label.day-name {
     color: $color4;
     font-weight: bold;
     font-size: 13px;
 }
 
-.calendar .day {
-    padding: 6px;
-    border-radius: 50%;
+.calendar label {
+    padding: 4px;
 }
 
-.calendar .day:hover {
-    background-color: rgba($foreground, 0.1);
-}
-
-.calendar .day:active {
-    background-color: $color2;
+.calendar:selected {
+    background-color: rgba($color5, 0.3);
     color: $background;
-}
-
-.calendar .day.today {
-    background-color: rgba($color5, 0.2);
-    color: $color5;
     font-weight: bold;
-}
-
-.calendar .day.today:active {
-    background-color: $color5;
-    color: $background;
 }
 
 .separator {
