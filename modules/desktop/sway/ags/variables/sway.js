@@ -64,7 +64,7 @@ function updateWorkspaces() {
 
 // Sway Workspaces
 export const swayWorkspaces = Variable([], {
-    listen: [['swaymsg', '-t', 'subscribe', '["workspace", "window"]'], updateWorkspaces],
+    listen: [['swaymsg', '-m', '-t', 'subscribe', '["workspace", "window"]'], updateWorkspaces],
 });
 
 // Initialize workspace asynchronously to avoid blocking on startup
@@ -74,7 +74,7 @@ Utils.execAsync('swaymsg -t get_workspaces')
 
 // Window Title
 export const windowTitle = Variable("", {
-    listen: [['swaymsg', '-t', 'subscribe', '["window"]'], out => {
+    listen: [['swaymsg', '-m', '-t', 'subscribe', '["window"]'], out => {
         try {
             const data = JSON.parse(out);
             if (data.change === "focus" || data.change === "title") {

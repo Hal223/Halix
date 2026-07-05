@@ -22,12 +22,12 @@ function Workspaces() {
                     else if (w.urgent) className += ' urgent';
                     else className += ' occupied';
                 }
-                let labelText = `${i}`;
+                let labelText = `${i}:`;
                 if (w && w.apps && w.apps.length > 0) {
                     const icons = w.apps.map(app => appIcons[app] || appIcons['default']).join(' ');
                     labelText = `${i}  ${icons}`;
                 }
-                
+
                 return Widget.Button({
                     class_name: className,
                     on_clicked: () => Utils.execAsync(['swaymsg', 'workspace', `${i}`]).catch(print),
@@ -154,7 +154,7 @@ function Right() {
         NetworkWidget(),
         SysStats(),
     ];
-    
+
     if (IS_LAPTOP) {
         const battery = BatteryWidget();
         if (battery) modules.push(battery);
