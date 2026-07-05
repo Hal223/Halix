@@ -50,11 +50,6 @@
   # Change this to the version of NixOS installed on the new machine
   system.stateVersion = "26.05";
 
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.extraSpecialArgs = {inherit inputs;};
-  home-manager.users.hal = import ./home.nix;
-
   # Performance and thermals for Intel 8th Gen ThinkPads
   services.throttled.enable = true;
   services.power-profiles-daemon.enable = true;

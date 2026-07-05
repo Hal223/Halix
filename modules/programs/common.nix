@@ -7,7 +7,6 @@
     # Utilities
     obsidian
     keepassxc
-    ags
     google-chrome
     chromium
     sshfs

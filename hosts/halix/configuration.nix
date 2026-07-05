@@ -42,9 +42,4 @@
 
   nixpkgs.config.allowUnfree = true;
   system.stateVersion = "26.05";
-
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.extraSpecialArgs = {inherit inputs;};
-  home-manager.users.hal = import ./home.nix;
 }
