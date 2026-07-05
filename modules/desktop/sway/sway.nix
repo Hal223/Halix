@@ -62,7 +62,7 @@
       # Smoothly transition wallpaper using awww (formerly swww)
       # Check if awww-daemon is running, if not start it
       if ! ${pkgs.procps}/bin/pgrep -f "awww-daemon" > /dev/null; then
-        ${pkgs.swww}/bin/awww-daemon 9>&- &
+        ${pkgs.swww}/bin/awww-daemon 9>&- >/dev/null 2>&1 &
         ${pkgs.coreutils}/bin/sleep 2
       fi
 
@@ -85,7 +85,7 @@
     exec 9>&-
 
     # Start Waybar in the background
-    PATH="/run/wrappers/bin:/run/current-system/sw/bin:$PATH" start-waybar &
+    PATH="/run/wrappers/bin:/run/current-system/sw/bin:$PATH" start-waybar >/dev/null 2>&1 &
 
     # Generate sway variables from pywal colors and apply them
     if [ -f ~/.cache/wal/colors.sh ]; then

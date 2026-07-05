@@ -8,10 +8,7 @@
     odysseus.url = "github:pewdiepie-archdaemon/odysseus/pull/1523/head";
     fresh.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+
     #antigravity.url = "github:jacopone/antigravity-nix";
     yazi-plugins = {
       url = "github:yazi-rs/plugins";
@@ -27,8 +24,6 @@
     wrappers,
     odysseus,
     nixos-hardware,
-    home-manager,
-    #antigravity,
     ...
   } @ inputs: {
     nixosConfigurations = {
@@ -36,8 +31,6 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/halix/configuration.nix
-          odysseus.nixosModules.default
-          home-manager.nixosModules.home-manager
         ];
       };
 
@@ -45,8 +38,6 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/halix-laptop/configuration.nix
-          #odysseus.nixosModules.default
-          home-manager.nixosModules.home-manager
         ];
       };
 
@@ -54,7 +45,6 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/template/configuration.nix
-          odysseus.nixosModules.default
         ];
       };
     };
