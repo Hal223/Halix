@@ -53,8 +53,8 @@
       buildInputs = [
         pkgs.glib
         pkgs.gjs
-        astal.io
-        astal.astal4
+        astal.packages.${system}.io
+        astal.packages.${system}.astal4
         # Add any extra Astal packages or GTK dependencies you need here
       ];
 
