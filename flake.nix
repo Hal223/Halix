@@ -41,6 +41,7 @@
   in {
     packages.${system}.ags-shell = pkgs.stdenv.mkDerivation {
       pname = "ags-shell";
+      version = "0.1.0";
       src = ./ags;
 
       nativeBuildInputs = with pkgs; [
