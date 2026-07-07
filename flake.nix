@@ -41,7 +41,7 @@
   in {
     packages.${system}.ags-shell = pkgs.stdenv.mkDerivation {
       pname = "ags-shell";
-      src = ./.; # You may need to change this to the directory containing your AGS config (e.g., ./ags)
+      src = ./ags;
 
       nativeBuildInputs = with pkgs; [
         wrapGAppsHook3
