@@ -418,6 +418,7 @@ in {
   environment.systemPackages = [
     pkgs.waybar
     startWaybar
+    pkgs.ags
     wofiNetworkManager
   ];
 }
