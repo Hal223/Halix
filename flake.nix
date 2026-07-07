@@ -5,14 +5,23 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
     wrappers.url = "github:Lassulus/wrappers";
-    odysseus.url = "github:pewdiepie-archdaemon/odysseus/pull/1523/head";
     fresh.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
 
-    #antigravity.url = "github:jacopone/antigravity-nix";
     yazi-plugins = {
       url = "github:yazi-rs/plugins";
       flake = false;
+    };
+
+    astal = {
+      url = "github:aylur/astal";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    ags = {
+      url = "github:aylur/ags";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.astal.follows = "astal";
     };
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
   };
@@ -22,10 +31,48 @@
     nixpkgs,
     fresh,
     wrappers,
-    odysseus,
     nixos-hardware,
+    ags,
+    astal,
     ...
-  } @ inputs: {
+  } @ inputs: let
+    system = "x86_64-linux";
+    pkgs = nixpkgs.legacyPackages.${system};
+  in {
+    packages.${system}.ags-shell = pkgs.stdenv.mkDerivation {
+      pname = "ags-shell";
+      src = ./.; # You may need to change this to the directory containing your AGS config (e.g., ./ags)
+
+      nativeBuildInputs = with pkgs; [
+        wrapGAppsHook3
+        gobject-introspection
+        ags.packages.${system}.default
+      ];
+
+      buildInputs = [
+        pkgs.glib
+        pkgs.gjs
+        astal.io
+        astal.astal4
+        # Add any extra Astal packages or GTK dependencies you need here
+      ];
+
+      # Ensure app.ts points to your entrypoint file
+      installPhase = ''
+        ags bundle app.ts $out/bin/ags-shell
+      '';
+
+      preFixup = ''
+        gappsWrapperArgs+=(
+          --prefix PATH : ${
+          pkgs.lib.makeBinPath [
+            # Add runtime executable dependencies here
+          ]
+        }
+        )
+      '';
+    };
+
     nixosConfigurations = {
       halix = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};

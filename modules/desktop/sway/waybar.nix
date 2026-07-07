@@ -187,7 +187,9 @@
       "margin-right": 10,
       "modules-left": ["sway/workspaces", "sway/mode"],
       "modules-center": ["sway/window"],
-      "modules-right": ["custom/theme", "pulseaudio", "network", "cpu", "memory", "temperature"${lib.optionalString (config.networking.hostName == "halix-laptop") '', "group/power"''}, "clock", "tray"],
+      "modules-right": ["custom/theme", "pulseaudio", "network", "cpu", "memory", "temperature"${
+      lib.optionalString (config.networking.hostName == "halix-laptop") '', "group/power"''
+    }, "clock", "tray"],
       "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
@@ -206,8 +208,11 @@
           "transition-left-to-right": true
         },
         "modules": [
-          "battery"${lib.optionalString (config.networking.hostName == "halix-laptop") ''        ,
-                  "power-profiles-daemon"''}
+          "battery"${
+      lib.optionalString (config.networking.hostName == "halix-laptop") ''
+        ,
+                  "power-profiles-daemon"''
+    }
         ]
       },
       "battery": {
@@ -418,7 +423,6 @@ in {
   environment.systemPackages = [
     pkgs.waybar
     startWaybar
-    pkgs.ags
     wofiNetworkManager
   ];
 }
