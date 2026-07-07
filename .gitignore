@@ -1,1 +1,4 @@
 nixos-switch.log
+modules/desktop/ags/node_modules/
+modules/desktop/ags/@girs/
+modules/desktop/ags/*.d.ts

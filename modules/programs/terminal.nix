@@ -47,6 +47,7 @@
     cleanup-old-build = "~/Halix/scripts/cleanup-old-build.sh";
     gc-cleanup = "nix-collect-garbage --delete-older-than 7d";
     vscode = "code";
+    ags-dev = "nix shell github:aylur/ags#agsFull";
   };
 
   programs.bash = {

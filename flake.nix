@@ -42,7 +42,7 @@
     packages.${system}.ags-shell = pkgs.stdenv.mkDerivation {
       pname = "ags-shell";
       version = "0.1.0";
-      src = ./ags;
+      src = ./modules/desktop/ags;
 
       nativeBuildInputs = with pkgs; [
         wrapGAppsHook3
@@ -60,18 +60,17 @@
 
       # Ensure app.ts points to your entrypoint file
       installPhase = ''
+        mkdir -p $out/bin
         ags bundle app.ts $out/bin/ags-shell
       '';
 
-      preFixup = ''
-        gappsWrapperArgs+=(
-          --prefix PATH : ${
-          pkgs.lib.makeBinPath [
-            # Add runtime executable dependencies here
-          ]
-        }
-        )
-      '';
+      # preFixup = ''
+      #   gappsWrapperArgs+=(
+      #     --prefix PATH : ''${pkgs.lib.makeBinPath [
+      #       # Add runtime executable dependencies here
+      #     ]}
+      #   )
+      # '';
     };
 
     nixosConfigurations = {
