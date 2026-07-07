@@ -412,7 +412,7 @@
     fi
 
     # Start waybar
-    ${pkgs.waybar}/bin/waybar -c ${waybarConfig} -s ${waybarStyle}
+    exec ${pkgs.waybar}/bin/waybar -c ${waybarConfig} -s ${waybarStyle}
   '';
 in {
   environment.systemPackages = [

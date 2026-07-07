@@ -79,6 +79,7 @@
     fi
 
     # Restart Waybar completely instead of just reloading CSS
+    ${pkgs.psmisc}/bin/killall .waybar-wrapped || true
     ${pkgs.psmisc}/bin/killall waybar || true
 
     # Release the lock before starting long-running background processes
