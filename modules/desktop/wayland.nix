@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   # Enable the X11 windowing system.
@@ -23,7 +24,7 @@
       };
     };
     extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.sway.default = [
+    config.sway.default = lib.mkForce [
       "wlr"
       "gtk"
     ];
