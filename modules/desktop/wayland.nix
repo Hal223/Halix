@@ -19,13 +19,11 @@
       settings = {
         screencast = {
           max_fps = 30;
-          chooser_type = "simple";
-          chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
         };
       };
     };
     extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.common.default = [
+    config.sway.default = [
       "wlr"
       "gtk"
     ];
