@@ -46,40 +46,6 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
   in {
-    packages.${system}.ags-shell = pkgs.stdenv.mkDerivation {
-      pname = "ags-shell";
-      version = "0.1.0";
-      src = ./modules/desktop/ags;
-
-      nativeBuildInputs = with pkgs; [
-        wrapGAppsHook3
-        gobject-introspection
-        ags.packages.${system}.default
-      ];
-
-      buildInputs = [
-        pkgs.glib
-        pkgs.gjs
-        astal.packages.${system}.io
-        astal.packages.${system}.astal4
-        # Add any extra Astal packages or GTK dependencies you need here
-      ];
-
-      # Ensure app.ts points to your entrypoint file
-      installPhase = ''
-        mkdir -p $out/bin
-        ags bundle app.ts $out/bin/ags-shell
-      '';
-
-      # preFixup = ''
-      #   gappsWrapperArgs+=(
-      #     --prefix PATH : ''${pkgs.lib.makeBinPath [
-      #       # Add runtime executable dependencies here
-      #     ]}
-      #   )
-      # '';
-    };
-
     nixosConfigurations = {
       halix = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};

@@ -11,7 +11,6 @@
     ../../modules/core
 
     # Desktop & Wayland
-    ../../modules/desktop/ags.nix
     ../../modules/desktop/wayland.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix

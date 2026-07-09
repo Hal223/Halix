@@ -19,6 +19,17 @@
   # environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
   home-manager.users.hal = {config, ...}: {
+    imports = [inputs.ags.homeManagerModules.default];
+
+    programs.ags = {
+      enable = true;
+      configDir = /home/hal/.config/ags;
+      extraPackages = with pkgs; [
+        inputs.astal.packages.${pkgs.system}.astal4
+        inputs.astal.packages.${pkgs.system}.io
+      ];
+    };
+
     home.stateVersion = "26.05";
     wayland.windowManager.hyprland = {
       enable = true;
@@ -44,6 +55,7 @@
         ### AUTOSTART ###
         # exec-once = $terminal
         # exec-once = nm-applet &
+        exec-once = ags run &
         # exec-once = waybar & hyprpaper & firefox
 
 
