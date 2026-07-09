@@ -144,7 +144,7 @@
         bind = $mainMod, E, exec, $fileManager
         bind = $mainMod, SPACE, togglefloating,
         bind = $mainMod, D, exec, $menu
-        bind = $mainMod SHIFT, C, exec, hyprctl reload && ags quit && ags run
+        bind = $mainMod SHIFT, C, exec, hyprctl reload; ags quit; ags run &
         #bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
 
