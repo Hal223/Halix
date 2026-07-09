@@ -14,7 +14,7 @@ export default function Calendar(gdkmonitor: Gdk.Monitor) {
       visible={false}
       keymode={Astal.Keymode.ON_DEMAND}
     >
-      <box cssName="calendar-pane" padding={10}>
+      <box cssName="calendar-pane">
         <Gtk.Calendar />
       </box>
     </window>

@@ -24,7 +24,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           hexpand
           halign={Gtk.Align.CENTER}
         >
-          <label label="Welcome to AGS!" />
+          <label label="Welcome to AGS!!" />
         </button>
         <box $type="center" />
         <button $type="end" hexpand halign={Gtk.Align.CENTER} onClicked={() => app.toggle_window("calendar")}>
