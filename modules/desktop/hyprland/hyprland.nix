@@ -89,10 +89,10 @@
             animation = fade, 1, 7, default
             animation = workspaces, 1, 6, default
         }
-        dwindle {
-            pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
-            preserve_split = true # You probably want this
-        }
+        #dwindle {
+        #    pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
+        #    preserve_split = true # You probably want this
+        #}
         master {
             new_status = master
         }
@@ -115,9 +115,9 @@
                 natural_scroll = false
             }
         }
-        gestures {
-            workspace_swipe = false
-        }
+        #gestures {
+        #    workspace_swipe = false
+        #}
 
         device {
             name = epic-mouse-v1
@@ -134,7 +134,7 @@
         bind = $mainMod, SPACE, togglefloating,
         bind = $mainMod, D, exec, $menu
         bind = $mainMod, P, pseudo, # dwindle
-        bind = $mainMod, J, togglesplit, # dwindle
+        #bind = $mainMod, J, togglesplit, # dwindle
 
         # Move focus with mainMod + arrow keys
         bind = $mainMod, left, movefocus, l
