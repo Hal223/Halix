@@ -23,7 +23,7 @@
 
     programs.ags = {
       enable = true;
-      configDir = /home/hal/.config/ags;
+      configDir = ../ags;
       extraPackages = with pkgs; [
         inputs.astal.packages.${pkgs.system}.astal4
         inputs.astal.packages.${pkgs.system}.io
@@ -53,7 +53,7 @@
 
 
         ### AUTOSTART ###
-        # exec-once = $terminal
+        exec-once = ags run modules/desktop/ags/
         # exec-once = nm-applet &
         exec-once = ags run &
         # exec-once = waybar & hyprpaper & firefox
@@ -145,7 +145,7 @@
         bind = $mainMod, E, exec, $fileManager
         bind = $mainMod, SPACE, togglefloating,
         bind = $mainMod, D, exec, $menu
-        bind = $mainMod SHIFT, C, exec, hyprclt reload
+        bind = $mainMod SHIFT, C, exec, hyprctl reload
         bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
 
