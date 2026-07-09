@@ -17,6 +17,7 @@
     ../../modules/desktop/display-manager.nix
     ../../modules/desktop/sway/sway.nix
     ../../modules/desktop/sway/waybar.nix
+    ../../modules/desktop/hyprland/hyprland.nix
 
     # Services
     ../../modules/services/docker.nix
