@@ -27,12 +27,9 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <label label="Welcome to AGS!" />
         </button>
         <box $type="center" />
-        <menubutton $type="end" hexpand halign={Gtk.Align.CENTER}>
+        <button $type="end" hexpand halign={Gtk.Align.CENTER} onClicked={() => app.toggle_window("calendar")}>
           <label label={time} />
-          <popover>
-            <Gtk.Calendar />
-          </popover>
-        </menubutton>
+        </button>
       </centerbox>
     </window>
   )

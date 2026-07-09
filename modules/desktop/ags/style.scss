@@ -18,3 +18,15 @@ window.Bar {
     margin: 2px;
   }
 }
+
+window.Calendar {
+  background: transparent;
+  color: $fg-color;
+
+  > box {
+    background: $bg-color;
+    border-radius: 10px;
+    margin: 8px;
+    margin-top: 0px; // assuming it is below the bar
+  }
+}
