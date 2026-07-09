@@ -4,6 +4,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
+
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     wrappers.url = "github:Lassulus/wrappers";
     fresh.inputs.nixpkgs.follows = "nixpkgs";
     fresh.url = "github:sinelaw/fresh";
@@ -34,6 +40,7 @@
     nixos-hardware,
     ags,
     astal,
+    home-manager,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -78,6 +85,12 @@
         specialArgs = {inherit inputs;};
         modules = [
           ./hosts/halix/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {inherit inputs;};
+          }
         ];
       };
 
