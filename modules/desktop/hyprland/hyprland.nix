@@ -143,6 +143,13 @@
         bind = $mainMod, up, movefocus, u
         bind = $mainMod, down, movefocus, d
 
+        # Move windows with mainMod + shift + arrow keys
+        bind = $mainMod SHIFT, left, movewindow, l
+        bind = $mainMod SHIFT, right, movewindow, r
+        bind = $mainMod SHIFT, up, movewindow, u
+        bind = $mainMod SHIFT, down, movewindow, d
+
+
         # Switch workspaces with mainMod + [0-9]
         bind = $mainMod, 1, workspace, 1
         bind = $mainMod, 2, workspace, 2
@@ -167,9 +174,9 @@
         bind = $mainMod SHIFT, 9, movetoworkspace, 9
         bind = $mainMod SHIFT, 0, movetoworkspace, 10
 
-        # Example special workspace (scratchpad)
-        bind = $mainMod, S, togglespecialworkspace, magic
-        bind = $mainMod SHIFT, S, movetoworkspace, special:magic
+        # buffer workspace, cool but like just you another workspace?
+        #bind = $mainMod, S, togglespecialworkspace, magic
+        #bind = $mainMod SHIFT, S, movetoworkspace, special:magic
 
         # Scroll through existing workspaces with mainMod + scroll
         bind = $mainMod, mouse_down, workspace, e+1
