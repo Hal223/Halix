@@ -55,7 +55,7 @@
         ### AUTOSTART ###
         exec-once = ags run
         # exec-once = nm-applet &
-        # exec-once = waybar & hyprpaper & firefox
+        # exec-once = hyprpaper & firefox
 
 
         ### ENVIRONMENT VARIABLES ###
