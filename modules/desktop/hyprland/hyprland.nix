@@ -53,9 +53,8 @@
 
 
         ### AUTOSTART ###
-        exec-once = ags run modules/desktop/ags/
+        exec-once = ags run
         # exec-once = nm-applet &
-        exec-once = ags run &
         # exec-once = waybar & hyprpaper & firefox
 
 
@@ -145,8 +144,8 @@
         bind = $mainMod, E, exec, $fileManager
         bind = $mainMod, SPACE, togglefloating,
         bind = $mainMod, D, exec, $menu
-        bind = $mainMod SHIFT, C, exec, hyprctl reload
-        bind = $mainMod, P, pseudo, # dwindle
+        bind = $mainMod SHIFT, C, exec, hyprctl reload && ags quit && ags run
+        #bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
 
         # Move focus with mainMod + arrow keys
