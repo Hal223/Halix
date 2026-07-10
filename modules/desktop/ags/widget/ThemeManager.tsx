@@ -40,8 +40,8 @@ const applyTheme = async (path: string) => {
         // Generate pywal colors
         await execAsync(['wal', '-i', path, '-n', '-q']).catch(console.error)
         
-        // Try to apply with awww
-        await execAsync(['awww', 'img', path, '--transition-type', 'wave', '--transition-angle', '30', '--transition-step', '120', '--transition-duration', '0.8', '--transition-fps', '60', '--filter', 'Bilinear']).catch(console.error)
+        // Try to apply with swww
+        await execAsync(['swww', 'img', path, '--transition-type', 'wave', '--transition-angle', '30', '--transition-step', '120', '--transition-duration', '0.8', '--transition-fps', '60', '--filter', 'Bilinear']).catch(console.error)
     } catch (err) {
         console.error("Failed to apply theme:", err)
     }
@@ -86,9 +86,9 @@ const deleteTheme = async (name: string) => {
 
 function DiceTile() {
     return (
-        <button cssName="theme-tile dice-tile" hexpand onClicked={selectRandomWallpaper}>
+        <button className="theme-tile dice-tile" hexpand onClicked={selectRandomWallpaper}>
             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
-                <label label="" cssName="icon" />
+                <label label="" className="icon" />
                 <label label="Dice" />
             </box>
         </button>
@@ -97,9 +97,9 @@ function DiceTile() {
 
 function SaveTile() {
     return (
-        <button cssName="theme-tile save-tile" hexpand onClicked={saveCurrentTheme}>
+        <button className="theme-tile save-tile" hexpand onClicked={saveCurrentTheme}>
             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
-                <label label="" cssName="icon" />
+                <label label="" className="icon" />
                 <label label="Save" />
             </box>
         </button>
@@ -108,13 +108,13 @@ function SaveTile() {
 
 function ThemeThumbnail({ theme }: { theme: Theme }) {
     return (
-        <box cssName="theme-thumbnail-container" widthRequest={160} heightRequest={100} css={`background-image: url('file://${theme.path}');`}>
-            <box cssName="theme-thumbnail-overlay" hexpand vexpand valign={Gtk.Align.FILL} halign={Gtk.Align.FILL}>
+        <box className="theme-thumbnail-container" widthRequest={160} heightRequest={100} css={`background-image: url('file://${theme.path}');`}>
+            <box className="theme-thumbnail-overlay" hexpand vexpand valign={Gtk.Align.FILL} halign={Gtk.Align.FILL}>
                 <box valign={Gtk.Align.CENTER} halign={Gtk.Align.CENTER} spacing={8}>
-                    <button cssName="select-btn" onClicked={() => applyTheme(theme.path)}>
+                    <button className="select-btn" onClicked={() => applyTheme(theme.path)}>
                         <label label="Select" />
                     </button>
-                    <button cssName="delete-btn" onClicked={() => deleteTheme(theme.name)}>
+                    <button className="delete-btn" onClicked={() => deleteTheme(theme.name)}>
                         <label label="Delete" />
                     </button>
                 </box>
@@ -132,7 +132,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     return (
         <window
             name={`theme-manager-${id}`}
-            class="ThemeManager"
+            className="ThemeManager"
             gdkmonitor={gdkmonitor}
             exclusivity={Astal.Exclusivity.IGNORE}
             anchor={TOP | BOTTOM | LEFT | RIGHT}
@@ -145,48 +145,70 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                 }
             }}
         >
-            <Gtk.Overlay cssClasses={["theme-manager-wrapper"]}>
+            <box className="theme-manager-wrapper">
                 <button 
                     hexpand 
                     vexpand 
-                    cssClasses={["click-away-btn"]} 
+                    className="click-away-btn" 
                     onClicked={() => app.toggle_window(`theme-manager-${id}`)}
                 />
-                <box 
-                    cssClasses={["theme-manager-content"]} 
-                    orientation={Gtk.Orientation.VERTICAL}
-                    valign={Gtk.Align.START}
-                    halign={Gtk.Align.END}
-                    margin_top={55}
-                    margin_end={10}
-                >
-                    {/* Top Actions Grid (2 columns) */}
-                    <box cssName="top-actions" spacing={10} homogeneous>
-                        <DiceTile />
-                        <SaveTile />
+                
+                <box orientation={Gtk.Orientation.VERTICAL}>
+                    <button 
+                        vexpand 
+                        className="click-away-btn" 
+                        onClicked={() => app.toggle_window(`theme-manager-${id}`)}
+                    />
+                    
+                    <box 
+                        className="theme-manager-content" 
+                        orientation={Gtk.Orientation.VERTICAL}
+                        valign={Gtk.Align.START}
+                        halign={Gtk.Align.END}
+                        margin_top={55}
+                        margin_end={10}
+                    >
+                        {/* Top Actions Grid (2 columns) */}
+                        <box className="top-actions" spacing={10} homogeneous>
+                            <DiceTile />
+                            <SaveTile />
+                        </box>
+                        
+                        <label label="Saved Themes" className="section-title" halign={Gtk.Align.START} />
+                        
+                        {/* Saved Themes Grid */}
+                        <box className="themes-grid" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                            {themesVar.as(themes => {
+                                const rows: any[] = []
+                                for (let i = 0; i < themes.length; i += 2) {
+                                    const theme1 = themes[i]
+                                    const theme2 = themes[i + 1]
+                                    rows.push(
+                                        <box orientation={Gtk.Orientation.HORIZONTAL} spacing={10} homogeneous>
+                                            <ThemeThumbnail theme={theme1} />
+                                            {theme2 ? <ThemeThumbnail theme={theme2} /> : <box />}
+                                        </box>
+                                    )
+                                }
+                                return rows
+                            })}
+                        </box>
                     </box>
                     
-                    <label label="Saved Themes" cssName="section-title" halign={Gtk.Align.START} />
-                    
-                    {/* Saved Themes Grid */}
-                    <box cssName="themes-grid" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                        {themesVar.as(themes => {
-                            const rows: any[] = []
-                            for (let i = 0; i < themes.length; i += 2) {
-                                const theme1 = themes[i]
-                                const theme2 = themes[i + 1]
-                                rows.push(
-                                    <box orientation={Gtk.Orientation.HORIZONTAL} spacing={10} homogeneous>
-                                        <ThemeThumbnail theme={theme1} />
-                                        {theme2 ? <ThemeThumbnail theme={theme2} /> : <box />}
-                                    </box>
-                                )
-                            }
-                            return rows
-                        })}
-                    </box>
+                    <button 
+                        vexpand 
+                        className="click-away-btn" 
+                        onClicked={() => app.toggle_window(`theme-manager-${id}`)}
+                    />
                 </box>
-            </Gtk.Overlay>
+                
+                <button 
+                    hexpand 
+                    vexpand 
+                    className="click-away-btn" 
+                    onClicked={() => app.toggle_window(`theme-manager-${id}`)}
+                />
+            </box>
         </window>
     )
 }

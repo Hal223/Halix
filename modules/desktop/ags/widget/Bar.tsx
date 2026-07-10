@@ -26,10 +26,10 @@ function Workspaces({ id }: { id: number }) {
   const workspaces = id === 0 ? [1, 2, 3, 4, 5] : [6, 7, 8, 9, 10]
 
   return (
-    <box cssName="workspaces" spacing={4}>
+    <box className="workspaces" spacing={4}>
       {workspaces.map(wsId => (
         <button
-          cssName={bind(hyprland, "focusedWorkspace").as(fw =>
+          className={bind(hyprland, "focusedWorkspace").as(fw => 
             fw.id === wsId ? "workspace-btn focused" : "workspace-btn"
           )}
           onClicked={() => hyprland.dispatch("workspace", wsId.toString())}
@@ -52,7 +52,7 @@ function CenterModules({ id }: { id: number }) {
 function Clock({ id }: { id: number }) {
   const time = createPoll("", 1000, "date")
   return (
-    <button onClicked={() => app.toggle_window(`calendar-${id}`)} cssName="clock-btn">
+    <button onClicked={() => app.toggle_window(`calendar-${id}`)} className="clock-btn">
       <label label={time} />
     </button>
   )
@@ -60,7 +60,7 @@ function Clock({ id }: { id: number }) {
 
 function EndModules({ id }: { id: number }) {
   return (
-    <box $type="end" hexpand halign={Gtk.Align.END} cssName="right-modules" spacing={20}>
+    <box $type="end" hexpand halign={Gtk.Align.END} className="right-modules" spacing={20}>
       <ThemeSwitcher id={id} />
       <Clock id={id} />
     </box>
@@ -81,7 +81,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor, id: number = 0) {
       anchor={TOP | LEFT | RIGHT}
       application={app}
     >
-      <centerbox cssName="centerbox">
+      <centerbox className="centerbox">
         <StartModules />
         <CenterModules id={id} />
         <EndModules id={id} />

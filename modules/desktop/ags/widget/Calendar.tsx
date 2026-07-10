@@ -13,7 +13,7 @@ export default function Calendar(gdkmonitor: Gdk.Monitor, id: number = 0) {
       application={app}
       visible={false}
     >
-      <box cssName="calendar-pane">
+      <box className="calendar-pane">
         <Gtk.Calendar />
       </box>
     </window>
