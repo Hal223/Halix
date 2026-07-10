@@ -12,8 +12,8 @@
 
   environment.systemPackages.pkgs = [
     # ... other packages
-    kitty # required for the default Hyprland config
-    hyprshot
+    pkgs.kitty # required for the default Hyprland config
+    pkgs.hyprshot
   ];
 
   # Optional, hint Electron apps to use Wayland:
