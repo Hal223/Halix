@@ -7,6 +7,9 @@ import { setupThemeWatcher } from "./lib/theme"
 
 app.start({
   css: style,
+  requestHandler(request, res) {
+    res("ok")
+  },
   main() {
     app.get_monitors().forEach((monitor, i) => {
       Bar(monitor, i)
