@@ -17,7 +17,7 @@ interface SavedTheme {
 // ──────────────────────────────────────────────────────────────────────────────
 // Storage helpers
 // ──────────────────────────────────────────────────────────────────────────────
-const THEMES_DIR = GLib.get_home_dir() + "/.local/share/ags/themes"
+const THEMES_DIR = GLib.get_home_dir() + "/.config/ags-themes"
 const THEMES_FILE = THEMES_DIR + "/saved.json"
 
 function ensureDir() {
@@ -93,15 +93,12 @@ function getWallpaperFiles(): string[] {
 }
 
 async function applyWallpaper(wallPath: string) {
-  // Try hyprpaper IPC (no-op if hyprpaper isn't running)
-  await spawnAsync(["hyprctl", "hyprpaper", "preload", wallPath]).catch(() => {})
-  const json = await spawnAsync(["hyprctl", "monitors", "-j"]).catch(() => "[]")
-  const monitors: Array<{ name: string }> = JSON.parse(json)
-  for (const mon of monitors) {
-    await spawnAsync(["hyprctl", "hyprpaper", "wallpaper", `${mon.name},${wallPath}`]).catch(() => {})
-  }
-  // wal WITHOUT -n so pywal also sets the wallpaper via its backend (swaybg on Wayland)
-  await spawnAsync(["wal", "-i", wallPath]).catch((e) => {
+  // 1. Set wallpaper visually via swww (standard Hyprland wallpaper daemon)
+  await spawnAsync(["swww", "img", wallPath, "--transition-type", "fade", "--transition-duration", "0.8"]).catch((e) => {
+    console.error("swww failed:", e)
+  })
+  // 2. Generate pywal colors only (-n skips wallpaper so swww handles it)
+  await spawnAsync(["wal", "-i", wallPath, "-n"]).catch((e) => {
     console.error("wal failed:", e)
   })
 }
