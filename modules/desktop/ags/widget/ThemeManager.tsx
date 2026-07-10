@@ -2,6 +2,7 @@ import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
+import GdkPixbuf from "gi://GdkPixbuf"
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
@@ -114,9 +115,10 @@ async function getCurrentWallpaperPath(): Promise<string> {
 // ──────────────────────────────────────────────────────────────────────────────
 function makeThumbnailImage(wallPath: string): Gtk.Widget {
   try {
-    const GdkPixbuf = imports.gi.GdkPixbuf
     const pbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(wallPath, 140, 90, false)
-    return new Gtk.Image({ pixbuf: pbuf, css_classes: ["thumb-image"] })
+    const img = new Gtk.Image({ css_classes: ["thumb-image"] })
+    img.set_from_pixbuf(pbuf)
+    return img
   } catch {
     const lbl = new Gtk.Label({ label: "🖼", css_classes: ["thumb-fallback"] })
     lbl.set_halign(Gtk.Align.CENTER)
