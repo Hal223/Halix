@@ -27,6 +27,7 @@
       extraPackages = with pkgs; [
         inputs.astal.packages.${pkgs.system}.astal4
         inputs.astal.packages.${pkgs.system}.io
+        inputs.astal.packages.${pkgs.system}.hyprland
       ];
     };
 

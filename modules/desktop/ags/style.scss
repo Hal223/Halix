@@ -40,6 +40,21 @@ window.Bar {
   .theme-switcher-box {
     margin-right: 12px;
   }
+
+  .workspaces {
+    margin: 4px;
+  }
+
+  .workspace-btn {
+    padding: 2px 8px;
+    border-radius: 8px;
+    min-width: 30px;
+    
+    &.focused {
+      background: rgba($color4, 0.7);
+      color: $bg-color;
+    }
+  }
 }
 
 window.Calendar {
