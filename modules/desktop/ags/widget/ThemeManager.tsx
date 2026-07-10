@@ -54,9 +54,8 @@ const applyTheme = async (path: string) => {
         // Generate pywal colors
         await execAsync(['wal', '-i', path, '-n', '-q']).catch(console.error)
         
-        // Try to apply with hyprpaper
-        await execAsync(['hyprctl', 'hyprpaper', 'preload', path]).catch(console.error)
-        await execAsync(['hyprctl', 'hyprpaper', 'wallpaper', `",${path}"`]).catch(console.error)
+        // Try to apply with awww
+        await execAsync(['awww', 'img', path, '--transition-type', 'wave', '--transition-angle', '30', '--transition-step', '120', '--transition-duration', '0.8', '--transition-fps', '60', '--filter', 'Bilinear']).catch(console.error)
     } catch (err) {
         console.error("Failed to apply theme:", err)
     }
@@ -139,7 +138,7 @@ function ThemeThumbnail({ theme }: { theme: Theme }) {
 }
 
 export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
-    const { TOP, RIGHT } = Astal.WindowAnchor
+    const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
     
     const themesGrid = new Gtk.Box({
         cssClasses: ["themes-grid"],
@@ -156,7 +155,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
             class="ThemeManager"
             gdkmonitor={gdkmonitor}
             exclusivity={Astal.Exclusivity.IGNORE}
-            anchor={TOP | RIGHT}
+            anchor={TOP | BOTTOM | LEFT | RIGHT}
             application={app}
             visible={false}
             keymode={Astal.Keymode.ON_DEMAND} // allow clicking off maybe
@@ -165,20 +164,33 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                     fetchThemes()
                 }
             }}
-            marginTop={55} // margin from the top
-            marginRight={10} // margin from the right
         >
-            <box cssName="theme-manager-content" orientation={Gtk.Orientation.VERTICAL}>
-                {/* Top Actions Grid (2 columns) */}
-                <box cssName="top-actions" spacing={10} homogeneous>
-                    <DiceTile />
-                    <SaveTile />
+            <box cssClasses={["theme-manager-wrapper"]}>
+                <button 
+                    hexpand 
+                    vexpand 
+                    cssClasses={["click-away-btn"]} 
+                    onClicked={() => app.toggle_window(`theme-manager-${id}`)}
+                />
+                <box 
+                    cssClasses={["theme-manager-content"]} 
+                    orientation={Gtk.Orientation.VERTICAL}
+                    valign={Gtk.Align.START}
+                    halign={Gtk.Align.END}
+                    marginTop={55}
+                    marginRight={10}
+                >
+                    {/* Top Actions Grid (2 columns) */}
+                    <box cssName="top-actions" spacing={10} homogeneous>
+                        <DiceTile />
+                        <SaveTile />
+                    </box>
+                    
+                    <label label="Saved Themes" cssName="section-title" halign={Gtk.Align.START} />
+                    
+                    {/* Saved Themes Grid */}
+                    {themesGrid}
                 </box>
-                
-                <label label="Saved Themes" cssName="section-title" halign={Gtk.Align.START} />
-                
-                {/* Saved Themes Grid */}
-                {themesGrid}
             </box>
         </window>
     )
