@@ -101,7 +101,7 @@ const deleteTheme = async (name: string) => {
 
 function DiceTile() {
     return (
-        <button cssName="theme-tile dice-tile" onClicked={selectRandomWallpaper}>
+        <button cssName="theme-tile dice-tile" hexpand onClicked={selectRandomWallpaper}>
             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                 <label label="" cssName="icon" />
                 <label label="Dice" />
@@ -112,7 +112,7 @@ function DiceTile() {
 
 function SaveTile() {
     return (
-        <button cssName="theme-tile save-tile" onClicked={saveCurrentTheme}>
+        <button cssName="theme-tile save-tile" hexpand onClicked={saveCurrentTheme}>
             <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                 <label label="" cssName="icon" />
                 <label label="Save" />
@@ -123,13 +123,13 @@ function SaveTile() {
 
 function ThemeThumbnail({ theme }: { theme: Theme }) {
     return (
-        <box cssName="theme-thumbnail-container" css={`background-image: url('${theme.path}');`}>
+        <box cssName="theme-thumbnail-container" widthRequest={160} heightRequest={100} css={`background-image: url('file://${theme.path}');`}>
             <box cssName="theme-thumbnail-overlay" hexpand vexpand valign={Gtk.Align.FILL} halign={Gtk.Align.FILL}>
                 <box valign={Gtk.Align.CENTER} halign={Gtk.Align.CENTER} spacing={8}>
-                    <button cssName="overlay-btn select-btn" onClicked={() => applyTheme(theme.path)}>
+                    <button cssName="select-btn" onClicked={() => applyTheme(theme.path)}>
                         <label label="Select" />
                     </button>
-                    <button cssName="overlay-btn delete-btn" onClicked={() => deleteTheme(theme.name)}>
+                    <button cssName="delete-btn" onClicked={() => deleteTheme(theme.name)}>
                         <label label="Delete" />
                     </button>
                 </box>
@@ -165,6 +165,8 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                     fetchThemes()
                 }
             }}
+            marginTop={55} // margin from the top
+            marginRight={10} // margin from the right
         >
             <box cssName="theme-manager-content" orientation={Gtk.Orientation.VERTICAL}>
                 {/* Top Actions Grid (2 columns) */}

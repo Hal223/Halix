@@ -74,13 +74,11 @@ window.ThemeManager {
   background: transparent;
   color: $fg-color;
 
-  .theme-manager-content {
+  > box {
     background: $bg-color;
     border-radius: 20px;
-    margin: 8px;
-    margin-top: 0px; // beneath the bar
     padding: 20px;
-    min-width: 300px;
+    min-width: 340px;
     box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 12px;
   }
 
@@ -133,23 +131,26 @@ window.ThemeManager {
     background: rgba(0, 0, 0, 0.6);
     opacity: 0;
     transition: all 0.3s ease;
+    border-radius: 16px;
   }
 
-  .overlay-btn {
-    border-radius: 8px;
-    padding: 6px 12px;
+  button {
     font-weight: bold;
     font-size: 13px;
     transition: all 0.3s ease;
   }
 
   .select-btn {
+    border-radius: 8px;
+    padding: 6px 12px;
     background: $color2;
     color: #000;
     &:hover { filter: brightness(1.1); }
   }
 
   .delete-btn {
+    border-radius: 8px;
+    padding: 6px 12px;
     background: $color1;
     color: #fff;
     &:hover { filter: brightness(1.1); }
