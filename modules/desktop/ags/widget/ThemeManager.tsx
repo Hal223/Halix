@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { execAsync, exec } from "ags/process"
-import { createBinding as bind } from "ags"
+import { execAsync } from "ags/process"
+import { createBinding as bind, createState } from "ags"
 import Hyprland from "gi://AstalHyprland"
 
 interface Theme {
@@ -9,40 +9,26 @@ interface Theme {
     path: string
 }
 
-let currentGridBox: Gtk.Box | null = null;
+const [themesVar, setThemes] = createState<Theme[]>([])
 
-const fetchThemes = async (gridBox = currentGridBox) => {
-    if (!gridBox) return;
+const fetchThemes = async () => {
     try {
         const out = await execAsync(['sh', '-c', 'for f in ~/.config/halix-themes/*; do [ -e "$f" ] && echo "$(basename "$f")|$(cat "$f")"; done'])
         
-        // Remove old children
-        let child = gridBox.get_first_child()
-        while (child) {
-            const next = child.get_next_sibling()
-            gridBox.remove(child)
-            child = next
+        if (!out) {
+            setThemes([])
+            return
         }
-
-        if (!out) return;
 
         const themes = out.split('\n').filter(Boolean).map(line => {
             const [name, path] = line.split('|')
             return { name, path }
         })
         
-        let currentRow: Gtk.Box | null = null;
-
-        // Add new themes in 2-column grid
-        themes.forEach((theme, i) => {
-            if (i % 2 === 0) {
-                currentRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, homogeneous: true });
-                gridBox.append(currentRow);
-            }
-            currentRow!.append(<ThemeThumbnail theme={theme} /> as Gtk.Widget)
-        })
+        setThemes(themes)
     } catch (err) {
         console.error(err)
+        setThemes([])
     }
 }
 
@@ -140,14 +126,8 @@ function ThemeThumbnail({ theme }: { theme: Theme }) {
 export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
     
-    const themesGrid = new Gtk.Box({
-        cssClasses: ["themes-grid"],
-        orientation: Gtk.Orientation.VERTICAL,
-        spacing: 10,
-    });
-    
-    currentGridBox = themesGrid;
-    fetchThemes(themesGrid);
+    // Initial fetch
+    fetchThemes();
 
     return (
         <window
@@ -165,7 +145,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                 }
             }}
         >
-            <box cssClasses={["theme-manager-wrapper"]}>
+            <Gtk.Overlay cssClasses={["theme-manager-wrapper"]}>
                 <button 
                     hexpand 
                     vexpand 
@@ -189,9 +169,25 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                     <label label="Saved Themes" cssName="section-title" halign={Gtk.Align.START} />
                     
                     {/* Saved Themes Grid */}
-                    {themesGrid}
+                    <box cssName="themes-grid" orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                        {themesVar.as(themes => {
+                            const rows: any[] = []
+                            for (let i = 0; i < themes.length; i += 2) {
+                                const theme1 = themes[i]
+                                const theme2 = themes[i + 1]
+                                rows.push(
+                                    <box orientation={Gtk.Orientation.HORIZONTAL} spacing={10} homogeneous>
+                                        <ThemeThumbnail theme={theme1} />
+                                        {theme2 ? <ThemeThumbnail theme={theme2} /> : <box />}
+                                    </box>
+                                )
+                            }
+                            return rows
+                        })}
+                    </box>
                 </box>
-            </box>
+            </Gtk.Overlay>
         </window>
     )
 }
+
