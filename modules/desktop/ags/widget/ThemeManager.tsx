@@ -177,8 +177,8 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                     orientation={Gtk.Orientation.VERTICAL}
                     valign={Gtk.Align.START}
                     halign={Gtk.Align.END}
-                    marginTop={55}
-                    marginRight={10}
+                    margin_top={55}
+                    margin_end={10}
                 >
                     {/* Top Actions Grid (2 columns) */}
                     <box cssName="top-actions" spacing={10} homogeneous>
