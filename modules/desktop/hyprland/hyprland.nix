@@ -10,9 +10,10 @@
   };
   xdg.portal.extraPortals = with pkgs; [xdg-desktop-portal-hyprland];
 
-  environment.systemPackages = [
+  environment.systemPackages.pkgs = [
     # ... other packages
-    pkgs.kitty # required for the default Hyprland config
+    kitty # required for the default Hyprland config
+    hyprshot
   ];
 
   # Optional, hint Electron apps to use Wayland:
@@ -87,8 +88,8 @@
         ### LOOK AND FEEL ###
 
         general {
-            gaps_in = 5
-            gaps_out = 20
+            gaps_in = 2
+            gaps_out = 2
             border_size = 1
             col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
             col.inactive_border = rgba(595959aa)
@@ -165,6 +166,11 @@
         bind = $mainMod, SPACE, togglefloating,
         bind = $mainMod, D, exec, $menu
         bind = $mainMod SHIFT, C, exec, hyprctl reload; ags quit; ags run &
+
+        # Screenshots
+        bind = , Print, exec, hyprshot -m output -o ~/Pictures/Screenshots
+        bind = $mainMod SHIFT, S, exec, hyprshot -m region -o ~/Pictures/Screenshots
+
         #bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
 
