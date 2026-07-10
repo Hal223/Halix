@@ -133,59 +133,56 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
             anchor={TOP | BOTTOM | LEFT | RIGHT}
             application={app}
             visible={false}
-            keymode={Astal.Keymode.EXCLUSIVE}
+            keymode={Astal.Keymode.ON_DEMAND}
             onNotifyVisible={(self) => {
                 if (self.visible) fetchThemes()
             }}
             onKeyPressed={(self, keyval) => {
                 if (keyval === Gdk.KEY_Escape) hide()
             }}
-            $={(self) => {
-                // Click anywhere on the window background to close
-                const click = new Gtk.GestureClick()
-                click.connect("released", () => hide())
-                self.add_controller(click)
-            }}
         >
-            <box
-                cssClasses={["theme-manager-content"]}
-                orientation={Gtk.Orientation.VERTICAL}
-                valign={Gtk.Align.START}
-                halign={Gtk.Align.END}
-                margin_top={55}
-                margin_end={10}
-                $={(self) => {
-                    // Stop clicks on the content from bubbling to the window
-                    const click = new Gtk.GestureClick()
-                    click.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
-                    click.connect("pressed", () => click.set_state(Gtk.EventSequenceState.CLAIMED))
-                    self.add_controller(click)
-                }}
-            >
-                <box cssClasses={["top-actions"]} spacing={10} homogeneous>
-                    <DiceTile />
-                    <SaveTile />
-                </box>
+            <overlay>
+                {/* Background: transparent button covering the full window */}
+                <button
+                    hexpand
+                    vexpand
+                    cssClasses={["click-away-btn"]}
+                    onClicked={hide}
+                />
+                {/* Foreground: the actual content panel */}
+                <box
+                    cssClasses={["theme-manager-content"]}
+                    orientation={Gtk.Orientation.VERTICAL}
+                    valign={Gtk.Align.START}
+                    halign={Gtk.Align.END}
+                    margin_top={55}
+                    margin_end={10}
+                >
+                    <box cssClasses={["top-actions"]} spacing={10} homogeneous>
+                        <DiceTile />
+                        <SaveTile />
+                    </box>
 
-                <label label="Saved Themes" cssClasses={["section-title"]} halign={Gtk.Align.START} />
+                    <label label="Saved Themes" cssClasses={["section-title"]} halign={Gtk.Align.START} />
 
-                <box cssClasses={["themes-grid"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
-                    {themesVar.as(themes => {
-                        const rows: any[] = []
-                        for (let i = 0; i < themes.length; i += 2) {
-                            const theme1 = themes[i]
-                            const theme2 = themes[i + 1]
-                            rows.push(
-                                <box orientation={Gtk.Orientation.HORIZONTAL} spacing={10} homogeneous>
-                                    <ThemeThumbnail theme={theme1} />
-                                    {theme2 ? <ThemeThumbnail theme={theme2} /> : <box />}
-                                </box>
-                            )
-                        }
-                        return rows
-                    })}
+                    <box cssClasses={["themes-grid"]} orientation={Gtk.Orientation.VERTICAL} spacing={10}>
+                        {themesVar.as(themes => {
+                            const rows: any[] = []
+                            for (let i = 0; i < themes.length; i += 2) {
+                                const theme1 = themes[i]
+                                const theme2 = themes[i + 1]
+                                rows.push(
+                                    <box orientation={Gtk.Orientation.HORIZONTAL} spacing={10} homogeneous>
+                                        <ThemeThumbnail theme={theme1} />
+                                        {theme2 ? <ThemeThumbnail theme={theme2} /> : <box />}
+                                    </box>
+                                )
+                            }
+                            return rows
+                        })}
+                    </box>
                 </box>
-            </box>
+            </overlay>
         </window>
     )
 }
