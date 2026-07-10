@@ -14,6 +14,8 @@
     # ... other packages
     pkgs.kitty # required for the default Hyprland config
     pkgs.hyprshot
+    pkgs.hyprpaper
+    pkgs.pywal
   ];
 
   # Optional, hint Electron apps to use Wayland:
@@ -75,8 +77,8 @@
 
         ### AUTOSTART ###
         exec-once = ags run
+        exec-once = hyprpaper
         # exec-once = nm-applet &
-        # exec-once = hyprpaper & firefox
 
 
         ### ENVIRONMENT VARIABLES ###

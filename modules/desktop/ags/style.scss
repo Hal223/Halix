@@ -78,6 +78,8 @@ window.ThemeManager {
     background: transparent;
     border: none;
     box-shadow: none;
+    min-height: 0;
+    padding: 0;
   }
 
   .theme-manager-content {
@@ -85,84 +87,134 @@ window.ThemeManager {
     border-radius: 20px;
     padding: 20px;
     min-width: 340px;
+    max-width: 380px;
     box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 24px;
     border: 1px solid rgba($color5, 0.4);
+    margin: 4px 8px 8px 8px;
   }
 
   .top-actions {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
+  // Dice + Save action tiles
   .theme-tile {
-    background: rgba($color0, 0.5);
+    background: rgba($color0, 0.6);
     border-radius: 16px;
-    min-height: 100px;
-    padding: 15px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    min-height: 90px;
+    padding: 12px;
+    transition: all 0.25s ease;
+    border: 2px solid rgba($color5, 0.2);
 
-    &:hover {
-      background: rgba($color5, 0.6);
-      border-color: $color5;
+    &.dice-tile:hover {
+      background: rgba($color4, 0.5);
+      border-color: $color4;
+    }
+
+    &.save-tile:hover {
+      background: rgba($color2, 0.4);
+      border-color: $color2;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
     }
 
     .icon {
-      font-size: 24px;
-      margin-bottom: 8px;
+      font-size: 28px;
     }
   }
 
   .section-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     margin-bottom: 10px;
-    margin-left: 5px;
+    margin-left: 2px;
+    color: rgba($fg-color, 0.7);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .status-label {
+    font-size: 12px;
+    color: $color4;
+    margin-bottom: 8px;
+    min-height: 18px;
+  }
+
+  .themes-scroll {
+    border-radius: 12px;
+  }
+
+  .themes-grid {
+    padding: 4px;
+  }
+
+  // Individual saved theme entry
+  .theme-thumbnail-entry {
+    padding: 4px;
   }
 
   .theme-thumbnail-container {
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: rgba(0,0,0,0.3);
     border-radius: 12px;
-    border: 2px solid $color5;
+    border: 2px solid rgba($color5, 0.4);
     min-width: 140px;
-    min-height: 100px;
-    transition: all 0.3s ease;
+    min-height: 95px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
 
     &:hover {
-      .theme-thumbnail-overlay {
-        opacity: 1;
-      }
+      border-color: $color5;
+    }
+
+    image, .thumb-image {
+      border-radius: 10px;
+    }
+
+    .thumb-fallback {
+      font-size: 32px;
+      halign: center;
+      valign: center;
     }
   }
 
   .theme-thumbnail-overlay {
-    background: rgba(0, 0, 0, 0.6);
-    opacity: 0;
-    transition: all 0.3s ease;
-    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 10px;
+    transition: opacity 0.2s ease;
+
+    .thumb-name {
+      font-size: 11px;
+      font-weight: bold;
+      color: white;
+      padding: 4px;
+    }
+  }
+
+  .empty-label {
+    color: rgba($fg-color, 0.45);
+    font-size: 12px;
+    padding: 20px 8px;
   }
 
   button {
     font-weight: bold;
-    font-size: 13px;
-    transition: all 0.3s ease;
+    font-size: 12px;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    padding: 5px 10px;
   }
 
   .select-btn {
-    border-radius: 8px;
-    padding: 6px 12px;
-    background: $color2;
+    background: rgba($color2, 0.85);
     color: #000;
-    &:hover { filter: brightness(1.1); }
+    &:hover { background: $color2; }
   }
 
   .delete-btn {
-    border-radius: 8px;
-    padding: 6px 12px;
-    background: $color1;
+    background: rgba($color1, 0.8);
     color: #fff;
-    &:hover { filter: brightness(1.1); }
+    &:hover { background: $color1; }
   }
 }
