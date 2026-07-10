@@ -61,7 +61,7 @@ function Clock({ id }: { id: number }) {
 function EndModules({ id }: { id: number }) {
   return (
     <box $type="end" hexpand halign={Gtk.Align.END} cssName="right-modules" spacing={20}>
-      <ThemeSwitcher />
+      <ThemeSwitcher id={id} />
       <Clock id={id} />
     </box>
   )
