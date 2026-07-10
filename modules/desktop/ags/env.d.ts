@@ -19,3 +19,8 @@ declare module "*.css" {
   const content: string
   export default content
 }
+
+declare module "gi://AstalHyprland" {
+  const content: any
+  export default content
+}

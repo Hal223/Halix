@@ -44,7 +44,26 @@
       configType = "hyprlang";
       extraConfig = ''
         ### MONITORS ###
+        $primaryMonitor = DP-1
+        $secondaryMonitor = DP-2
+
+        # Configure monitors (you may need to change the names above to match your `hyprctl monitors`)
+        monitor=$primaryMonitor,preferred,auto,auto
+        monitor=$secondaryMonitor,preferred,auto,auto
         monitor=,preferred,auto,auto
+
+        ### WORKSPACES ###
+        workspace = 1, monitor:$primaryMonitor, default:true
+        workspace = 2, monitor:$primaryMonitor
+        workspace = 3, monitor:$primaryMonitor
+        workspace = 4, monitor:$primaryMonitor
+        workspace = 5, monitor:$primaryMonitor
+
+        workspace = 6, monitor:$secondaryMonitor, default:true
+        workspace = 7, monitor:$secondaryMonitor
+        workspace = 8, monitor:$secondaryMonitor
+        workspace = 9, monitor:$secondaryMonitor
+        workspace = 10, monitor:$secondaryMonitor
 
         ### MY PROGRAMS ###
 

@@ -2,7 +2,7 @@ import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { execAsync } from "ags/process"
 import { createPoll } from "ags/time"
-import { bind } from "ags"
+import { createBinding as bind, For } from "ags"
 import Hyprland from "gi://AstalHyprland"
 import ThemeSwitcher from "./ThemeSwitcher"
 
@@ -19,34 +19,32 @@ function StartModules() {
   )
 }
 
-function Workspaces() {
+function Workspaces({ id }: { id: number }) {
   const hyprland = Hyprland.get_default()
+  
+  // Assign workspaces 1-5 to primary monitor (id 0) and 6-10 to secondary (id 1)
+  const workspaces = id === 0 ? [1, 2, 3, 4, 5] : [6, 7, 8, 9, 10]
 
   return (
     <box cssName="workspaces" spacing={4}>
-      {bind(hyprland, "workspaces").as(wss =>
-        wss
-          .filter(ws => ws.id > 0) // Ignore special/scratchpad workspaces if any
-          .sort((a, b) => a.id - b.id)
-          .map(ws => (
-            <button
-              cssName={bind(hyprland, "focusedWorkspace").as(fw =>
-                fw === ws ? "workspace-btn focused" : "workspace-btn"
-              )}
-              onClicked={() => ws.focus()}
-            >
-              <label label={ws.id.toString()} />
-            </button>
-          ))
-      )}
+      {workspaces.map(wsId => (
+        <button
+          cssName={bind(hyprland, "focusedWorkspace").as(fw =>
+            fw.id === wsId ? "workspace-btn focused" : "workspace-btn"
+          )}
+          onClicked={() => hyprland.dispatch("workspace", wsId.toString())}
+        >
+          <label label={wsId.toString()} />
+        </button>
+      ))}
     </box>
   )
 }
 
-function CenterModules() {
+function CenterModules({ id }: { id: number }) {
   return (
     <box $type="center">
-      <Workspaces />
+      <Workspaces id={id} />
     </box>
   )
 }
@@ -85,7 +83,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor, id: number = 0) {
     >
       <centerbox cssName="centerbox">
         <StartModules />
-        <CenterModules />
+        <CenterModules id={id} />
         <EndModules id={id} />
       </centerbox>
     </window>
