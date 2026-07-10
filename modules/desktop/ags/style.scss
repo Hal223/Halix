@@ -87,7 +87,6 @@ window.ThemeManager {
     border-radius: 20px;
     padding: 20px;
     min-width: 340px;
-    max-width: 380px;
     box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 24px;
     border: 1px solid rgba($color5, 0.4);
     margin: 4px 8px 8px 8px;
@@ -161,7 +160,6 @@ window.ThemeManager {
     border: 2px solid rgba($color5, 0.4);
     min-width: 140px;
     min-height: 95px;
-    overflow: hidden;
     transition: border-color 0.2s ease;
 
     &:hover {
@@ -174,8 +172,6 @@ window.ThemeManager {
 
     .thumb-fallback {
       font-size: 32px;
-      halign: center;
-      valign: center;
     }
   }
 

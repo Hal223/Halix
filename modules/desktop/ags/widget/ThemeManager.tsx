@@ -37,10 +37,14 @@ function loadThemes(): SavedTheme[] {
 }
 
 function persistThemes(themes: SavedTheme[]) {
-  ensureDir()
-  const file = Gio.File.new_for_path(THEMES_FILE)
-  const data = new TextEncoder().encode(JSON.stringify(themes, null, 2))
-  file.replace_contents(data, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null)
+  try {
+    ensureDir()
+    const json = JSON.stringify(themes, null, 2)
+    // GLib.file_set_contents is the most reliable sync write in GJS
+    GLib.file_set_contents(THEMES_FILE, json)
+  } catch (e) {
+    console.error("persistThemes failed:", e)
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -89,25 +93,29 @@ function getWallpaperFiles(): string[] {
 }
 
 async function applyWallpaper(wallPath: string) {
-  // Load wallpaper via hyprpaper IPC
+  // Try hyprpaper IPC (no-op if hyprpaper isn't running)
   await spawnAsync(["hyprctl", "hyprpaper", "preload", wallPath]).catch(() => {})
-  // Apply to all connected monitors
   const json = await spawnAsync(["hyprctl", "monitors", "-j"]).catch(() => "[]")
   const monitors: Array<{ name: string }> = JSON.parse(json)
   for (const mon of monitors) {
     await spawnAsync(["hyprctl", "hyprpaper", "wallpaper", `${mon.name},${wallPath}`]).catch(() => {})
   }
-  // Generate pywal colors
-  await spawnAsync(["wal", "-i", wallPath, "-n"]).catch(() => {})
+  // wal WITHOUT -n so pywal also sets the wallpaper via its backend (swaybg on Wayland)
+  await spawnAsync(["wal", "-i", wallPath]).catch((e) => {
+    console.error("wal failed:", e)
+  })
 }
 
 async function getCurrentWallpaperPath(): Promise<string> {
-  // pywal records the last used image here
-  const walFile = GLib.get_home_dir() + "/.cache/wal/wal"
-  const file = Gio.File.new_for_path(walFile)
-  if (!file.query_exists(null)) return ""
-  const [, contents] = file.load_contents(null)
-  return new TextDecoder().decode(contents).trim()
+  try {
+    const walFile = GLib.get_home_dir() + "/.cache/wal/wal"
+    const [ok, contents] = GLib.file_get_contents(walFile)
+    if (!ok) return ""
+    return new TextDecoder().decode(contents).trim()
+  } catch (e) {
+    console.error("getCurrentWallpaperPath failed:", e)
+    return ""
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -152,15 +160,14 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
 
   // ── Saved themes grid ─────────────────────────────────────────────────────
   const grid = new Gtk.FlowBox({
-    column_homogeneous: true,
     row_spacing: 10,
     column_spacing: 10,
     max_children_per_line: 2,
     min_children_per_line: 2,
     selection_mode: Gtk.SelectionMode.NONE,
     css_classes: ["themes-grid"],
-    homogeneous: true,
   })
+  grid.set_homogeneous(true)
 
   function clearGrid() {
     let child = grid.get_first_child()
