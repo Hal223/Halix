@@ -10,7 +10,7 @@
   };
   xdg.portal.extraPortals = with pkgs; [xdg-desktop-portal-hyprland];
 
-  environment.systemPackages.pkgs = [
+  environment.systemPackages = [
     # ... other packages
     pkgs.kitty # required for the default Hyprland config
     pkgs.hyprshot
