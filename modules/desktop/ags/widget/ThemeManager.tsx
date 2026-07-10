@@ -1,7 +1,7 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { execAsync, exec } from "ags/process"
-import { Variable, createBinding as bind } from "ags"
+import { createBinding as bind } from "ags"
 import Hyprland from "gi://AstalHyprland"
 
 interface Theme {
@@ -9,28 +9,42 @@ interface Theme {
     path: string
 }
 
-const savedThemes = Variable<Theme[]>([])
+let currentGridBox: Gtk.Box | null = null;
 
-const fetchThemes = async () => {
+const fetchThemes = async (gridBox = currentGridBox) => {
+    if (!gridBox) return;
     try {
         const out = await execAsync(['sh', '-c', 'for f in ~/.config/halix-themes/*; do [ -e "$f" ] && echo "$(basename "$f")|$(cat "$f")"; done'])
-        if (!out) {
-            savedThemes.set([])
-            return
+        
+        // Remove old children
+        let child = gridBox.get_first_child()
+        while (child) {
+            const next = child.get_next_sibling()
+            gridBox.remove(child)
+            child = next
         }
+
+        if (!out) return;
+
         const themes = out.split('\n').filter(Boolean).map(line => {
             const [name, path] = line.split('|')
             return { name, path }
         })
-        savedThemes.set(themes)
+        
+        let currentRow: Gtk.Box | null = null;
+
+        // Add new themes in 2-column grid
+        themes.forEach((theme, i) => {
+            if (i % 2 === 0) {
+                currentRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, homogeneous: true });
+                gridBox.append(currentRow);
+            }
+            currentRow!.append(<ThemeThumbnail theme={theme} /> as Gtk.Widget)
+        })
     } catch (err) {
         console.error(err)
-        savedThemes.set([])
     }
 }
-
-// Fetch themes initially
-fetchThemes()
 
 const applyTheme = async (path: string) => {
     try {
@@ -43,11 +57,6 @@ const applyTheme = async (path: string) => {
         // Try to apply with hyprpaper
         await execAsync(['hyprctl', 'hyprpaper', 'preload', path]).catch(console.error)
         await execAsync(['hyprctl', 'hyprpaper', 'wallpaper', `",${path}"`]).catch(console.error)
-        
-        // Restart waybar if necessary or let the user's Pywal setup do its thing.
-        // Actually, the user has theme-manager that restarts waybar in sway, but for AGS,
-        // if they have pywal css imported, they might need to restart AGS. 
-        // Or we can just call setupThemeWatcher() which they already have in app.ts!
     } catch (err) {
         console.error("Failed to apply theme:", err)
     }
@@ -93,7 +102,7 @@ const deleteTheme = async (name: string) => {
 function DiceTile() {
     return (
         <button cssName="theme-tile dice-tile" onClicked={selectRandomWallpaper}>
-            <box vertical valign={Gtk.Align.CENTER}>
+            <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                 <label label="" cssName="icon" />
                 <label label="Dice" />
             </box>
@@ -104,7 +113,7 @@ function DiceTile() {
 function SaveTile() {
     return (
         <button cssName="theme-tile save-tile" onClicked={saveCurrentTheme}>
-            <box vertical valign={Gtk.Align.CENTER}>
+            <box orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
                 <label label="" cssName="icon" />
                 <label label="Save" />
             </box>
@@ -132,11 +141,15 @@ function ThemeThumbnail({ theme }: { theme: Theme }) {
 export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     const { TOP, RIGHT } = Astal.WindowAnchor
     
-    // We use a simple vertical box holding two rows/grids.
-    // Since GTK4 CSS grid isn't always perfectly exposed in JSX without FlowBox/GridView, 
-    // we can use a Box with FlowBox or just VBox of HBoxes for simplicity.
-    // Let's use a FlowBox for the saved themes to wrap them nicely.
+    const themesGrid = new Gtk.Box({
+        cssClasses: ["themes-grid"],
+        orientation: Gtk.Orientation.VERTICAL,
+        spacing: 10,
+    });
     
+    currentGridBox = themesGrid;
+    fetchThemes(themesGrid);
+
     return (
         <window
             name={`theme-manager-${id}`}
@@ -153,7 +166,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                 }
             }}
         >
-            <box cssName="theme-manager-content" vertical>
+            <box cssName="theme-manager-content" orientation={Gtk.Orientation.VERTICAL}>
                 {/* Top Actions Grid (2 columns) */}
                 <box cssName="top-actions" spacing={10} homogeneous>
                     <DiceTile />
@@ -163,30 +176,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
                 <label label="Saved Themes" cssName="section-title" halign={Gtk.Align.START} />
                 
                 {/* Saved Themes Grid */}
-                <flowbox
-                    cssName="themes-grid"
-                    selectionMode={Gtk.SelectionMode.NONE}
-                    maxChildrenPerLine={2}
-                    minChildrenPerLine={2}
-                    rowSpacing={10}
-                    columnSpacing={10}
-                    setup={(self) => {
-                        savedThemes.subscribe((themes) => {
-                            // Remove old children
-                            let child = self.get_first_child()
-                            while (child) {
-                                const next = child.get_next_sibling()
-                                self.remove(child)
-                                child = next
-                            }
-                            
-                            // Add new themes
-                            themes.forEach(theme => {
-                                self.append(<ThemeThumbnail theme={theme} /> as Gtk.Widget)
-                            })
-                        })
-                    }}
-                />
+                {themesGrid}
             </box>
         </window>
     )
