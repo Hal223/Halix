@@ -59,16 +59,15 @@
       # Generate pywal colors
       ${pkgs.pywal16}/bin/wal -i "$WP" -n -q
 
-      # Smoothly transition wallpaper using awww (formerly swww)
       # Check if awww-daemon is running, if not start it
       if ! ${pkgs.procps}/bin/pgrep -f "awww-daemon" > /dev/null; then
-        ${pkgs.swww}/bin/awww-daemon 9>&- >/dev/null 2>&1 &
+        ${pkgs.awww}/bin/awww-daemon 9>&- >/dev/null 2>&1 &
         ${pkgs.coreutils}/bin/sleep 2
       fi
 
       # Try to set wallpaper, retry if it fails (daemon might still be starting)
       for i in 1 2 3 4 5; do
-        if ${pkgs.swww}/bin/awww img "$WP" --transition-type wave --transition-angle 30 --transition-step 120 --transition-duration 0.8 --transition-fps 60 --filter Bilinear; then
+        if ${pkgs.awww}/bin/awww img "$WP" --transition-type wave --transition-angle 30 --transition-step 120 --transition-duration 0.8 --transition-fps 60 --filter Bilinear; then
           break
         fi
         ${pkgs.coreutils}/bin/sleep 1
@@ -450,7 +449,7 @@
     package = pkgs.sway;
     # Add runtime binaries to Sway's PATH so it can find swaybg, wofi, etc.
     runtimeInputs = with pkgs; [
-      swww
+      awww
       wofi
       ghostty
       grim

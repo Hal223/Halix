@@ -93,11 +93,11 @@ function getWallpaperFiles(): string[] {
 }
 
 async function applyWallpaper(wallPath: string) {
-  // 1. Set wallpaper visually via swww (standard Hyprland wallpaper daemon)
-  await spawnAsync(["swww", "img", wallPath, "--transition-type", "fade", "--transition-duration", "0.8"]).catch((e) => {
-    console.error("swww failed:", e)
+  // 1. Set wallpaper visually via awww (standard Hyprland wallpaper daemon)
+  await spawnAsync(["awww", "img", wallPath, "--transition-type", "fade", "--transition-duration", "0.8"]).catch((e) => {
+    console.error("awww failed:", e)
   })
-  // 2. Generate pywal colors only (-n skips wallpaper so swww handles it)
+  // 2. Generate pywal colors only (-n skips wallpaper so awww handles it)
   await spawnAsync(["wal", "-i", wallPath, "-n"]).catch((e) => {
     console.error("wal failed:", e)
   })

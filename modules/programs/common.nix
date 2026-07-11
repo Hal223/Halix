@@ -18,7 +18,7 @@
     pwvucontrol
     pywal16
     swaybg
-    swww
+    awww
     grim
     slurp
     wl-clipboard
