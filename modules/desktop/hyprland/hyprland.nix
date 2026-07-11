@@ -78,6 +78,7 @@
         ### AUTOSTART ###
         exec-once = ags run
         exec-once = hyprpaper
+        exec-once = awww img "$(cat .cache/wal/wal)"
         # exec-once = nm-applet &
 
 
