@@ -13,7 +13,7 @@
     fuse3
     nixfmt
     alejandra
-
+    lutris-free
     # Sound & Desktop (CLI/base tools)
     pwvucontrol
     pywal16

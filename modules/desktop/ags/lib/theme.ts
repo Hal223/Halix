@@ -29,8 +29,7 @@ export function setupThemeWatcher() {
 
   let timeoutId: number | null = null
 
-  monitor.connect("changed", (mon, file, other, eventType) => {
-    console.log(`[ThemeWatcher] File changed event fired: ${eventType} on file ${file.get_path()}`);
+  monitor.connect("changed", () => {
     if (timeoutId !== null) {
       GLib.source_remove(timeoutId)
     }
@@ -38,16 +37,13 @@ export function setupThemeWatcher() {
     timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
       timeoutId = null
       
-      console.log("[ThemeWatcher] Compiling SCSS...");
       ;(async () => {
         try {
-          const res = await spawnAsync(["npx", "sass", scssPath, cssPath])
-          console.log("[ThemeWatcher] Compile output:", res);
+          await spawnAsync(["npx", "sass", scssPath, cssPath])
           app.reset_css()
           app.apply_css(cssPath)
-          console.log("[ThemeWatcher] Applied CSS successfully!");
         } catch (e) {
-          console.error("[ThemeWatcher] Failed to compile/apply SCSS on change:", e)
+          console.error("Failed to compile/apply SCSS on change:", e)
         }
       })()
 
