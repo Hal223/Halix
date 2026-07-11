@@ -18,7 +18,7 @@
     pwvucontrol
     pywal16
     swaybg
-    awww
+    #awww
     grim
     slurp
     wl-clipboard
@@ -41,4 +41,5 @@
     usbutils
     smartmontools
   ];
+  services.awww.enable = true;
 }
