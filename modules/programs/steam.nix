@@ -14,7 +14,8 @@
     package = pkgs.steam.override {
       extraPkgs = pkgs:
         with pkgs; [
-          protonup-qt
+          protonup-rs
+          lutris
           # Add extra dependencies here if needed (e.g., openssl, nghttp2)
         ];
       extraProfile = ''
