@@ -3,6 +3,7 @@ import { Astal, Gtk, Gdk } from "ags/gtk4"
 import GLib from "gi://GLib"
 import Gio from "gi://Gio"
 import GdkPixbuf from "gi://GdkPixbuf"
+import GObject from "gi://GObject"
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Types
@@ -40,7 +41,6 @@ function persistThemes(themes: SavedTheme[]) {
   try {
     ensureDir()
     const json = JSON.stringify(themes, null, 2)
-    // GLib.file_set_contents is the most reliable sync write in GJS
     GLib.file_set_contents(THEMES_FILE, json)
   } catch (e) {
     console.error("persistThemes failed:", e)
@@ -93,7 +93,7 @@ function getWallpaperFiles(): string[] {
 }
 
 async function applyWallpaper(wallPath: string) {
-  // 1. Set wallpaper visually via awww (standard Hyprland wallpaper daemon)
+  // 1. Set wallpaper visually via awww
   await spawnAsync(["awww", "img", wallPath, "--transition-type", "fade", "--transition-duration", "0.8"]).catch((e) => {
     console.error("awww failed:", e)
   })
@@ -161,15 +161,30 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   }
 
   // ── Saved themes grid ─────────────────────────────────────────────────────
+  // 3 columns: [Random] [Save] [Pick] — then saved themes fill rows below.
+  // ALL grid items are wrapped in .theme-grid-cell which controls the fixed
+  // min-width/min-height. No SizeGroup needed.
   const grid = new Gtk.FlowBox({
     row_spacing: 10,
     column_spacing: 10,
-    max_children_per_line: 2,
-    min_children_per_line: 2,
+    max_children_per_line: 3,
+    min_children_per_line: 3,
     selection_mode: Gtk.SelectionMode.NONE,
     css_classes: ["themes-grid"],
   })
   grid.set_homogeneous(true)
+
+  // ── Helper: wrap an action button in a uniform .theme-grid-cell ───────────
+  function makeActionCell(btn: Gtk.Widget): Gtk.Box {
+    const cell = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      css_classes: ["theme-grid-cell"],
+      hexpand: true,
+      vexpand: true,
+    })
+    cell.append(btn)
+    return cell
+  }
 
   function clearGrid() {
     let child = grid.get_first_child()
@@ -189,8 +204,6 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     img.set_vexpand(true)
 
     // ── Split overlay: left half = use, right half = delete ──────────────
-    // Using Gtk.Box + GestureClick instead of Gtk.Button to avoid
-    // GTK's default button borders/backgrounds entirely.
     const selectBox = new Gtk.Box({
       css_classes: ["overlay-half", "left"],
       halign: Gtk.Align.FILL,
@@ -220,7 +233,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     deleteBox.append(new Gtk.Label({ label: "✕", css_classes: ["overlay-icon"], halign: Gtk.Align.CENTER, hexpand: true }))
     const deleteGesture = new Gtk.GestureClick()
     deleteGesture.connect("released", () => {
-      let themes = loadThemes().filter(t => t.id !== theme.id)
+      const themes = loadThemes().filter(t => t.id !== theme.id)
       persistThemes(themes)
       refreshGrid()
     })
@@ -231,7 +244,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
       halign: Gtk.Align.FILL,
       valign: Gtk.Align.FILL,
       hexpand: true,
-      vexpand: true
+      vexpand: true,
     })
     actions.append(selectBox)
     actions.append(deleteBox)
@@ -245,25 +258,79 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
 
     const overlay = new Gtk.Overlay()
     overlay.set_css_classes(["theme-thumbnail-container"])
+    overlay.set_hexpand(true)
+    overlay.set_vexpand(true)
     overlay.set_child(img)
     overlay.add_overlay(overlay_box)
 
-    const tile = new Gtk.Box({
-      orientation: Gtk.Orientation.VERTICAL,
-      spacing: 5,
-      css_classes: ["theme-thumbnail-entry"],
+    // ── Drag handle ──────────────────────────────────────────────────────
+    const dragHandle = new Gtk.Label({
+      label: "⠿",
+      css_classes: ["theme-drag-handle"],
+      valign: Gtk.Align.CENTER,
     })
-    tile.append(overlay)
 
-    return tile
+    const dragSource = new Gtk.DragSource({ actions: Gdk.DragAction.MOVE })
+    dragSource.connect("prepare", () => {
+      const val = new GObject.Value()
+      val.init(GObject.TYPE_STRING)
+      val.set_string(theme.id)
+      cell.add_css_class("drag-active")
+      return Gdk.ContentProvider.new_for_value(val)
+    })
+    dragSource.connect("drag-end", () => {
+      cell.remove_css_class("drag-active")
+    })
+    dragHandle.add_controller(dragSource)
+
+    const dropTarget = new Gtk.DropTarget({ actions: Gdk.DragAction.MOVE })
+    dropTarget.set_gtypes([GObject.TYPE_STRING])
+    dropTarget.connect("enter", () => {
+      cell.add_css_class("drop-target")
+      return Gdk.DragAction.MOVE
+    })
+    dropTarget.connect("leave", () => {
+      cell.remove_css_class("drop-target")
+    })
+    dropTarget.connect("drop", (_target, value) => {
+      cell.remove_css_class("drop-target")
+      const draggedId = typeof value === "string" ? value : (value as any).get_string?.()
+      if (!draggedId || draggedId === theme.id) return true
+      const themes = loadThemes()
+      const draggedIdx = themes.findIndex(t => t.id === draggedId)
+      const targetIdx = themes.findIndex(t => t.id === theme.id)
+      if (draggedIdx !== -1 && targetIdx !== -1) {
+        const [draggedTheme] = themes.splice(draggedIdx, 1)
+        themes.splice(targetIdx, 0, draggedTheme)
+        persistThemes(themes)
+        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+          refreshGrid()
+          return GLib.SOURCE_REMOVE
+        })
+      }
+      return true
+    })
+
+    // ── Outer cell: .theme-grid-cell owns the size, handle sits left ─────
+    const cell = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      spacing: 4,
+      css_classes: ["theme-grid-cell"],
+      hexpand: true,
+      vexpand: true,
+    })
+    cell.add_controller(dropTarget)
+    cell.append(dragHandle)
+    cell.append(overlay)
+
+    return cell
   }
 
   function refreshGrid() {
     clearGrid()
-
-    // Insert action tiles as the first two grid items
-    grid.insert(diceBtn, -1)
-    grid.insert(saveBtn, -1)
+    grid.insert(diceWrapper, -1)
+    grid.insert(saveWrapper, -1)
+    grid.insert(pickWrapper, -1)
 
     const themes = loadThemes()
     if (themes.length === 0) {
@@ -282,8 +349,6 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   }
 
   // ── Dice button ───────────────────────────────────────────────────────────
-  const diceIcon = new Gtk.Label({ label: "🎲", css_classes: ["icon"] })
-  const diceLbl = new Gtk.Label({ label: "Random" })
   const diceInner = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
     spacing: 6,
@@ -292,8 +357,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     hexpand: true,
     vexpand: true,
   })
-  diceInner.append(diceIcon)
-  diceInner.append(diceLbl)
+  diceInner.append(new Gtk.Label({ label: "🎲", css_classes: ["icon"] }))
 
   const diceBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
   diceBtn.set_child(diceInner)
@@ -312,10 +376,9 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     }
     busy = false
   })
+  const diceWrapper = makeActionCell(diceBtn)
 
   // ── Save button ────────────────────────────────────────────────────────────
-  const saveIcon = new Gtk.Label({ label: "💾", css_classes: ["icon"] })
-  const saveLbl = new Gtk.Label({ label: "Save" })
   const saveInner = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
     spacing: 6,
@@ -324,8 +387,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     hexpand: true,
     vexpand: true,
   })
-  saveInner.append(saveIcon)
-  saveInner.append(saveLbl)
+  saveInner.append(new Gtk.Label({ label: "💾", css_classes: ["icon"] }))
 
   const saveBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
   saveBtn.set_child(saveInner)
@@ -338,7 +400,6 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
       if (!wallPath) { setStatus("❌ No active pywal theme found"); busy = false; return }
 
       const existing = loadThemes()
-      // Avoid duplicates
       if (existing.some(t => t.wallpaperPath === wallPath)) {
         setStatus("ℹ Already saved!")
         busy = false
@@ -360,8 +421,56 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     }
     busy = false
   })
+  const saveWrapper = makeActionCell(saveBtn)
 
+  // ── Pick file button ───────────────────────────────────────────────────────
+  const pickInner = new Gtk.Box({
+    orientation: Gtk.Orientation.VERTICAL,
+    spacing: 6,
+    halign: Gtk.Align.CENTER,
+    valign: Gtk.Align.CENTER,
+    hexpand: true,
+    vexpand: true,
+  })
+  pickInner.append(new Gtk.Label({ label: "🗂️", css_classes: ["icon"] }))
 
+  const pickBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
+  pickBtn.set_child(pickInner)
+  pickBtn.connect("clicked", () => {
+    const dialog = new Gtk.FileDialog()
+    dialog.set_title("Select Wallpaper")
+
+    const imageFilter = new Gtk.FileFilter()
+    imageFilter.set_name("Images")
+    imageFilter.add_mime_type("image/jpeg")
+    imageFilter.add_mime_type("image/png")
+    imageFilter.add_mime_type("image/webp")
+    imageFilter.add_mime_type("image/gif")
+
+    const filterList = Gio.ListStore.new(Gtk.FileFilter)
+    filterList.append(imageFilter)
+    dialog.set_filters(filterList)
+    dialog.set_default_filter(imageFilter)
+
+    const rootWin = pickBtn.get_root() as Gtk.Window | null
+    dialog.open(rootWin, null, async (_d, res) => {
+      try {
+        const file = dialog.open_finish(res)
+        if (!file) return
+        const wallPath = file.get_path()
+        if (!wallPath) return
+        if (busy) return
+        busy = true
+        setStatus("🖼️ Applying wallpaper…")
+        closeWindow()
+        await applyWallpaper(wallPath)
+        busy = false
+      } catch {
+        // User cancelled — no-op
+      }
+    })
+  })
+  const pickWrapper = makeActionCell(pickBtn)
 
   // ── Scrollable grid ────────────────────────────────────────────────────────
   const scroll = new Gtk.ScrolledWindow({
@@ -370,7 +479,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     hscrollbar_policy: Gtk.PolicyType.NEVER,
     vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
     propagate_natural_height: true,
-    max_content_height: 300,
+    max_content_height: 320,
   })
   scroll.set_child(grid)
 
@@ -380,8 +489,8 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     css_classes: ["generic-widget-content"],
     spacing: 16,
   })
-  content.append(statusLabel)
   content.append(scroll)
+  content.append(statusLabel)
 
   function closeWindow() {
     close()
@@ -391,5 +500,4 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   refreshGrid()
 
   return content
-
 }

@@ -77,106 +77,140 @@ window.Calendar {
 // ThemeManager Popup/Popover Styles
 
 
-  .click-away-btn {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    min-height: 0;
-    padding: 0;
+.click-away-btn {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  min-height: 0;
+  padding: 0;
+}
+
+
+.status-label {
+  font-size: 12px;
+  color: $color4;
+  margin-bottom: 8px;
+  min-height: 14px;
+}
+
+.themes-scroll {
+  border-radius: 12px;
+}
+
+.themes-grid {
+  padding: 4px;
+}
+
+// Each item in the grid (action tiles + saved themes)
+// ALL sizing is controlled here — children just fill their parent.
+.theme-grid-cell {
+  min-height: 110px;
+  min-width: 130px;
+  padding: 4px;
+}
+
+.theme-drag-handle {
+  min-width: 24px;
+  color: rgba($color7, 0.4);
+  font-size: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $color7;
+    background: rgba($color7, 0.1);
   }
+}
 
+.theme-drag-spacer {
+  min-width: 24px;
+  padding: 0 4px;
+}
 
-  .status-label {
-    font-size: 12px;
-    color: $color4;
-    margin-bottom: 8px;
-    min-height: 18px;
-  }
+.drag-active {
+  opacity: 0.5;
+}
 
-  .themes-scroll {
-    border-radius: 12px;
-  }
+.drop-target {
+  border-color: $color2 !important;
+  background: rgba($color2, 0.2);
+}
 
-  .themes-grid {
-    padding: 4px;
-  }
+.theme-thumbnail-container {
+  border-radius: 12px;
+  border: 2px solid rgba($color5, 0.4);
+  transition: border-color 0.2s ease;
+  // Fill the grid cell — sizing is set on .theme-grid-cell
+  hexpand: true;
+  vexpand: true;
 
-  // Individual saved theme entry
-  .theme-thumbnail-entry {
-    padding: 4px;
-  }
+  &:hover {
+    border-color: $color5;
 
-  .theme-thumbnail-container {
-    border-radius: 12px;
-    border: 2px solid rgba($color5, 0.4);
-    transition: border-color 0.2s ease;
-
-    &:hover {
-      border-color: $color5;
-
-      .theme-thumbnail-overlay {
-        opacity: 1;
-      }
+    .theme-thumbnail-overlay {
+      opacity: 1;
     }
-
-    image,
-    .thumb-image {
-      border-radius: 10px;
-    }
-
-    .thumb-fallback {
-      font-size: 32px;
-    }
   }
 
-  .theme-thumbnail-overlay {
-    background: rgba(0, 0, 0, 0.65);
+  image,
+  .thumb-image {
     border-radius: 10px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
   }
 
-  .empty-label {
-    color: rgba($fg-color, 0.45);
-    font-size: 12px;
-    padding: 20px 8px;
+  .thumb-fallback {
+    font-size: 32px;
+  }
+}
+
+.theme-thumbnail-overlay {
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.empty-label {
+  color: rgba($fg-color, 0.45);
+  font-size: 12px;
+  padding: 20px 8px;
+}
+
+.overlay-half {
+  background: transparent;
+  transition: background 0.2s ease;
+
+  .overlay-icon {
+    font-size: 42px;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.2s ease;
   }
 
-  .overlay-half {
-    background: transparent;
-    transition: background 0.2s ease;
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
 
-    .overlay-icon {
-      font-size: 42px;
-      color: rgba(255, 255, 255, 0.4);
-      transition: all 0.2s ease;
-    }
+  &.left {
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
 
-    &:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    &.left {
-      border-right: 1px solid rgba(255, 255, 255, 0.3);
-      border-top-left-radius: 10px;
-      border-bottom-left-radius: 10px;
-
-      &:hover .overlay-icon {
-        color: $color2;
-        text-shadow: 0 0 10px rgba($color2, 0.5);
-      }
-    }
-
-    &.right {
-      border-top-right-radius: 10px;
-      border-bottom-right-radius: 10px;
-
-      &:hover .overlay-icon {
-        color: $color1;
-        text-shadow: 0 0 10px rgba($color1, 0.5);
-      }
+    &:hover .overlay-icon {
+      color: $color2;
+      text-shadow: 0 0 10px rgba($color2, 0.5);
     }
   }
+
+  &.right {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    &:hover .overlay-icon {
+      color: $color1;
+      text-shadow: 0 0 10px rgba($color1, 0.5);
+    }
+  }
+}
 
 
 // ==============================================================================
@@ -219,15 +253,11 @@ window.Calendar {
 // 3. Action Tiles (Like the Dice/Save buttons)
 // Apply this to <button> elements you want to look like large clickable cards
 .generic-widget-tile {
-  // Semi-transparent dark background for the tile itself
   background: rgba($color0, 0.6);
-  // Slightly smaller radius than the main container
-  //border-radius: px;
-  //min-height: 90px;
-  //padding: 2px;
-  // Smooth animation when hovering
+  // Fill whatever cell it is placed in
+  hexpand: true;
+  vexpand: true;
   transition: all 0.25s ease;
-  // Subtle border to define the tile
   border: 2px solid rgba($color5, 0.2);
 
   // When hovering, brighten the background and border using a pywal accent color

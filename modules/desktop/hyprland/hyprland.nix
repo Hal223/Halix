@@ -171,8 +171,8 @@
         bind = $mainMod SHIFT, C, exec, hyprctl reload; ags quit; ags run &
 
         # Screenshots
-        bind = , Print, exec, hyprshot -m output -o ~/Pictures/Screenshots
-        bind = $mainMod SHIFT, S, exec, hyprshot -m region -o ~/Pictures/Screenshots
+        bind = , Print, exec, hyprshot -z -m output -o ~/Pictures/Screenshots
+        bind = $mainMod SHIFT, S, exec, hyprshot -z -m region -o ~/Pictures/Screenshots
 
         #bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
