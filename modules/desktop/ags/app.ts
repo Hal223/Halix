@@ -1,8 +1,9 @@
 import app from "ags/gtk4/app"
 import style from "./style.scss"
-import Bar from "./widget/Bar"
-import Calendar from "./widget/Calendar"
-import ThemeManager from "./widget/ThemeManager"
+import Test from "./widget/test"
+import Bar from "./widget/bar"
+import Calendar from "./widget/calendar"
+import ThemeManager from "./widget/thememanager"
 import { setupThemeWatcher } from "./lib/theme"
 
 app.start({
@@ -12,9 +13,9 @@ app.start({
   },
   main() {
     app.get_monitors().forEach((monitor, i) => {
+      Test(monitor, i)
       Bar(monitor, i)
       Calendar(monitor, i)
-      ThemeManager(monitor, i)
     })
 
     setupThemeWatcher()

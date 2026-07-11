@@ -8,7 +8,7 @@ window.Bar {
   color: $fg-color;
   font-weight: bold;
 
-  > centerbox {
+  >centerbox {
     margin: 8px;
   }
 
@@ -27,6 +27,10 @@ window.Bar {
 
   .theme-btn {
     color: $color8;
+  }
+
+  .test-btn {
+    color: $color5;
   }
 
   .clock-btn {
@@ -49,7 +53,7 @@ window.Bar {
     padding: 2px 8px;
     border-radius: 8px;
     min-width: 30px;
-    
+
     &.focused {
       background: rgba($color4, 0.7);
       color: $bg-color;
@@ -61,7 +65,7 @@ window.Calendar {
   background: transparent;
   color: $fg-color;
 
-  > box {
+  >box {
     background: $bg-color;
     border-radius: 10px;
     margin: 8px;
@@ -70,9 +74,8 @@ window.Calendar {
   }
 }
 
-window.ThemeManager {
-  background: transparent;
-  color: $fg-color;
+// ThemeManager Popup/Popover Styles
+
 
   .click-away-btn {
     background: transparent;
@@ -82,58 +85,6 @@ window.ThemeManager {
     padding: 0;
   }
 
-  .theme-manager-content {
-    background-color: $bg-color;
-    border-radius: 20px;
-    padding: 20px;
-    min-width: 340px;
-    box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 24px;
-    border: 1px solid rgba($color5, 0.4);
-    margin: 4px 8px 8px 8px;
-  }
-
-  .top-actions {
-    margin-bottom: 16px;
-  }
-
-  // Dice + Save action tiles
-  .theme-tile {
-    background: rgba($color0, 0.6);
-    border-radius: 16px;
-    min-height: 90px;
-    padding: 12px;
-    transition: all 0.25s ease;
-    border: 2px solid rgba($color5, 0.2);
-
-    &.dice-tile:hover {
-      background: rgba($color4, 0.5);
-      border-color: $color4;
-    }
-
-    &.save-tile:hover {
-      background: rgba($color2, 0.4);
-      border-color: $color2;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .icon {
-      font-size: 28px;
-    }
-  }
-
-  .section-title {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    margin-left: 2px;
-    color: rgba($fg-color, 0.7);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
 
   .status-label {
     font-size: 12px;
@@ -158,15 +109,18 @@ window.ThemeManager {
   .theme-thumbnail-container {
     border-radius: 12px;
     border: 2px solid rgba($color5, 0.4);
-    min-width: 140px;
-    min-height: 95px;
     transition: border-color 0.2s ease;
 
     &:hover {
       border-color: $color5;
+
+      .theme-thumbnail-overlay {
+        opacity: 1;
+      }
     }
 
-    image, .thumb-image {
+    image,
+    .thumb-image {
       border-radius: 10px;
     }
 
@@ -176,16 +130,10 @@ window.ThemeManager {
   }
 
   .theme-thumbnail-overlay {
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0.65);
     border-radius: 10px;
+    opacity: 0;
     transition: opacity 0.2s ease;
-
-    .thumb-name {
-      font-size: 11px;
-      font-weight: bold;
-      color: white;
-      padding: 4px;
-    }
   }
 
   .empty-label {
@@ -194,23 +142,136 @@ window.ThemeManager {
     padding: 20px 8px;
   }
 
-  button {
-    font-weight: bold;
-    font-size: 12px;
-    transition: all 0.2s ease;
-    border-radius: 8px;
-    padding: 5px 10px;
+  .overlay-half {
+    background: transparent;
+    transition: background 0.2s ease;
+
+    .overlay-icon {
+      font-size: 42px;
+      color: rgba(255, 255, 255, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    &.left {
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+
+      &:hover .overlay-icon {
+        color: $color2;
+        text-shadow: 0 0 10px rgba($color2, 0.5);
+      }
+    }
+
+    &.right {
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+
+      &:hover .overlay-icon {
+        color: $color1;
+        text-shadow: 0 0 10px rgba($color1, 0.5);
+      }
+    }
   }
 
-  .select-btn {
-    background: rgba($color2, 0.85);
-    color: #000;
-    &:hover { background: $color2; }
+
+// ==============================================================================
+// 🛠️ GENERIC WIDGET TEMPLATE SYSTEM
+// ==============================================================================
+// Use these classes as a foundation for building new popup widgets. 
+// They extrapolate the "glassy, modern, floating" aesthetic of the ThemeManager.
+// ==============================================================================
+
+// 1. The Main Container (The "Window" content)
+// Apply this to the main <box> inside your <window>
+.generic-widget-content {
+  // Uses the pywal background color but with 85% opacity for a glassmorphism effect
+  background-color: $bg-color;
+  // Large rounded corners for a modern "bubble" look
+  border-radius: 20px;
+  // Plenty of breathing room inside the widget
+  padding: 20px;
+  // Deep drop shadow to make the widget float above the wallpaper/other windows
+  box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 24px;
+  // Subtle border colored with pywal's color5 to give it a defined edge
+  border: 1px solid rgba($color5, 0.4);
+  // Margin ensures the drop shadow isn't cut off by the window bounding box
+  margin: 4px 8px 8px 8px;
+}
+
+// 2. Section Titles
+// Apply this to <label> elements that act as headers
+.generic-widget-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-left: 2px;
+  // Semi-transparent foreground color so it doesn't overpower the content
+  color: rgba($fg-color, 0.7);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+// 3. Action Tiles (Like the Dice/Save buttons)
+// Apply this to <button> elements you want to look like large clickable cards
+.generic-widget-tile {
+  // Semi-transparent dark background for the tile itself
+  background: rgba($color0, 0.6);
+  // Slightly smaller radius than the main container
+  //border-radius: px;
+  //min-height: 90px;
+  //padding: 2px;
+  // Smooth animation when hovering
+  transition: all 0.25s ease;
+  // Subtle border to define the tile
+  border: 2px solid rgba($color5, 0.2);
+
+  // When hovering, brighten the background and border using a pywal accent color
+  &:hover {
+    background: rgba($color4, 0.5);
+    border-color: $color4;
   }
 
-  .delete-btn {
-    background: rgba($color1, 0.8);
-    color: #fff;
-    &:hover { background: $color1; }
+  // Target any text inside the tile
+  label {
+    font-size: 13px;
+    font-weight: 600;
   }
+
+  // Target any icon (e.g. emoji or nerd font) inside the tile
+  .icon {
+    font-size: 28px;
+  }
+}
+
+// 4. Standard Buttons
+// Apply to regular <button> elements inside the widget
+.generic-widget-btn {
+  font-weight: bold;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  border-radius: 2px;
+  padding: 5px 10px;
+  // Primary accent background
+  background: rgba($color2, 0.85);
+  // Dark text on a bright accent background usually reads best
+  color: #000;
+
+  &:hover {
+    background: $color2; // Solidify on hover
+  }
+}
+
+// 5. Transparent Popover
+// Overrides GTK's default white speech bubble background for popovers
+popover.transparent-popover>contents {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+
 }

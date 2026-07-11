@@ -120,11 +120,17 @@ async function getCurrentWallpaperPath(): Promise<string> {
 // ──────────────────────────────────────────────────────────────────────────────
 function makeThumbnailImage(wallPath: string): Gtk.Widget {
   try {
-    const pbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(wallPath, 140, 90, false)
-    const img = new Gtk.Image({ css_classes: ["thumb-image"] })
-    img.set_from_pixbuf(pbuf)
-    return img
-  } catch {
+    const file = Gio.File.new_for_path(wallPath)
+    const pic = new Gtk.Picture()
+    pic.set_file(file)
+    pic.set_can_shrink(true)
+    pic.set_content_fit(Gtk.ContentFit.COVER)
+    pic.set_css_classes(["thumb-image"])
+    pic.set_hexpand(true)
+    pic.set_vexpand(true)
+    return pic
+  } catch (e) {
+    console.error("Failed to load thumbnail", e)
     const lbl = new Gtk.Label({ label: "🖼", css_classes: ["thumb-fallback"] })
     lbl.set_halign(Gtk.Align.CENTER)
     lbl.set_valign(Gtk.Align.CENTER)
@@ -133,10 +139,9 @@ function makeThumbnailImage(wallPath: string): Gtk.Widget {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// ThemeManager popup window
+// ThemeManager Content
 // ──────────────────────────────────────────────────────────────────────────────
-export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
-  const { TOP, RIGHT } = Astal.WindowAnchor
+export default function ThemeManagerContent({ id, close }: { id: number, close: () => void }) {
   let busy = false
 
   // ── Status label ─────────────────────────────────────────────────────────
@@ -170,6 +175,9 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     let child = grid.get_first_child()
     while (child) {
       const next = child.get_next_sibling()
+      if (child instanceof Gtk.FlowBoxChild) {
+        child.set_child(null)
+      }
       grid.remove(child)
       child = next
     }
@@ -180,30 +188,19 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     img.set_hexpand(true)
     img.set_vexpand(true)
 
-    const nameLabel = new Gtk.Label({
-      label: theme.name.length > 20 ? theme.name.substring(0, 18) + "…" : theme.name,
-      css_classes: ["thumb-name"],
-      halign: Gtk.Align.CENTER,
-      valign: Gtk.Align.CENTER,
-      hexpand: true,
-      wrap: true,
-      justify: Gtk.Justification.CENTER,
-    })
-    const overlay_box = new Gtk.Box({
-      css_classes: ["theme-thumbnail-overlay"],
+    // ── Split overlay: left half = use, right half = delete ──────────────
+    // Using Gtk.Box + GestureClick instead of Gtk.Button to avoid
+    // GTK's default button borders/backgrounds entirely.
+    const selectBox = new Gtk.Box({
+      css_classes: ["overlay-half", "left"],
       halign: Gtk.Align.FILL,
       valign: Gtk.Align.FILL,
+      hexpand: true,
+      vexpand: true,
     })
-    overlay_box.append(nameLabel)
-
-    const overlay = new Gtk.Overlay()
-    overlay.set_css_classes(["theme-thumbnail-container"])
-    overlay.set_child(img)
-    overlay.add_overlay(overlay_box)
-
-    const selectBtn = new Gtk.Button({ css_classes: ["select-btn"], hexpand: true })
-    selectBtn.set_child(new Gtk.Label({ label: "✓ Use" }))
-    selectBtn.connect("clicked", async () => {
+    selectBox.append(new Gtk.Label({ label: "✓", css_classes: ["overlay-icon"], halign: Gtk.Align.CENTER, hexpand: true }))
+    const selectGesture = new Gtk.GestureClick()
+    selectGesture.connect("released", async (_g, _n, _x, _y) => {
       if (busy) return
       busy = true
       setStatus("🎨 Applying theme…")
@@ -211,18 +208,45 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
       await applyWallpaper(theme.wallpaperPath)
       busy = false
     })
+    selectBox.add_controller(selectGesture)
 
-    const deleteBtn = new Gtk.Button({ css_classes: ["delete-btn"] })
-    deleteBtn.set_child(new Gtk.Label({ label: "✕" }))
-    deleteBtn.connect("clicked", () => {
+    const deleteBox = new Gtk.Box({
+      css_classes: ["overlay-half", "right"],
+      halign: Gtk.Align.FILL,
+      valign: Gtk.Align.FILL,
+      hexpand: true,
+      vexpand: true,
+    })
+    deleteBox.append(new Gtk.Label({ label: "✕", css_classes: ["overlay-icon"], halign: Gtk.Align.CENTER, hexpand: true }))
+    const deleteGesture = new Gtk.GestureClick()
+    deleteGesture.connect("released", () => {
       let themes = loadThemes().filter(t => t.id !== theme.id)
       persistThemes(themes)
       refreshGrid()
     })
+    deleteBox.add_controller(deleteGesture)
 
-    const actions = new Gtk.Box({ spacing: 6, halign: Gtk.Align.FILL, hexpand: true })
-    actions.append(selectBtn)
-    actions.append(deleteBtn)
+    const actions = new Gtk.Box({
+      orientation: Gtk.Orientation.HORIZONTAL,
+      halign: Gtk.Align.FILL,
+      valign: Gtk.Align.FILL,
+      hexpand: true,
+      vexpand: true
+    })
+    actions.append(selectBox)
+    actions.append(deleteBox)
+
+    const overlay_box = new Gtk.Box({
+      css_classes: ["theme-thumbnail-overlay"],
+      halign: Gtk.Align.FILL,
+      valign: Gtk.Align.FILL,
+    })
+    overlay_box.append(actions)
+
+    const overlay = new Gtk.Overlay()
+    overlay.set_css_classes(["theme-thumbnail-container"])
+    overlay.set_child(img)
+    overlay.add_overlay(overlay_box)
 
     const tile = new Gtk.Box({
       orientation: Gtk.Orientation.VERTICAL,
@@ -230,13 +254,17 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
       css_classes: ["theme-thumbnail-entry"],
     })
     tile.append(overlay)
-    tile.append(actions)
 
     return tile
   }
 
   function refreshGrid() {
     clearGrid()
+
+    // Insert action tiles as the first two grid items
+    grid.insert(diceBtn, -1)
+    grid.insert(saveBtn, -1)
+
     const themes = loadThemes()
     if (themes.length === 0) {
       const empty = new Gtk.Label({
@@ -267,7 +295,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
   diceInner.append(diceIcon)
   diceInner.append(diceLbl)
 
-  const diceBtn = new Gtk.Button({ css_classes: ["theme-tile", "dice-tile"], hexpand: true })
+  const diceBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
   diceBtn.set_child(diceInner)
   diceBtn.connect("clicked", async () => {
     if (busy) return
@@ -299,7 +327,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
   saveInner.append(saveIcon)
   saveInner.append(saveLbl)
 
-  const saveBtn = new Gtk.Button({ css_classes: ["theme-tile", "save-tile"], hexpand: true })
+  const saveBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
   saveBtn.set_child(saveInner)
   saveBtn.connect("clicked", async () => {
     if (busy) return
@@ -333,18 +361,7 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     busy = false
   })
 
-  // ── Top action row ─────────────────────────────────────────────────────────
-  const topRow = new Gtk.Box({ spacing: 12, css_classes: ["top-actions"], hexpand: true, homogeneous: true })
-  topRow.append(diceBtn)
-  topRow.append(saveBtn)
 
-  // ── Section label ──────────────────────────────────────────────────────────
-  const sectionTitle = new Gtk.Label({
-    label: "Saved Themes",
-    css_classes: ["section-title"],
-    halign: Gtk.Align.START,
-    hexpand: true,
-  })
 
   // ── Scrollable grid ────────────────────────────────────────────────────────
   const scroll = new Gtk.ScrolledWindow({
@@ -353,39 +370,26 @@ export default function ThemeManager(gdkmonitor: Gdk.Monitor, id: number = 0) {
     hscrollbar_policy: Gtk.PolicyType.NEVER,
     vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
     propagate_natural_height: true,
-    max_content_height: 380,
+    max_content_height: 300,
   })
   scroll.set_child(grid)
 
   // ── Content panel ──────────────────────────────────────────────────────────
   const content = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
-    css_classes: ["theme-manager-content"],
-    spacing: 0,
+    css_classes: ["generic-widget-content"],
+    spacing: 16,
   })
-  content.append(topRow)
   content.append(statusLabel)
-  content.append(sectionTitle)
   content.append(scroll)
 
   function closeWindow() {
-    const win = app.get_window(`theme-manager-${id}`)
-    if (win) win.visible = false
+    close()
   }
 
-  // ── Window ─────────────────────────────────────────────────────────────────
-  return (
-    <window
-      name={`theme-manager-${id}`}
-      class="ThemeManager"
-      gdkmonitor={gdkmonitor}
-      anchor={TOP | RIGHT}
-      application={app}
-      visible={false}
-      keymode={Astal.Keymode.ON_DEMAND}
-      onShow={() => refreshGrid()}
-    >
-      {content}
-    </window>
-  )
+  // Populate themes on creation
+  refreshGrid()
+
+  return content
+
 }

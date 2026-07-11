@@ -3,7 +3,7 @@ import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import { createBinding as bind } from "ags"
 import Hyprland from "gi://AstalHyprland"
-import ThemeSwitcher from "./ThemeSwitcher"
+import ThemeSwitcher from "./themeswitcher"
 
 function Workspaces({ id }: { id: number }) {
   const hyprland = Hyprland.get_default()
@@ -47,6 +47,9 @@ function Clock({ id }: { id: number }) {
 function EndModules({ id }: { id: number }) {
   return (
     <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={20}>
+      <button onClicked={() => app.toggle_window(`test-${id}`)} cssClasses={["test-btn"]}>
+        <label label="🧪" />
+      </button>
       <ThemeSwitcher id={id} />
       <Clock id={id} />
     </box>
