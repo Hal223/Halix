@@ -93,11 +93,9 @@ function getWallpaperFiles(): string[] {
 }
 
 async function applyWallpaper(wallPath: string) {
-  // 1. Set wallpaper visually via awww
   await spawnAsync(["awww", "img", wallPath, "--transition-type", "fade", "--transition-duration", "0.8"]).catch((e) => {
     console.error("awww failed:", e)
   })
-  // 2. Generate pywal colors only (-n skips wallpaper so awww handles it)
   await spawnAsync(["wal", "-i", wallPath, "-n"]).catch((e) => {
     console.error("wal failed:", e)
   })
@@ -144,7 +142,6 @@ function makeThumbnailImage(wallPath: string): Gtk.Widget {
 export default function ThemeManagerContent({ id, close }: { id: number, close: () => void }) {
   let busy = false
 
-  // ── Status label ─────────────────────────────────────────────────────────
   const statusLabel = new Gtk.Label({
     label: "",
     css_classes: ["status-label"],
@@ -160,10 +157,8 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     })
   }
 
-  // ── Saved themes grid ─────────────────────────────────────────────────────
-  // 3 columns: [Random] [Save] [Pick] — then saved themes fill rows below.
-  // ALL grid items are wrapped in .theme-grid-cell which controls the fixed
-  // min-width/min-height. No SizeGroup needed.
+  // ── Grid: 3 columns — [Random] [Save] [Pick], then saved themes ──────────
+  // .theme-grid-cell is the single source of sizing truth for all grid items.
   const grid = new Gtk.FlowBox({
     row_spacing: 10,
     column_spacing: 10,
@@ -174,7 +169,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   })
   grid.set_homogeneous(true)
 
-  // ── Helper: wrap an action button in a uniform .theme-grid-cell ───────────
+  // Wraps an action button in the uniform grid cell
   function makeActionCell(btn: Gtk.Widget): Gtk.Box {
     const cell = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
@@ -203,7 +198,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     img.set_hexpand(true)
     img.set_vexpand(true)
 
-    // ── Split overlay: left half = use, right half = delete ──────────────
+    // ── Split overlay: ✓ left to use, ✕ right to delete ─────────────────
     const selectBox = new Gtk.Box({
       css_classes: ["overlay-half", "left"],
       halign: Gtk.Align.FILL,
@@ -213,7 +208,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     })
     selectBox.append(new Gtk.Label({ label: "✓", css_classes: ["overlay-icon"], halign: Gtk.Align.CENTER, hexpand: true }))
     const selectGesture = new Gtk.GestureClick()
-    selectGesture.connect("released", async (_g, _n, _x, _y) => {
+    selectGesture.connect("released", async () => {
       if (busy) return
       busy = true
       setStatus("🎨 Applying theme…")
@@ -249,25 +244,28 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     actions.append(selectBox)
     actions.append(deleteBox)
 
-    const overlay_box = new Gtk.Box({
+    const overlayBox = new Gtk.Box({
       css_classes: ["theme-thumbnail-overlay"],
       halign: Gtk.Align.FILL,
       valign: Gtk.Align.FILL,
     })
-    overlay_box.append(actions)
+    overlayBox.append(actions)
 
-    const overlay = new Gtk.Overlay()
-    overlay.set_css_classes(["theme-thumbnail-container"])
-    overlay.set_hexpand(true)
-    overlay.set_vexpand(true)
-    overlay.set_child(img)
-    overlay.add_overlay(overlay_box)
+    // The thumbnail overlay container — fills the full .theme-grid-cell
+    const thumbOverlay = new Gtk.Overlay()
+    thumbOverlay.set_css_classes(["theme-thumbnail-container"])
+    thumbOverlay.set_hexpand(true)
+    thumbOverlay.set_vexpand(true)
+    thumbOverlay.set_child(img)
+    thumbOverlay.add_overlay(overlayBox)
 
-    // ── Drag handle ──────────────────────────────────────────────────────
-    const dragHandle = new Gtk.Label({
-      label: "⠿",
+    // ── Drag handle: thin strip overlaid on the left edge ────────────────
+    // Using a Gtk.Box (not a Label) so there's no text character affecting size.
+    // halign: START + overlay means it floats on the left with zero layout cost.
+    const dragHandle = new Gtk.Box({
       css_classes: ["theme-drag-handle"],
       valign: Gtk.Align.CENTER,
+      halign: Gtk.Align.START,
     })
 
     const dragSource = new Gtk.DragSource({ actions: Gdk.DragAction.MOVE })
@@ -283,6 +281,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     })
     dragHandle.add_controller(dragSource)
 
+    // Drop target lives on the outer cell
     const dropTarget = new Gtk.DropTarget({ actions: Gdk.DragAction.MOVE })
     dropTarget.set_gtypes([GObject.TYPE_STRING])
     dropTarget.connect("enter", () => {
@@ -311,17 +310,18 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
       return true
     })
 
-    // ── Outer cell: .theme-grid-cell owns the size, handle sits left ─────
+    // Attach drag handle as an overlay so it floats over the left edge
+    thumbOverlay.add_overlay(dragHandle)
+
+    // Outer cell — same .theme-grid-cell as action buttons, single source of size
     const cell = new Gtk.Box({
       orientation: Gtk.Orientation.HORIZONTAL,
-      spacing: 4,
       css_classes: ["theme-grid-cell"],
       hexpand: true,
       vexpand: true,
     })
     cell.add_controller(dropTarget)
-    cell.append(dragHandle)
-    cell.append(overlay)
+    cell.append(thumbOverlay)
 
     return cell
   }
@@ -398,14 +398,12 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     try {
       const wallPath = await getCurrentWallpaperPath()
       if (!wallPath) { setStatus("❌ No active pywal theme found"); busy = false; return }
-
       const existing = loadThemes()
       if (existing.some(t => t.wallpaperPath === wallPath)) {
         setStatus("ℹ Already saved!")
         busy = false
         return
       }
-
       const name = wallPath.split("/").pop()?.replace(/\.[^.]+$/, "") ?? "theme"
       const newTheme: SavedTheme = {
         id: GLib.uuid_string_random(),
@@ -437,6 +435,8 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   const pickBtn = new Gtk.Button({ css_classes: ["generic-widget-tile"], hexpand: true, vexpand: true })
   pickBtn.set_child(pickInner)
   pickBtn.connect("clicked", () => {
+    // Pass null as parent — passing the popover's root causes a Wayland
+    // protocol error because GTK tries to reparent a non-toplevel window.
     const dialog = new Gtk.FileDialog()
     dialog.set_title("Select Wallpaper")
 
@@ -452,14 +452,12 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     dialog.set_filters(filterList)
     dialog.set_default_filter(imageFilter)
 
-    const rootWin = pickBtn.get_root() as Gtk.Window | null
-    dialog.open(rootWin, null, async (_d, res) => {
+    dialog.open(null, null, async (_d, res) => {
       try {
         const file = dialog.open_finish(res)
         if (!file) return
         const wallPath = file.get_path()
-        if (!wallPath) return
-        if (busy) return
+        if (!wallPath || busy) return
         busy = true
         setStatus("🖼️ Applying wallpaper…")
         closeWindow()
@@ -483,7 +481,6 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
   })
   scroll.set_child(grid)
 
-  // ── Content panel ──────────────────────────────────────────────────────────
   const content = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
     css_classes: ["generic-widget-content"],
@@ -496,7 +493,6 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     close()
   }
 
-  // Populate themes on creation
   refreshGrid()
 
   return content

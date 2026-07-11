@@ -110,22 +110,18 @@ window.Calendar {
 }
 
 .theme-drag-handle {
-  min-width: 24px;
-  color: rgba($color7, 0.4);
-  font-size: 16px;
-  padding: 0 4px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  // Thin vertical strip — 8px wide pill on the left edge of the thumbnail.
+  // It is an GTK overlay so it takes zero horizontal space from the thumbnail.
+  min-width: 8px;
+  min-height: 40px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  margin: auto 0 auto 6px;
+  transition: background 0.2s ease;
 
   &:hover {
-    color: $color7;
-    background: rgba($color7, 0.1);
+    background: rgba(255, 255, 255, 0.7);
   }
-}
-
-.theme-drag-spacer {
-  min-width: 24px;
-  padding: 0 4px;
 }
 
 .drag-active {
@@ -138,12 +134,11 @@ window.Calendar {
 }
 
 .theme-thumbnail-container {
+  // box-sizing: border-box ensures the 2px border counts INSIDE the cell size,
+  // not outside — keeps thumbnails visually the same size as the action buttons.
   border-radius: 12px;
   border: 2px solid rgba($color5, 0.4);
   transition: border-color 0.2s ease;
-  // Fill the grid cell — sizing is set on .theme-grid-cell
-  hexpand: true;
-  vexpand: true;
 
   &:hover {
     border-color: $color5;
@@ -254,11 +249,9 @@ window.Calendar {
 // Apply this to <button> elements you want to look like large clickable cards
 .generic-widget-tile {
   background: rgba($color0, 0.6);
-  // Fill whatever cell it is placed in
-  hexpand: true;
-  vexpand: true;
   transition: all 0.25s ease;
   border: 2px solid rgba($color5, 0.2);
+  border-radius: 12px;
 
   // When hovering, brighten the background and border using a pywal accent color
   &:hover {
