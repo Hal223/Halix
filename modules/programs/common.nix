@@ -13,7 +13,8 @@
     fuse3
     nixfmt
     alejandra
-    # Sound & Desktop (CLI/base tools)
+    protonup-rs
+    lutris # Sound & Desktop (CLI/base tools)
     pwvucontrol
     pywal16
     swaybg
