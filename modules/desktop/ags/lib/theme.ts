@@ -20,26 +20,26 @@ function spawnAsync(cmd: string[]): Promise<string> {
   })
 }
 
+let themeMonitor: Gio.FileMonitor | null = null
+
 export function setupThemeWatcher() {
   const walDir = Gio.File.new_for_path(GLib.get_home_dir() + "/.cache/wal")
-  const monitor = walDir.monitor_directory(Gio.FileMonitorFlags.NONE, null)
+  themeMonitor = walDir.monitor_directory(Gio.FileMonitorFlags.NONE, null)
 
   const scssPath = GLib.get_home_dir() + "/Halix/modules/desktop/ags/style.scss"
   const cssPath = "/tmp/ags-style.css"
 
   let timeoutId: number | null = null
 
-  monitor.connect("changed", (monitor, file, other_file, event_type) => {
-    if (file && file.get_basename() !== "colors.scss") return;
-
-    // Ignore DELETED events to avoid compiling when pywal is in the middle of replacing the file
+  themeMonitor.connect("changed", (monitor, file, other_file, event_type) => {
+    // Ignore DELETED events
     if (event_type === Gio.FileMonitorEvent.DELETED) return;
 
     if (timeoutId !== null) {
       GLib.source_remove(timeoutId)
     }
 
-    timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+    timeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
       timeoutId = null
       
       ;(async () => {
