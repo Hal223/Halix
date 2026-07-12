@@ -245,6 +245,9 @@ function AppRow({ stream }: { stream: any /* AstalWp.Endpoint */ }) {
 
 function AudioPopoverContent() {
   const audio = getAudio()
+  
+  const [showOutputs, setShowOutputs] = createState(false)
+  const [showInputs, setShowInputs] = createState(false)
 
   // ── Master volume slider ──────────────────────────────────────
   const speaker = audio?.defaultSpeaker
@@ -366,8 +369,8 @@ function AudioPopoverContent() {
   const scroll = new Gtk.ScrolledWindow({
     hscrollbar_policy: Gtk.PolicyType.NEVER,
     vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-    min_content_height: 80,
-    max_content_height: 320,
+    min_content_height: 120,
+    max_content_height: 500,
   })
 
   const inner = new Gtk.Box({
@@ -380,17 +383,47 @@ function AudioPopoverContent() {
   inner.append(new Gtk.Label({ label: "VOLUME", css_classes: ["audio-section-title"], halign: Gtk.Align.START }))
   inner.append(masterRow)
 
-  // Separator
-  inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
+  if (audio) {
+    // Section: Outputs
+    const defaultOutputDesc = bind(audio, "defaultSpeaker").as(s => s?.description ?? "Select Output")
+    const outputBtn = (
+      <button cssClasses={["audio-selector-btn"]} onClicked={() => setShowOutputs(!showOutputs())}>
+        <box spacing={8}>
+          <label label="󰓃" cssClasses={["audio-selector-icon"]} />
+          <label label={defaultOutputDesc} hexpand halign={Gtk.Align.START} ellipsize={3} maxWidthChars={28} />
+          <label label={bind(showOutputs).as(s => s ? "󰅁" : "󰅂")} />
+        </box>
+      </button>
+    )
+    const outputRevealer = (
+      <revealer transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} revealChild={bind(showOutputs)}>
+        {outputBox}
+      </revealer>
+    )
+    inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
+    inner.append(outputBtn)
+    inner.append(outputRevealer)
 
-  // Section: Outputs
-  inner.append(new Gtk.Label({ label: "OUTPUT", css_classes: ["audio-section-title"], halign: Gtk.Align.START }))
-  inner.append(outputBox)
-
-  // Section: Inputs
-  inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
-  inner.append(new Gtk.Label({ label: "INPUT", css_classes: ["audio-section-title"], halign: Gtk.Align.START }))
-  inner.append(inputBox)
+    // Section: Inputs
+    const defaultInputDesc = bind(audio, "defaultMicrophone").as(m => m?.description ?? "Select Input")
+    const inputBtn = (
+      <button cssClasses={["audio-selector-btn"]} onClicked={() => setShowInputs(!showInputs())}>
+        <box spacing={8}>
+          <label label="󰓄" cssClasses={["audio-selector-icon"]} />
+          <label label={defaultInputDesc} hexpand halign={Gtk.Align.START} ellipsize={3} maxWidthChars={28} />
+          <label label={bind(showInputs).as(s => s ? "󰅁" : "󰅂")} />
+        </box>
+      </button>
+    )
+    const inputRevealer = (
+      <revealer transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} revealChild={bind(showInputs)}>
+        {inputBox}
+      </revealer>
+    )
+    inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
+    inner.append(inputBtn)
+    inner.append(inputRevealer)
+  }
 
   // Section: Apps
   inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))

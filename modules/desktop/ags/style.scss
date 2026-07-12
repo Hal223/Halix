@@ -414,6 +414,33 @@ window.Bar {
   color: rgba($fg-color, 0.75);
 }
 
+.audio-selector-btn {
+  background: rgba($fg-color, 0.05);
+  border: 1px solid rgba($fg-color, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  transition: all 0.2s ease;
+  box-shadow: none;
+
+  &:hover {
+    background: rgba($color4, 0.15);
+    border-color: rgba($color4, 0.3);
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba($fg-color, 0.85);
+  }
+
+  .audio-selector-icon {
+    font-size: 14px;
+    color: $color4;
+  }
+}
+
 // Per-app streams
 .audio-apps-list {
   margin-left: 2px;
