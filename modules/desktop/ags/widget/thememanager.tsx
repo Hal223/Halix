@@ -259,13 +259,13 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     thumbOverlay.set_child(img)
     thumbOverlay.add_overlay(overlayBox)
 
-    // ── Drag handle: thin strip overlaid on the left edge ────────────────
+    // ── Drag handle: thin strip overlaid on the top edge ─────────────────
     // Using a Gtk.Box (not a Label) so there's no text character affecting size.
-    // halign: START + overlay means it floats on the left with zero layout cost.
+    // halign: CENTER + overlay means it floats on the top with zero layout cost.
     const dragHandle = new Gtk.Box({
       css_classes: ["theme-drag-handle"],
-      valign: Gtk.Align.CENTER,
-      halign: Gtk.Align.START,
+      valign: Gtk.Align.START,
+      halign: Gtk.Align.CENTER,
     })
 
     const dragSource = new Gtk.DragSource({ actions: Gdk.DragAction.MOVE })
@@ -447,7 +447,7 @@ export default function ThemeManagerContent({ id, close }: { id: number, close: 
     imageFilter.add_mime_type("image/webp")
     imageFilter.add_mime_type("image/gif")
 
-    const filterList = Gio.ListStore.new(Gtk.FileFilter)
+    const filterList = Gio.ListStore.new(Gtk.FileFilter as any)
     filterList.append(imageFilter)
     dialog.set_filters(filterList)
     dialog.set_default_filter(imageFilter)

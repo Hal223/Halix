@@ -17,7 +17,7 @@ window.Bar {
     border-radius: 12px;
     padding: 2px 14px;
     margin: 4px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px;
+    box-shadow: rgba($color0, 0.5) 0px 2px 4px;
     transition: all 0.3s ease;
 
     &:hover {
@@ -110,17 +110,17 @@ window.Calendar {
 }
 
 .theme-drag-handle {
-  // Thin vertical strip — 8px wide pill on the left edge of the thumbnail.
-  // It is an GTK overlay so it takes zero horizontal space from the thumbnail.
-  min-width: 8px;
-  min-height: 40px;
-  background: rgba(255, 255, 255, 0.35);
+  // Thin horizontal strip — pill on the top edge of the thumbnail.
+  // It is a GTK overlay so it takes zero vertical space from the thumbnail.
+  min-width: 100px;
+  min-height: 12px;
+  //background: rgba($fg-color, 0.45);
   border-radius: 4px;
-  margin: auto 0 auto 6px;
-  transition: background 0.2s ease;
+  margin-top: 0px;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba($fg-color, 0.85);
   }
 }
 
@@ -129,7 +129,7 @@ window.Calendar {
 }
 
 .drop-target {
-  border-color: $color2 !important;
+  border-color: $color2;
   background: rgba($color2, 0.2);
 }
 
@@ -159,7 +159,7 @@ window.Calendar {
 }
 
 .theme-thumbnail-overlay {
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba($color0, 0.65);
   border-radius: 10px;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -173,20 +173,20 @@ window.Calendar {
 
 .overlay-half {
   background: transparent;
-  transition: background 0.2s ease;
+  transition: background-color 0.2s ease;
 
   .overlay-icon {
     font-size: 42px;
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba($fg-color, 0.4);
     transition: all 0.2s ease;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba($fg-color, 0.15);
   }
 
   &.left {
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 1px solid rgba($fg-color, 0.3);
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
 
@@ -225,7 +225,7 @@ window.Calendar {
   // Plenty of breathing room inside the widget
   padding: 20px;
   // Deep drop shadow to make the widget float above the wallpaper/other windows
-  box-shadow: rgba(0, 0, 0, 0.6) 0px 8px 24px;
+  box-shadow: rgba($color0, 0.7) 0px 8px 24px;
   // Subtle border colored with pywal's color5 to give it a defined edge
   border: 1px solid rgba($color5, 0.4);
   // Margin ensures the drop shadow isn't cut off by the window bounding box
@@ -282,7 +282,7 @@ window.Calendar {
   // Primary accent background
   background: rgba($color2, 0.85);
   // Dark text on a bright accent background usually reads best
-  color: #000;
+  color: $color0;
 
   &:hover {
     background: $color2; // Solidify on hover
