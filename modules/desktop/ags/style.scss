@@ -289,6 +289,8 @@ window.Calendar {
   }
 }
 
+}
+
 // 5. Transparent Popover
 // Overrides GTK's default white speech bubble background for popovers
 popover.transparent-popover>contents {
@@ -296,5 +298,255 @@ popover.transparent-popover>contents {
   border: none;
   box-shadow: none;
   padding: 0;
+}
 
+
+// 🔊 AUDIO WIDGET SYSTEM
+// ==============================================================================
+
+// ── Bar: VolumeButton ─────────────────────────────────────────────────────────
+window.Bar {
+  .volume-btn {
+    color: $color6;
+    min-width: 38px;
+
+    .volume-icon {
+      font-size: 17px;
+    }
+  }
+}
+
+// ── Audio Popup ───────────────────────────────────────────────────────────────
+.audio-popup {
+  min-width: 320px;
+  padding: 16px;
+  gap: 0;
+}
+
+.audio-popup-inner {
+  padding: 4px;
+}
+
+.audio-section-title {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: rgba($fg-color, 0.45);
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.audio-sep {
+  background: rgba($fg-color, 0.1);
+  min-height: 1px;
+  margin: 6px 0;
+}
+
+// Master volume row
+.master-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba($fg-color, 0.75);
+  min-width: 52px;
+}
+
+.master-volume-slider {
+  min-width: 160px;
+
+  slider {
+    min-width: 14px;
+    min-height: 14px;
+    background: $color6;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba($color6, 0.5);
+  }
+
+  trough {
+    min-height: 4px;
+    border-radius: 2px;
+    background: rgba($fg-color, 0.15);
+  }
+
+  highlight {
+    background: linear-gradient(to right, $color4, $color6);
+    border-radius: 2px;
+  }
+}
+
+// Device list rows
+.audio-device-list {
+  margin-left: 2px;
+}
+
+.audio-device-row {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 4px 8px;
+  margin: 2px 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($color4, 0.15);
+    border-color: rgba($color4, 0.3);
+  }
+
+  &.active {
+    background: rgba($color6, 0.2);
+    border-color: rgba($color6, 0.5);
+
+    .audio-device-icon {
+      color: $color6;
+    }
+
+    .audio-device-name {
+      color: $fg-color;
+      font-weight: 600;
+    }
+  }
+}
+
+.audio-device-icon {
+  font-size: 14px;
+  color: rgba($fg-color, 0.45);
+  min-width: 20px;
+}
+
+.audio-device-name {
+  font-size: 12px;
+  color: rgba($fg-color, 0.75);
+}
+
+// Per-app streams
+.audio-apps-list {
+  margin-left: 2px;
+}
+
+.audio-app-row {
+  padding: 3px 4px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba($fg-color, 0.05);
+  }
+}
+
+.app-icon {
+  font-size: 15px;
+  min-width: 22px;
+}
+
+.app-name {
+  font-size: 11px;
+  color: rgba($fg-color, 0.8);
+  min-width: 90px;
+}
+
+.app-volume-slider {
+  min-width: 100px;
+
+  slider {
+    min-width: 12px;
+    min-height: 12px;
+    background: $color4;
+    border-radius: 50%;
+  }
+
+  trough {
+    min-height: 3px;
+    border-radius: 2px;
+    background: rgba($fg-color, 0.15);
+  }
+
+  highlight {
+    background: $color4;
+    border-radius: 2px;
+  }
+}
+
+.app-mute-btn {
+  background: rgba($fg-color, 0.08);
+  border: 1px solid rgba($fg-color, 0.12);
+  border-radius: 6px;
+  padding: 2px 6px;
+  min-width: 28px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  box-shadow: none;
+
+  &:hover {
+    background: rgba($color4, 0.25);
+    border-color: $color4;
+  }
+
+  &.muted {
+    background: rgba($color1, 0.25);
+    border-color: rgba($color1, 0.5);
+    color: $color1;
+  }
+}
+
+.audio-empty {
+  font-size: 11px;
+  color: rgba($fg-color, 0.35);
+  padding: 4px 8px;
+  font-style: italic;
+}
+
+// ── Volume OSD Overlay ────────────────────────────────────────────────────────
+window.VolumeOSD {
+  background: transparent;
+
+  > box {
+    background: transparent;
+  }
+}
+
+.osd-content {
+  background: rgba($background, 0.9);
+  border-radius: 20px;
+  border: 1px solid rgba($color6, 0.4);
+  box-shadow:
+    rgba($color0, 0.8) 0px 12px 40px,
+    rgba($color6, 0.15) 0px 0px 0px 1px inset;
+  padding: 24px 36px 20px;
+  min-width: 200px;
+
+  // Position in the upper-center of the screen
+  margin-top: 80px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.osd-icon {
+  font-size: 42px;
+  color: $color6;
+  // Subtle glow on the icon
+  text-shadow: 0 0 20px rgba($color6, 0.6);
+  margin-bottom: 4px;
+}
+
+.osd-percentage {
+  font-size: 28px;
+  font-weight: bold;
+  color: $fg-color;
+  margin-bottom: 12px;
+}
+
+.osd-bar {
+  min-height: 6px;
+  border-radius: 3px;
+
+  trough {
+    background: rgba($fg-color, 0.15);
+    border-radius: 3px;
+    min-height: 6px;
+  }
+
+  progress {
+    background: linear-gradient(to right, $color4, $color6);
+    border-radius: 3px;
+    min-height: 6px;
+  }
 }

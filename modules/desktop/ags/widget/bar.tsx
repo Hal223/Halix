@@ -4,6 +4,7 @@ import { createPoll } from "ags/time"
 import { createBinding as bind } from "ags"
 import Hyprland from "gi://AstalHyprland"
 import ThemeSwitcher from "./themeswitcher"
+import { VolumeButton } from "./audio"
 
 function Workspaces({ id }: { id: number }) {
   const hyprland = Hyprland.get_default()
@@ -50,6 +51,7 @@ function EndModules({ id }: { id: number }) {
       <button onClicked={() => app.toggle_window(`test-${id}`)} cssClasses={["test-btn"]}>
         <label label="🧪" />
       </button>
+      <VolumeButton id={id} />
       <ThemeSwitcher id={id} />
       <Clock id={id} />
     </box>

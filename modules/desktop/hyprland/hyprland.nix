@@ -16,6 +16,7 @@
     pkgs.hyprshot
     pkgs.hyprpaper
     pkgs.pywal
+    pkgs.libpulseaudio # provides paplay for volume sound effects
   ];
 
   # Optional, hint Electron apps to use Wayland:
@@ -31,6 +32,7 @@
         inputs.astal.packages.${pkgs.system}.astal4
         inputs.astal.packages.${pkgs.system}.io
         inputs.astal.packages.${pkgs.system}.hyprland
+        inputs.astal.packages.${pkgs.system}.wireplumber
       ];
     };
 
@@ -173,6 +175,13 @@
         # Screenshots
         bind = , Print, exec, hyprshot -z -m output -o ~/Pictures/Screenshots
         bind = $mainMod SHIFT, S, exec, hyprshot -z -m region -o ~/Pictures/Screenshots
+
+        # Audio / Volume keys (XF86 + headset hardware buttons)
+        # bindel allows repeat while held down
+        bindel = , XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ && ags request volume-up
+        bindel = , XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && ags request volume-down
+        bind   = , XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ags request volume-mute
+        bind   = , XF86AudioMicMute,     exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
         #bind = $mainMod, P, pseudo, # dwindle
         #bind = $mainMod, J, togglesplit, # dwindle
