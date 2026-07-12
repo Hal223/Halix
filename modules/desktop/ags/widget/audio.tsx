@@ -10,8 +10,8 @@ import { playVolumeSound } from "../lib/volume-sound"
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-function getWp() {
-  return AstalWp.get_default()
+function getAudio() {
+  return AstalWp.get_default()?.audio
 }
 
 function volumeIcon(vol: number, muted: boolean): string {
@@ -35,8 +35,8 @@ let _osdHideTimer: number | null = null
 let _osdSetVolume: ((v: number, muted: boolean) => void) | null = null
 
 export function showVolumeOSD() {
-  const wp = getWp()
-  const speaker = wp?.get_default_speaker()
+  const audio = getAudio()
+  const speaker = audio?.defaultSpeaker
   if (!speaker || !_osdWindow || !_osdSetVolume) return
 
   _osdSetVolume(speaker.volume, speaker.mute)
@@ -148,10 +148,10 @@ function DeviceRow({
   endpoint,
   onSelect,
 }: {
-  endpoint: AstalWp.Endpoint
+  endpoint: any // AstalWp.Endpoint
   onSelect: () => void
 }) {
-  const isDefault = bind(endpoint, "is_default")
+  const isDefault = bind(endpoint, "is-default")
   const desc = bind(endpoint, "description").as(d =>
     d?.replace(/\s+\(.+?\)\s*$/, "") ?? endpoint.description ?? "Unknown Device"
   )
@@ -185,12 +185,10 @@ function DeviceRow({
 // AppRow — per-application sink-input with slider + mute
 // ─────────────────────────────────────────────────────────────────────────────
 
-function AppRow({ stream }: { stream: AstalWp.Endpoint }) {
+function AppRow({ stream }: { stream: any /* AstalWp.Endpoint */ }) {
   // Resolve friendly name / icon from binary name
-  const props = stream.get_properties() as Record<string, string> | null
-  const binary = props?.["application.process.binary"] ?? ""
-  const appName = props?.["application.name"] ?? stream.description ?? ""
-  const { name, icon } = resolveAppInfo(binary, appName)
+  const nameProp = stream.name ?? stream.description ?? ""
+  const { name, icon } = resolveAppInfo(nameProp, nameProp)
 
   const volBind = bind(stream, "volume")
   const muteBind = bind(stream, "mute")
@@ -212,14 +210,14 @@ function AppRow({ stream }: { stream: AstalWp.Endpoint }) {
   volBind.subscribe(v => { slider.value = v })
 
   slider.connect("value-changed", () => {
-    stream.set_volume(clamp(slider.value))
+    stream.volume = clamp(slider.value)
   })
 
   const muteBtn = (
     <button
       cssClasses={muteBind.as(m => ["app-mute-btn", ...(m ? ["muted"] : [])])}
       tooltipText={muteBind.as(m => (m ? "Unmute" : "Mute"))}
-      onClicked={() => stream.set_mute(!stream.mute)}
+      onClicked={() => { stream.mute = !stream.mute }}
     >
       <label label={muteBind.as(m => (m ? "󰖁" : "󰕾"))} />
     </button>
@@ -246,10 +244,10 @@ function AppRow({ stream }: { stream: AstalWp.Endpoint }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function AudioPopoverContent() {
-  const wp = getWp()
+  const audio = getAudio()
 
   // ── Master volume slider ──────────────────────────────────────
-  const speaker = wp?.get_default_speaker()
+  const speaker = audio?.defaultSpeaker
 
   const masterSlider = new Gtk.Scale({
     orientation: Gtk.Orientation.HORIZONTAL,
@@ -266,7 +264,7 @@ function AudioPopoverContent() {
   if (speaker) {
     bind(speaker, "volume").subscribe(v => { masterSlider.value = v })
     masterSlider.connect("value-changed", () => {
-      speaker.set_volume(clamp(masterSlider.value))
+      speaker.volume = clamp(masterSlider.value)
     })
   }
 
@@ -278,7 +276,7 @@ function AudioPopoverContent() {
       masterMuteLbl.label = m ? "󰖁" : "󰕾"
       masterMuteBtn.css_classes = m ? ["app-mute-btn", "muted"] : ["app-mute-btn"]
     })
-    masterMuteBtn.connect("clicked", () => speaker.set_mute(!speaker.mute))
+    masterMuteBtn.connect("clicked", () => { speaker.mute = !speaker.mute })
   }
 
   const masterRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8 })
@@ -315,24 +313,23 @@ function AudioPopoverContent() {
     child = inputBox.get_first_child()
     while (child) { const next = child.get_next_sibling(); inputBox.remove(child); child = next }
 
-    if (!wp) return
+    if (!audio) return
 
     // Outputs (sinks)
-    const sinks = wp.get_endpoints()?.filter(e => e.media_class?.includes("Sink") || e.media_class?.includes("Output")) ?? []
+    const sinks = audio.speakers ?? []
     for (const sink of sinks) {
-      outputBox.append(DeviceRow({ endpoint: sink, onSelect: () => sink.set_is_default(true) }))
+      outputBox.append(DeviceRow({ endpoint: sink, onSelect: () => { sink.isDefault = true } }))
     }
     if (sinks.length === 0) {
       outputBox.append(new Gtk.Label({ label: "No output devices", css_classes: ["audio-empty"] }))
     }
 
     // Inputs (sources — exclude monitors)
-    const sources = wp.get_endpoints()?.filter(e =>
-      (e.media_class?.includes("Source") || e.media_class?.includes("Input")) &&
+    const sources = audio.microphones?.filter((e: any) =>
       !e.description?.includes("Monitor")
     ) ?? []
     for (const src of sources) {
-      inputBox.append(DeviceRow({ endpoint: src, onSelect: () => src.set_is_default(true) }))
+      inputBox.append(DeviceRow({ endpoint: src, onSelect: () => { src.isDefault = true } }))
     }
     if (sources.length === 0) {
       inputBox.append(new Gtk.Label({ label: "No input devices", css_classes: ["audio-empty"] }))
@@ -343,11 +340,9 @@ function AudioPopoverContent() {
     let child = appsBox.get_first_child()
     while (child) { const next = child.get_next_sibling(); appsBox.remove(child); child = next }
 
-    if (!wp) return
+    if (!audio) return
 
-    const streams = wp.get_streams()?.filter(s =>
-      s.media_class?.includes("Stream/Output") || s.media_class?.includes("Stream/Input")
-    ) ?? []
+    const streams = audio.streams ?? []
 
     for (const s of streams) {
       appsBox.append(AppRow({ stream: s }))
@@ -360,10 +355,11 @@ function AudioPopoverContent() {
   rebuildDevices()
   rebuildApps()
 
-  if (wp) {
+  if (audio) {
     // Rebuild on topology change
-    wp.connect("notify::endpoints", () => rebuildDevices())
-    wp.connect("notify::streams", () => rebuildApps())
+    audio.connect("notify::speakers", () => rebuildDevices())
+    audio.connect("notify::microphones", () => rebuildDevices())
+    audio.connect("notify::streams", () => rebuildApps())
   }
 
   // ── Layout ────────────────────────────────────────────────────
@@ -417,8 +413,8 @@ function AudioPopoverContent() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function VolumeButton({ id }: { id: number }) {
-  const wp = getWp()
-  const speaker = wp?.get_default_speaker()
+  const audio = getAudio()
+  const speaker = audio?.defaultSpeaker
 
   // Dynamic icon label reacts to volume + mute changes
   const iconLabel = new Gtk.Label({ css_classes: ["volume-icon"] })
@@ -447,7 +443,7 @@ export function VolumeButton({ id }: { id: number }) {
   scroll.connect("scroll", (_self: any, _dx: number, dy: number) => {
     if (!speaker) return
     const delta = dy > 0 ? -0.05 : 0.05
-    speaker.set_volume(clamp(speaker.volume + delta))
+    speaker.volume = clamp(speaker.volume + delta)
     playVolumeSound()
     showVolumeOSD()
     return true

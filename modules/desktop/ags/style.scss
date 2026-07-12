@@ -289,8 +289,6 @@ window.Calendar {
   }
 }
 
-}
-
 // 5. Transparent Popover
 // Overrides GTK's default white speech bubble background for popovers
 popover.transparent-popover>contents {
@@ -320,7 +318,6 @@ window.Bar {
 .audio-popup {
   min-width: 320px;
   padding: 16px;
-  gap: 0;
 }
 
 .audio-popup-inner {
@@ -515,8 +512,6 @@ window.VolumeOSD {
 
   // Position in the upper-center of the screen
   margin-top: 80px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .osd-icon {
