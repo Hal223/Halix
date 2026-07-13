@@ -57,35 +57,33 @@ export function showVolumeOSD() {
 // VolumeOSD — full-screen overlay, center of screen, auto-hides
 // ─────────────────────────────────────────────────────────────────────────────
 
+let _soundTimer: number | null = null
+function debouncedPlayVolumeSound() {
+  if (_soundTimer !== null) {
+    GLib.source_remove(_soundTimer)
+  }
+  _soundTimer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+    playVolumeSound()
+    _soundTimer = null
+    return GLib.SOURCE_REMOVE
+  })
+}
+
 export function VolumeOSD(gdkmonitor: Gdk.Monitor, id: number = 0) {
   // Only create OSD on primary monitor (id 0)
   if (id !== 0) return null
 
-  const [vol, setVol] = createState(0)
-  const [muted, setMuted] = createState(false)
-
   // Expose setter to the module-level showVolumeOSD()
   _osdSetVolume = (v: number, m: boolean) => {
-    setVol(v)
-    setMuted(m)
+    iconLabel.label = volumeIcon(v, m)
+    pctLabel.label = m ? "Muted" : `${Math.round(v * 100)}%`
+    bar.fraction = Math.min(1, v)
   }
-
-  const pct = bind(vol).as(v => Math.round(v * 100))
-  const icon = bind(vol).as((v) => volumeIcon(v, muted()))
-  const muteIcon = bind(muted).as(m => volumeIcon(vol(), m))
 
   // Large icon
   const iconLabel = new Gtk.Label({
     css_classes: ["osd-icon"],
     halign: Gtk.Align.CENTER,
-  })
-  iconLabel.label = ""
-  // Bind combined icon (vol OR muted can change)
-  bind(vol).subscribe(v => {
-    iconLabel.label = volumeIcon(v, muted())
-  })
-  bind(muted).subscribe(m => {
-    iconLabel.label = volumeIcon(vol(), m)
   })
 
   // Percentage text
@@ -93,20 +91,11 @@ export function VolumeOSD(gdkmonitor: Gdk.Monitor, id: number = 0) {
     css_classes: ["osd-percentage"],
     halign: Gtk.Align.CENTER,
   })
-  bind(vol).subscribe(v => {
-    pctLabel.label = muted() ? "Muted" : `${Math.round(v * 100)}%`
-  })
-  bind(muted).subscribe(m => {
-    pctLabel.label = m ? "Muted" : `${Math.round(vol() * 100)}%`
-  })
 
   // Progress bar
   const bar = new Gtk.ProgressBar({
     css_classes: ["osd-bar"],
     hexpand: true,
-  })
-  bind(vol).subscribe(v => {
-    bar.fraction = Math.min(1, v) // bar only shows 0-100% range
   })
 
   const content = new Gtk.Box({
@@ -130,13 +119,35 @@ export function VolumeOSD(gdkmonitor: Gdk.Monitor, id: number = 0) {
       keymode={Astal.Keymode.NONE}
       application={app}
       visible={false}
-      clickThrough={true}
     >
       {content}
     </window>
   )
 
   _osdWindow = win as unknown as Gtk.Window
+
+  // Global watcher for external volume/mute changes
+  const audio = getAudio()
+  const speaker = audio?.defaultSpeaker
+  if (speaker) {
+    let lastVol = speaker.volume
+    let lastMute = speaker.mute
+    bind(speaker, "volume").subscribe(() => {
+      if (speaker.volume !== lastVol) {
+        lastVol = speaker.volume
+        showVolumeOSD()
+        debouncedPlayVolumeSound()
+      }
+    })
+    bind(speaker, "mute").subscribe(() => {
+      if (speaker.mute !== lastMute) {
+        lastMute = speaker.mute
+        showVolumeOSD()
+        debouncedPlayVolumeSound()
+      }
+    })
+  }
+
   return win
 }
 
@@ -151,34 +162,37 @@ function DeviceRow({
   endpoint: any // AstalWp.Endpoint
   onSelect: () => void
 }) {
-  const isDefault = bind(endpoint, "is-default")
-  const desc = bind(endpoint, "description").as(d =>
-    d?.replace(/\s+\(.+?\)\s*$/, "") ?? endpoint.description ?? "Unknown Device"
-  )
+  const iconLabel = new Gtk.Label({ css_classes: ["audio-device-icon"] })
+  bind(endpoint, "is-default").subscribe(() => { 
+    iconLabel.label = (endpoint.isDefault ?? false) ? "󰓃" : "󰓄" 
+  })
+  iconLabel.label = (endpoint.isDefault ?? false) ? "󰓃" : "󰓄"
 
-  const row = (
-    <button
-      cssClasses={isDefault.as(d => ["audio-device-row", ...(d ? ["active"] : [])])}
-      onClicked={onSelect}
-      halign={Gtk.Align.FILL}
-      hexpand
-    >
-      <box spacing={8} halign={Gtk.Align.START}>
-        <label
-          cssClasses={["audio-device-icon"]}
-          label={isDefault.as(d => (d ? "󰓃" : "󰓄"))}
-        />
-        <label
-          cssClasses={["audio-device-name"]}
-          label={desc}
-          ellipsize={3 /* PANGO_ELLIPSIZE_END */}
-          maxWidthChars={28}
-          halign={Gtk.Align.START}
-        />
-      </box>
-    </button>
-  )
-  return row
+  const nameLabel = new Gtk.Label({
+    css_classes: ["audio-device-name"],
+    ellipsize: 3,
+    max_width_chars: 28,
+    halign: Gtk.Align.START,
+  })
+  bind(endpoint, "description").subscribe(() => { 
+    nameLabel.label = endpoint.description?.replace(/\s+\(.+?\)\s*$/, "") ?? "Unknown Device"
+  })
+  nameLabel.label = endpoint.description?.replace(/\s+\(.+?\)\s*$/, "") ?? "Unknown Device"
+
+  const box = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, halign: Gtk.Align.START })
+  box.append(iconLabel)
+  box.append(nameLabel)
+
+  const btn = new Gtk.Button({ halign: Gtk.Align.FILL, hexpand: true })
+  bind(endpoint, "is-default").subscribe(() => {
+    btn.css_classes = ["audio-device-row", ...((endpoint.isDefault ?? false) ? ["active"] : [])]
+  })
+  btn.css_classes = ["audio-device-row", ...((endpoint.isDefault ?? false) ? ["active"] : [])]
+  
+  btn.connect("clicked", onSelect)
+  btn.set_child(box)
+
+  return btn
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -186,12 +200,8 @@ function DeviceRow({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function AppRow({ stream }: { stream: any /* AstalWp.Endpoint */ }) {
-  // Resolve friendly name / icon from binary name
   const nameProp = stream.name ?? stream.description ?? ""
   const { name, icon } = resolveAppInfo(nameProp, nameProp)
-
-  const volBind = bind(stream, "volume")
-  const muteBind = bind(stream, "mute")
 
   const slider = new Gtk.Scale({
     orientation: Gtk.Orientation.HORIZONTAL,
@@ -202,41 +212,51 @@ function AppRow({ stream }: { stream: any /* AstalWp.Endpoint */ }) {
       lower: 0,
       upper: 1,
       step_increment: 0.05,
-      value: stream.volume,
+      value: stream.volume ?? 0.5,
     }),
   })
 
-  // Keep slider in sync with stream
-  volBind.subscribe(v => { slider.value = v })
-
+  bind(stream, "volume").subscribe(() => { slider.set_value(stream.volume ?? 0.5) })
   slider.connect("value-changed", () => {
-    stream.volume = clamp(slider.value)
+    stream.volume = clamp(slider.get_value())
   })
 
-  const muteBtn = (
-    <button
-      cssClasses={muteBind.as(m => ["app-mute-btn", ...(m ? ["muted"] : [])])}
-      tooltipText={muteBind.as(m => (m ? "Unmute" : "Mute"))}
-      onClicked={() => { stream.mute = !stream.mute }}
-    >
-      <label label={muteBind.as(m => (m ? "󰖁" : "󰕾"))} />
-    </button>
-  )
+  const muteLbl = new Gtk.Label()
+  const muteBtn = new Gtk.Button()
+  muteBtn.set_child(muteLbl)
 
-  return (
-    <box cssClasses={["audio-app-row"]} spacing={8} hexpand>
-      <label cssClasses={["app-icon"]} label={icon} />
-      <label
-        cssClasses={["app-name"]}
-        label={name}
-        ellipsize={3}
-        maxWidthChars={14}
-        halign={Gtk.Align.START}
-      />
-      {slider}
-      {muteBtn}
-    </box>
-  )
+  const updateMute = () => {
+    const isMuted = stream.mute ?? false
+    muteBtn.css_classes = ["app-mute-btn", ...(isMuted ? ["muted"] : [])]
+    muteBtn.tooltip_text = isMuted ? "Unmute" : "Mute"
+    muteLbl.label = isMuted ? "󰖁" : "󰕾"
+  }
+  bind(stream, "mute").subscribe(updateMute)
+  updateMute()
+
+  muteBtn.connect("clicked", () => { stream.mute = !(stream.mute ?? false) })
+
+  const box = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true, css_classes: ["audio-app-row"] })
+  box.append(new Gtk.Label({ css_classes: ["app-icon"], label: icon }))
+  box.append(new Gtk.Label({
+    css_classes: ["app-name"],
+    label: name,
+    ellipsize: 3,
+    max_width_chars: 14,
+    halign: Gtk.Align.START,
+  }))
+  box.append(slider)
+  box.append(muteBtn)
+
+  return box
+}
+
+function clearBox(box: Gtk.Box) {
+  let child = box.get_first_child()
+  while (child) {
+    box.remove(child)
+    child = box.get_first_child()
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -245,9 +265,6 @@ function AppRow({ stream }: { stream: any /* AstalWp.Endpoint */ }) {
 
 function AudioPopoverContent() {
   const audio = getAudio()
-  
-  const [showOutputs, setShowOutputs] = createState(false)
-  const [showInputs, setShowInputs] = createState(false)
 
   // ── Master volume slider ──────────────────────────────────────
   const speaker = audio?.defaultSpeaker
@@ -265,9 +282,9 @@ function AudioPopoverContent() {
     }),
   })
   if (speaker) {
-    bind(speaker, "volume").subscribe(v => { masterSlider.value = v })
+    bind(speaker, "volume").subscribe(() => { masterSlider.set_value(speaker.volume ?? 0) })
     masterSlider.connect("value-changed", () => {
-      speaker.volume = clamp(masterSlider.value)
+      speaker.volume = clamp(masterSlider.get_value())
     })
   }
 
@@ -275,11 +292,12 @@ function AudioPopoverContent() {
   const masterMuteLbl = new Gtk.Label()
   masterMuteBtn.set_child(masterMuteLbl)
   if (speaker) {
-    bind(speaker, "mute").subscribe(m => {
-      masterMuteLbl.label = m ? "󰖁" : "󰕾"
-      masterMuteBtn.css_classes = m ? ["app-mute-btn", "muted"] : ["app-mute-btn"]
+    bind(speaker, "mute").subscribe(() => {
+      const isMuted = speaker.mute ?? false
+      masterMuteLbl.label = isMuted ? "󰖁" : "󰕾"
+      masterMuteBtn.css_classes = isMuted ? ["app-mute-btn", "muted"] : ["app-mute-btn"]
     })
-    masterMuteBtn.connect("clicked", () => { speaker.mute = !speaker.mute })
+    masterMuteBtn.connect("clicked", () => { speaker.mute = !(speaker.mute ?? false) })
   }
 
   const masterRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8 })
@@ -288,88 +306,66 @@ function AudioPopoverContent() {
   masterRow.append(masterMuteBtn)
 
   // ── Output Devices ────────────────────────────────────────────
-  const outputBox = new Gtk.Box({
-    orientation: Gtk.Orientation.VERTICAL,
-    spacing: 4,
-    css_classes: ["audio-device-list"],
-  })
+  const outputBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 4, css_classes: ["audio-device-list"] })
+  if (audio) {
+    const updateOutputs = () => {
+      clearBox(outputBox)
+      const sinks = audio.speakers ?? []
+      if (sinks.length > 0) {
+        sinks.forEach((sink: any) => outputBox.append(DeviceRow({ endpoint: sink, onSelect: () => { sink.isDefault = true } })))
+      } else {
+        outputBox.append(new Gtk.Label({ label: "No output devices", css_classes: ["audio-empty"] }))
+      }
+    }
+    bind(audio, "speakers").subscribe(updateOutputs)
+    updateOutputs()
+  } else {
+    outputBox.append(new Gtk.Label({ label: "No output devices", css_classes: ["audio-empty"] }))
+  }
 
   // ── Input Devices ─────────────────────────────────────────────
-  const inputBox = new Gtk.Box({
-    orientation: Gtk.Orientation.VERTICAL,
-    spacing: 4,
-    css_classes: ["audio-device-list"],
-  })
+  const inputBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 4, css_classes: ["audio-device-list"] })
+  if (audio) {
+    const updateInputs = () => {
+      clearBox(inputBox)
+      const sources = (audio.microphones ?? []).filter((e: any) => !e.description?.includes("Monitor"))
+      if (sources.length > 0) {
+        sources.forEach((src: any) => inputBox.append(DeviceRow({ endpoint: src, onSelect: () => { src.isDefault = true } })))
+      } else {
+        inputBox.append(new Gtk.Label({ label: "No input devices", css_classes: ["audio-empty"] }))
+      }
+    }
+    bind(audio, "microphones").subscribe(updateInputs)
+    updateInputs()
+  } else {
+    inputBox.append(new Gtk.Label({ label: "No input devices", css_classes: ["audio-empty"] }))
+  }
 
   // ── App streams ───────────────────────────────────────────────
-  const appsBox = new Gtk.Box({
-    orientation: Gtk.Orientation.VERTICAL,
-    spacing: 6,
-    css_classes: ["audio-apps-list"],
-  })
-
-  // Build device & app lists reactively via notify signals
-  function rebuildDevices() {
-    // Clear children
-    let child = outputBox.get_first_child()
-    while (child) { const next = child.get_next_sibling(); outputBox.remove(child); child = next }
-    child = inputBox.get_first_child()
-    while (child) { const next = child.get_next_sibling(); inputBox.remove(child); child = next }
-
-    if (!audio) return
-
-    // Outputs (sinks)
-    const sinks = audio.speakers ?? []
-    for (const sink of sinks) {
-      outputBox.append(DeviceRow({ endpoint: sink, onSelect: () => { sink.isDefault = true } }))
-    }
-    if (sinks.length === 0) {
-      outputBox.append(new Gtk.Label({ label: "No output devices", css_classes: ["audio-empty"] }))
-    }
-
-    // Inputs (sources — exclude monitors)
-    const sources = audio.microphones?.filter((e: any) =>
-      !e.description?.includes("Monitor")
-    ) ?? []
-    for (const src of sources) {
-      inputBox.append(DeviceRow({ endpoint: src, onSelect: () => { src.isDefault = true } }))
-    }
-    if (sources.length === 0) {
-      inputBox.append(new Gtk.Label({ label: "No input devices", css_classes: ["audio-empty"] }))
-    }
-  }
-
-  function rebuildApps() {
-    let child = appsBox.get_first_child()
-    while (child) { const next = child.get_next_sibling(); appsBox.remove(child); child = next }
-
-    if (!audio) return
-
-    const streams = audio.streams ?? []
-
-    for (const s of streams) {
-      appsBox.append(AppRow({ stream: s }))
-    }
-    if (streams.length === 0) {
-      appsBox.append(new Gtk.Label({ label: "No active streams", css_classes: ["audio-empty"] }))
-    }
-  }
-
-  rebuildDevices()
-  rebuildApps()
-
+  const appsBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 6, css_classes: ["audio-apps-list"] })
   if (audio) {
-    // Rebuild on topology change
-    audio.connect("notify::speakers", () => rebuildDevices())
-    audio.connect("notify::microphones", () => rebuildDevices())
-    audio.connect("notify::streams", () => rebuildApps())
+    const updateStreams = () => {
+      clearBox(appsBox)
+      const streams = audio.streams ?? []
+      if (streams.length > 0) {
+        streams.forEach((s: any) => appsBox.append(AppRow({ stream: s })))
+      } else {
+        appsBox.append(new Gtk.Label({ label: "No active streams", css_classes: ["audio-empty"] }))
+      }
+    }
+    bind(audio, "streams").subscribe(updateStreams)
+    updateStreams()
+  } else {
+    appsBox.append(new Gtk.Label({ label: "No active streams", css_classes: ["audio-empty"] }))
   }
 
   // ── Layout ────────────────────────────────────────────────────
   const scroll = new Gtk.ScrolledWindow({
     hscrollbar_policy: Gtk.PolicyType.NEVER,
     vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-    min_content_height: 120,
+    min_content_width: 350,
+    max_content_width: 350,
+    min_content_height: 300,
     max_content_height: 500,
   })
 
@@ -385,50 +381,66 @@ function AudioPopoverContent() {
 
   if (audio) {
     // Section: Outputs
+    let showOutputs = false
+    const outputIcon = new Gtk.Label({ label: "󰅂" })
+    const outputRevealer = new Gtk.Revealer({
+      transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
+      revealChild: false,
+    })
+    outputRevealer.set_child(outputBox as Gtk.Widget)
+
     const defaultOutputDesc = bind(audio, "defaultSpeaker").as(s => s?.description ?? "Select Output")
     const outputBtn = (
-      <button cssClasses={["audio-selector-btn"]} onClicked={() => setShowOutputs(!showOutputs())}>
+      <button cssClasses={["audio-selector-btn"]} onClicked={() => {
+        showOutputs = !showOutputs
+        outputIcon.label = showOutputs ? "󰅁" : "󰅂"
+        outputRevealer.revealChild = showOutputs
+      }}>
         <box spacing={8}>
           <label label="󰓃" cssClasses={["audio-selector-icon"]} />
           <label label={defaultOutputDesc} hexpand halign={Gtk.Align.START} ellipsize={3} maxWidthChars={28} />
-          <label label={bind(showOutputs).as(s => s ? "󰅁" : "󰅂")} />
+          {outputIcon}
         </box>
       </button>
     )
-    const outputRevealer = (
-      <revealer transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} revealChild={bind(showOutputs)}>
-        {outputBox}
-      </revealer>
-    )
+
     inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
-    inner.append(outputBtn)
+    inner.append(outputBtn as Gtk.Widget)
     inner.append(outputRevealer)
 
     // Section: Inputs
+    let showInputs = false
+    const inputIcon = new Gtk.Label({ label: "󰅂" })
+    const inputRevealer = new Gtk.Revealer({
+      transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
+      revealChild: false,
+    })
+    inputRevealer.set_child(inputBox as Gtk.Widget)
+
     const defaultInputDesc = bind(audio, "defaultMicrophone").as(m => m?.description ?? "Select Input")
     const inputBtn = (
-      <button cssClasses={["audio-selector-btn"]} onClicked={() => setShowInputs(!showInputs())}>
+      <button cssClasses={["audio-selector-btn"]} onClicked={() => {
+        showInputs = !showInputs
+        inputIcon.label = showInputs ? "󰅁" : "󰅂"
+        inputRevealer.revealChild = showInputs
+      }}>
         <box spacing={8}>
           <label label="󰓄" cssClasses={["audio-selector-icon"]} />
           <label label={defaultInputDesc} hexpand halign={Gtk.Align.START} ellipsize={3} maxWidthChars={28} />
-          <label label={bind(showInputs).as(s => s ? "󰅁" : "󰅂")} />
+          {inputIcon}
         </box>
       </button>
     )
-    const inputRevealer = (
-      <revealer transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN} revealChild={bind(showInputs)}>
-        {inputBox}
-      </revealer>
-    )
+
     inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
-    inner.append(inputBtn)
+    inner.append(inputBtn as Gtk.Widget)
     inner.append(inputRevealer)
   }
 
   // Section: Apps
   inner.append(new Gtk.Separator({ orientation: Gtk.Orientation.HORIZONTAL, css_classes: ["audio-sep"] }))
   inner.append(new Gtk.Label({ label: "APPS", css_classes: ["audio-section-title"], halign: Gtk.Align.START }))
-  inner.append(appsBox)
+  inner.append(appsBox as Gtk.Widget)
 
   scroll.set_child(inner)
 
@@ -454,7 +466,7 @@ export function VolumeButton({ id }: { id: number }) {
 
   function updateIcon() {
     if (!speaker) { iconLabel.label = "󰖁"; return }
-    iconLabel.label = volumeIcon(speaker.volume, speaker.mute)
+    iconLabel.label = volumeIcon(speaker.volume ?? 0, speaker.mute ?? false)
   }
   updateIcon()
 
@@ -477,8 +489,6 @@ export function VolumeButton({ id }: { id: number }) {
     if (!speaker) return
     const delta = dy > 0 ? -0.05 : 0.05
     speaker.volume = clamp(speaker.volume + delta)
-    playVolumeSound()
-    showVolumeOSD()
     return true
   })
 

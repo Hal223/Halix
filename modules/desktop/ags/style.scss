@@ -353,6 +353,8 @@ window.Bar {
   slider {
     min-width: 14px;
     min-height: 14px;
+    margin: 0;
+    border: 0;
     background: $color6;
     border-radius: 50%;
     box-shadow: 0 0 4px rgba($color6, 0.5);
@@ -473,6 +475,8 @@ window.Bar {
   slider {
     min-width: 12px;
     min-height: 12px;
+    margin: 0;
+    border: 0;
     background: $color4;
     border-radius: 50%;
   }

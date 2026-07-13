@@ -24,3 +24,8 @@ declare module "gi://AstalHyprland" {
   const content: any
   export default content
 }
+
+declare module "gi://AstalWp" {
+  const content: any
+  export default content
+}
