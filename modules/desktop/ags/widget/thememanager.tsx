@@ -99,6 +99,9 @@ async function applyWallpaper(wallPath: string) {
   await spawnAsync(["wal", "-i", wallPath, "-n"]).catch((e) => {
     console.error("wal failed:", e)
   })
+  await spawnAsync(["hyprctl", "reload"]).catch((e) => {
+    console.error("hyprctl reload failed:", e)
+  })
 }
 
 async function getCurrentWallpaperPath(): Promise<string> {

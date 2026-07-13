@@ -11,7 +11,7 @@ app.start({
   css: style,
   requestHandler(request, res) {
     // Hyprland keybind sends: ags request volume-up / volume-down / volume-mute
-    if (request === "volume-up" || request === "volume-down" || request === "volume-mute") {
+    if (request[0] === "volume-up" || request[0] === "volume-down" || request[0] === "volume-mute") {
       showVolumeOSD()
       res("ok")
       return

@@ -32,7 +32,6 @@
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1"; # Tells Electron apps (like Discord) to use Wayland
-    XDG_CURRENT_DESKTOP = "sway"; # Helps portals identify the environment
     GTK_THEME = "Adwaita:dark"; # Force a dark theme for GTK apps and Waybar's tray menus
   };
 
