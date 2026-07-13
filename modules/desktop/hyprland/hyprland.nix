@@ -95,7 +95,7 @@
         source = ~/.cache/wal/colors-hyprland.conf
 
         general {
-            gaps_in = 2
+            gaps_in = 4
             gaps_out = 2
             border_size = 1
             col.active_border = $color4 $color6 45deg
@@ -147,6 +147,7 @@
             kb_model =
             kb_options =
             kb_rules =
+            numlock_by_default = true
 
             follow_mouse = 1
             sensitivity = 0

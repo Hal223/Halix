@@ -365,8 +365,8 @@ function AudioPopoverContent() {
     vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
     min_content_width: 350,
     max_content_width: 350,
-    min_content_height: 300,
-    max_content_height: 500,
+    min_content_height: 450,
+    max_content_height: 600,
   })
 
   const inner = new Gtk.Box({

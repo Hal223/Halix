@@ -1,7 +1,7 @@
 @use '/home/hal/.cache/wal/colors.scss' as *;
 
 $fg-color: $foreground;
-$bg-color: rgba($background, 0.85);
+$bg-color: $background;
 
 window.Bar {
   background: transparent;
@@ -526,13 +526,13 @@ window.Bar {
 window.VolumeOSD {
   background: transparent;
 
-  > box {
+  >box {
     background: transparent;
   }
 }
 
 .osd-content {
-  background: rgba($background, 0.9);
+  background: $background;
   border-radius: 20px;
   border: 1px solid rgba($color6, 0.4);
   box-shadow:

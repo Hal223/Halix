@@ -48,9 +48,6 @@ function Clock({ id }: { id: number }) {
 function EndModules({ id }: { id: number }) {
   return (
     <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={20}>
-      <button onClicked={() => app.toggle_window(`test-${id}`)} cssClasses={["test-btn"]}>
-        <label label="🧪" />
-      </button>
       <VolumeButton id={id} />
       <ThemeSwitcher id={id} />
       <Clock id={id} />
