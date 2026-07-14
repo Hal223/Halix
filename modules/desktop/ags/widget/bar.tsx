@@ -49,24 +49,38 @@ function Clock({ id }: { id: number }) {
 function SysTray() {
   const tray = AstalTray.get_default()
 
-  return (
-    <box cssClasses={["systray"]} spacing={8}>
-      {bind(tray, "items").as((items: any[]) =>
-        items.map((item: any) => {
-          const mb = (
-            <menubutton
-              tooltipMarkup={bind(item, "tooltipMarkup")}
-              menuModel={bind(item, "menuModel")}
-            >
-              <image gicon={bind(item, "gicon")} />
-            </menubutton>
-          ) as any
-          mb.insert_action_group("dbusmenu", item.actionGroup)
-          return mb
-        })
-      ) as any}
-    </box>
-  )
+  const container = (
+    <box cssClasses={["systray"]} spacing={8} />
+  ) as any
+
+  const updateTray = () => {
+    const items = tray.get_items() ?? []
+    // Clear current children
+    let child = container.get_first_child()
+    while (child) {
+      container.remove(child)
+      child = container.get_first_child()
+    }
+
+    // Create and append new children
+    items.forEach((item: any) => {
+      const mb = (
+        <menubutton
+          tooltipMarkup={bind(item, "tooltipMarkup")}
+          menuModel={bind(item, "menuModel")}
+        >
+          <image gicon={bind(item, "gicon")} />
+        </menubutton>
+      ) as any
+      mb.insert_action_group("dbusmenu", item.actionGroup)
+      container.append(mb)
+    })
+  }
+
+  bind(tray, "items").subscribe(updateTray)
+  updateTray()
+
+  return container
 }
 
 function EndModules({ id }: { id: number }) {
