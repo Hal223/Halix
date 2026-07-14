@@ -3,6 +3,7 @@ import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import { createBinding as bind } from "ags"
 import Hyprland from "gi://AstalHyprland"
+import AstalTray from "gi://AstalTray"
 import ThemeSwitcher from "./themeswitcher"
 import { VolumeButton } from "./audio"
 
@@ -45,9 +46,33 @@ function Clock({ id }: { id: number }) {
   )
 }
 
+function SysTray() {
+  const tray = AstalTray.get_default()
+
+  return (
+    <box cssClasses={["systray"]} spacing={8}>
+      {bind(tray, "items").as(items =>
+        items.map(item => (
+          <menubutton
+            tooltipMarkup={bind(item, "tooltipMarkup")}
+            usePopover={false}
+            menuModel={bind(item, "menuModel")}
+            setup={mb => {
+              mb.insert_action_group("dbusmenu", item.actionGroup)
+            }}
+          >
+            <icon gicon={bind(item, "gicon")} />
+          </menubutton>
+        ))
+      )}
+    </box>
+  )
+}
+
 function EndModules({ id }: { id: number }) {
   return (
     <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={20}>
+      <SysTray />
       <VolumeButton id={id} />
       <ThemeSwitcher id={id} />
       <Clock id={id} />
