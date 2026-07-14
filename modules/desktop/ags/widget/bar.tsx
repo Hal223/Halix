@@ -61,7 +61,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor, id: number = 0) {
 
   return (
     <window
-      visible={bind(hyprland, "focusedClient").as((client: any) => !client?.fullscreen)}
+      visible={bind(hyprland, "focusedClient").as(() => {
+        // Find if there is any fullscreen client on THIS specific monitor
+        const monitor = hyprland.get_monitor(id)
+        const clients = hyprland.get_clients()
+        const hasFullscreen = clients.some((c: any) => c.monitor?.id === monitor?.id && c.fullscreen)
+        return !hasFullscreen
+      })}
       name={`bar-${id}`}
       class="Bar"
       gdkmonitor={gdkmonitor}
