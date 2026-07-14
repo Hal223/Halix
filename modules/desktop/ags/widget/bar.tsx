@@ -64,7 +64,7 @@ function SysTray() {
             <icon gicon={bind(item, "gicon")} />
           </menubutton>
         ))
-      )}
+      ) as any}
     </box>
   )
 }

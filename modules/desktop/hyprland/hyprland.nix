@@ -33,6 +33,7 @@
         inputs.astal.packages.${pkgs.system}.io
         inputs.astal.packages.${pkgs.system}.hyprland
         inputs.astal.packages.${pkgs.system}.wireplumber
+        inputs.astal.packages.${pkgs.system}.tray
       ];
     };
 
