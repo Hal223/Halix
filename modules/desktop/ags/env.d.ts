@@ -29,3 +29,8 @@ declare module "gi://AstalWp" {
   const content: any
   export default content
 }
+
+declare module "gi://AstalTray" {
+  const content: any
+  export default content
+}

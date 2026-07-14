@@ -51,19 +51,19 @@ function SysTray() {
 
   return (
     <box cssClasses={["systray"]} spacing={8}>
-      {bind(tray, "items").as(items =>
-        items.map(item => (
-          <menubutton
-            tooltipMarkup={bind(item, "tooltipMarkup")}
-            usePopover={false}
-            menuModel={bind(item, "menuModel")}
-            setup={mb => {
-              mb.insert_action_group("dbusmenu", item.actionGroup)
-            }}
-          >
-            <icon gicon={bind(item, "gicon")} />
-          </menubutton>
-        ))
+      {bind(tray, "items").as((items: any[]) =>
+        items.map((item: any) => {
+          const mb = (
+            <menubutton
+              tooltipMarkup={bind(item, "tooltipMarkup")}
+              menuModel={bind(item, "menuModel")}
+            >
+              <image gicon={bind(item, "gicon")} />
+            </menubutton>
+          ) as any
+          mb.insert_action_group("dbusmenu", item.actionGroup)
+          return mb
+        })
       ) as any}
     </box>
   )
