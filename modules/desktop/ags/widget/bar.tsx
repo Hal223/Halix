@@ -50,7 +50,7 @@ function SysTray() {
   const tray = AstalTray.get_default()
 
   const container = (
-    <box cssClasses={["systray"]} spacing={8} />
+    <box cssClasses={["systray"]} spacing={0} />
   ) as any
 
   const updateTray = () => {
@@ -75,6 +75,8 @@ function SysTray() {
       mb.insert_action_group("dbusmenu", item.actionGroup)
       container.append(mb)
     })
+
+    container.visible = items.length > 0
   }
 
   bind(tray, "items").subscribe(updateTray)

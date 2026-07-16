@@ -46,8 +46,21 @@ window.Bar {
   }
 
   .systray {
+    background: $bg-color;
+    border-radius: 12px;
+    padding: 0 4px;
+    margin: 4px;
+    box-shadow: rgba($color0, 0.5) 0px 2px 4px;
+
     menubutton {
-      padding: 2px 8px;
+      background: transparent;
+      box-shadow: none;
+      margin: 2px;
+      padding: 2px 6px;
+
+      &:hover {
+        background: rgba($color2, 0.4);
+      }
     }
   }
 
