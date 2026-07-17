@@ -12,7 +12,8 @@ window.Bar {
     margin: 8px;
   }
 
-  button, menubutton {
+  button,
+  menubutton {
     background: $bg-color;
     border-radius: 12px;
     padding: 2px 8px;
@@ -27,7 +28,7 @@ window.Bar {
   }
 
   // Prevent GTK MenuButton's internal button from double-rendering backgrounds
-  menubutton > button {
+  menubutton>button {
     background: transparent;
     box-shadow: none;
     border: none;
@@ -35,7 +36,7 @@ window.Bar {
     margin: 0;
     min-height: 0;
     min-width: 0;
-    
+
     &:hover {
       background: transparent;
     }
@@ -43,7 +44,7 @@ window.Bar {
 
   .theme-btn {
     color: $color8;
-    min-width: 38px;
+    min-width: 20px;
   }
 
   .test-btn {
@@ -611,4 +612,198 @@ window.VolumeOSD {
     border-radius: 3px;
     min-height: 6px;
   }
+}
+
+// ==============================================================================
+// 🌐 NETWORK & BLUETOOTH WIDGET
+// ==============================================================================
+
+// ── Bar button ────────────────────────────────────────────────────────────────
+window.Bar {
+  .net-btn {
+    color: $color3;
+    min-width: 38px;
+
+    .net-bar-icon {
+      font-size: 17px;
+    }
+
+    .net-bt-dot {
+      font-size: 10px;
+      color: rgba($color3, 0.6);
+      margin-left: 1px;
+
+      &.connected {
+        color: $color3;
+      }
+    }
+  }
+}
+
+// ── Popup container ───────────────────────────────────────────────────────────
+.net-popup {
+  min-width: 320px;
+  padding: 16px;
+}
+
+.net-popup-inner {
+  padding: 4px;
+}
+
+// ── Section headers ───────────────────────────────────────────────────────────
+.net-section-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: $fg-color;
+  hexpand: true;
+}
+
+.net-section-icon {
+  font-size: 18px;
+  color: $color3;
+  min-width: 24px;
+}
+
+// ── Status badge ──────────────────────────────────────────────────────────────
+.net-status-badge {
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: rgba($fg-color, 0.5);
+
+  &.connected {
+    color: $color2;
+    background: rgba($color2, 0.15);
+  }
+
+  &.disconnected {
+    color: rgba($fg-color, 0.4);
+  }
+}
+
+// ── Expand / scan buttons ─────────────────────────────────────────────────────
+.net-expand-btn,
+.net-scan-btn {
+  background: rgba($fg-color, 0.06);
+  border: 1px solid rgba($fg-color, 0.1);
+  border-radius: 8px;
+  padding: 2px 8px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  box-shadow: none;
+
+  &:hover {
+    background: rgba($color3, 0.18);
+    border-color: rgba($color3, 0.4);
+  }
+
+  label {
+    color: rgba($fg-color, 0.75);
+    font-size: 13px;
+  }
+}
+
+.net-scan-btn {
+  margin-right: 2px;
+}
+
+// ── Access point list ─────────────────────────────────────────────────────────
+.net-ap-list {
+  margin: 4px 2px 2px 2px;
+}
+
+.net-ap-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: none;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba($color3, 0.1);
+    border-color: rgba($color3, 0.25);
+  }
+
+  &.active {
+    background: rgba($color3, 0.18);
+    border-color: rgba($color3, 0.45);
+  }
+}
+
+.net-device-row {
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.net-device-icon {
+  font-size: 16px;
+  color: rgba($fg-color, 0.5);
+  min-width: 22px;
+
+  .net-ap-btn.active & {
+    color: $color3;
+  }
+}
+
+.net-device-name {
+  font-size: 12px;
+  color: rgba($fg-color, 0.8);
+
+  .net-ap-btn.active & {
+    font-weight: 600;
+    color: $fg-color;
+  }
+}
+
+.net-signal-pct {
+  font-size: 11px;
+  color: rgba($fg-color, 0.4);
+}
+
+// ── Bluetooth device list ─────────────────────────────────────────────────────
+.net-bt-list {
+  margin: 4px 2px 2px 2px;
+}
+
+.net-bt-action-btn {
+  background: rgba($fg-color, 0.06);
+  border: 1px solid rgba($fg-color, 0.12);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  box-shadow: none;
+
+  label {
+    color: rgba($fg-color, 0.75);
+  }
+
+  &:hover {
+    background: rgba($color3, 0.2);
+    border-color: $color3;
+  }
+
+  &.connected {
+    background: rgba($color1, 0.15);
+    border-color: rgba($color1, 0.4);
+
+    label {
+      color: $color1;
+    }
+
+    &:hover {
+      background: rgba($color1, 0.25);
+    }
+  }
+}
+
+// ── Empty state label ─────────────────────────────────────────────────────────
+.net-empty {
+  font-size: 11px;
+  color: rgba($fg-color, 0.35);
+  padding: 6px 8px;
+  font-style: italic;
 }

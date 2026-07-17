@@ -34,3 +34,13 @@ declare module "gi://AstalTray" {
   const content: any
   export default content
 }
+
+declare module "gi://AstalNetwork" {
+  const content: any
+  export default content
+}
+
+declare module "gi://AstalBluetooth" {
+  const content: any
+  export default content
+}

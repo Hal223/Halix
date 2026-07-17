@@ -6,6 +6,7 @@ import Hyprland from "gi://AstalHyprland"
 import AstalTray from "gi://AstalTray"
 import ThemeSwitcher from "./themeswitcher"
 import { VolumeButton } from "./audio"
+import { NetworkButton } from "./network"
 
 function Workspaces({ id }: { id: number }) {
   const hyprland = Hyprland.get_default()
@@ -89,6 +90,7 @@ function EndModules({ id }: { id: number }) {
   return (
     <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={20}>
       <SysTray />
+      <NetworkButton id={id} />
       <VolumeButton id={id} />
       <ThemeSwitcher id={id} />
       <Clock id={id} />
