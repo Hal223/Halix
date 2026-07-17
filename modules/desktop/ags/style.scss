@@ -44,7 +44,7 @@ window.Bar {
 
   .theme-btn {
     color: $color8;
-    min-width: 20px;
+    min-width: 32px;
   }
 
   .test-btn {
@@ -622,19 +622,24 @@ window.VolumeOSD {
 window.Bar {
   .net-btn {
     color: $color3;
-    min-width: 38px;
+    // Wide enough to show net icon + BT icon side-by-side
+    min-width: 56px;
 
     .net-bar-icon {
       font-size: 17px;
     }
 
-    .net-bt-dot {
-      font-size: 10px;
-      color: rgba($color3, 0.6);
-      margin-left: 1px;
+    .net-bt-bar-icon {
+      font-size: 15px;
+      color: rgba($color3, 0.65);
 
       &.connected {
         color: $color3;
+      }
+
+      // Empty string label takes no space
+      &:empty {
+        min-width: 0;
       }
     }
   }
@@ -705,7 +710,7 @@ window.Bar {
 }
 
 .net-scan-btn {
-  margin-right: 2px;
+  // No extra margin — sits naturally next to toggle in the header row
 }
 
 // ── Access point list ─────────────────────────────────────────────────────────

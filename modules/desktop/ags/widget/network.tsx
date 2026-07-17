@@ -24,25 +24,18 @@ function clearBox(box: Gtk.Box) {
   }
 }
 
-// Nerd-font icons for wifi strength
 function wifiIcon(strength: number, enabled: boolean, connected: boolean): string {
-  if (!enabled) return "󰖪"   // disabled
-  if (!connected) return "󰖭"  // offline
-  if (strength >= 80) return "󰤨" // excellent
-  if (strength >= 60) return "󰤥" // good
-  if (strength >= 40) return "󰤢" // ok
-  if (strength >= 20) return "󰤟" // weak
-  return "󰤯"                     // none
+  if (!enabled) return "󰖪"
+  if (!connected) return "󰖭"
+  if (strength >= 80) return "󰤨"
+  if (strength >= 60) return "󰤥"
+  if (strength >= 40) return "󰤢"
+  if (strength >= 20) return "󰤟"
+  return "󰤯"
 }
 
 function wiredIcon(connected: boolean): string {
   return connected ? "󰈀" : "󰈂"
-}
-
-function btIcon(powered: boolean, connected: boolean): string {
-  if (!powered) return "󰂲"
-  if (connected) return "󰂱"
-  return "󰂯"
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -58,6 +51,7 @@ function ApRow({ ap, wifi }: { ap: any; wifi: any }) {
   })
   bind(ap, "strength").subscribe(() => {
     strengthIcon.label = wifiIcon(ap.strength ?? 0, true, true)
+    pctLabel.label = `${ap.strength ?? 0}%`
   })
 
   const ssidLabel = new Gtk.Label({
@@ -78,19 +72,17 @@ function ApRow({ ap, wifi }: { ap: any; wifi: any }) {
   const row = new Gtk.Box({
     orientation: Gtk.Orientation.HORIZONTAL,
     spacing: 8,
-    css_classes: isActive ? ["net-device-row", "active"] : ["net-device-row"],
+    css_classes: ["net-device-row"],
   })
   row.append(strengthIcon)
   row.append(ssidLabel)
   row.append(pctLabel)
 
-  const btn = new Gtk.Button({ hexpand: true, css_classes: [] })
-  btn.set_child(row)
-  btn.add_css_class("net-ap-btn")
+  const btn = new Gtk.Button({ hexpand: true, css_classes: ["net-ap-btn"] })
   if (isActive) btn.add_css_class("active")
+  btn.set_child(row)
 
   btn.connect("clicked", () => {
-    // Activate connection — use nmcli as a subprocess for simplicity
     if (ap.ssid) {
       GLib.spawn_command_line_async(`nmcli device wifi connect "${ap.ssid}"`)
     }
@@ -118,7 +110,6 @@ function BtDeviceRow({ device }: { device: any }) {
     hexpand: true,
   })
 
-  // Connect / Disconnect button
   const actionLbl = new Gtk.Label({ label: device.connected ? "Disconnect" : "Connect" })
   const actionBtn = new Gtk.Button({ css_classes: ["net-bt-action-btn"] })
   actionBtn.set_child(actionLbl)
@@ -132,7 +123,6 @@ function BtDeviceRow({ device }: { device: any }) {
     }
   })
 
-  // Update on changes
   const update = () => {
     iconLabel.label = device.connected ? "󰂱" : "󰂯"
     actionLbl.label = device.connected ? "Disconnect" : "Connect"
@@ -142,7 +132,7 @@ function BtDeviceRow({ device }: { device: any }) {
       actionBtn.remove_css_class("connected")
     }
   }
-  try { bind(device, "connected").subscribe(update) } catch { /* some devices may not support */ }
+  try { bind(device, "connected").subscribe(update) } catch { /* ok */ }
 
   const row = new Gtk.Box({
     orientation: Gtk.Orientation.HORIZONTAL,
@@ -166,10 +156,9 @@ function NetworkPopoverContent() {
   const wifi = network?.wifi ?? null
   const wired = network?.wired ?? null
 
-  // ── Section header helper ─────────────────────────────────────
-  function sectionTitle(label: string) {
+  function sectionTitle(text: string) {
     return new Gtk.Label({
-      label,
+      label: text,
       css_classes: ["net-section-title"],
       halign: Gtk.Align.START,
     })
@@ -182,11 +171,48 @@ function NetworkPopoverContent() {
     })
   }
 
-  // ── Wifi Toggle Row ───────────────────────────────────────────
-  const wifiToggle = new Gtk.Switch({
-    active: wifi?.enabled ?? false,
-    valign: Gtk.Align.CENTER,
-  })
+  // ── Wifi section ──────────────────────────────────────────────
+
+  // AP list + revealer
+  const apBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 2, css_classes: ["net-ap-list"] })
+  let apRevealer: Gtk.Revealer | null = null
+  let apRevealerOpen = false
+
+  const rebuildAps = () => {
+    clearBox(apBox)
+    if (!wifi || !wifi.enabled) {
+      apBox.append(new Gtk.Label({ label: "Wireless disabled", css_classes: ["net-empty"] }))
+      return
+    }
+    const aps: any[] = Array.from(wifi.accessPoints ?? [])
+    const seen = new Map<string, any>()
+    for (const ap of aps) {
+      const ssid = ap.ssid || ""
+      if (!ssid) continue
+      const existing = seen.get(ssid)
+      if (!existing || (ap.strength ?? 0) > (existing.strength ?? 0)) seen.set(ssid, ap)
+    }
+    const unique = Array.from(seen.values()).sort((a, b) => (b.strength ?? 0) - (a.strength ?? 0))
+    if (unique.length === 0) {
+      apBox.append(new Gtk.Label({ label: "No networks found", css_classes: ["net-empty"] }))
+    } else {
+      unique.slice(0, 10).forEach(ap => apBox.append(ApRow({ ap, wifi })))
+    }
+  }
+
+  if (wifi) {
+    apRevealer = new Gtk.Revealer({
+      transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
+      revealChild: false,
+    })
+    apRevealer.set_child(apBox)
+    rebuildAps()
+    try { bind(wifi, "accessPoints").subscribe(rebuildAps) } catch { /* ok */ }
+    bind(wifi, "enabled").subscribe(rebuildAps)
+  }
+
+  // Wifi toggle
+  const wifiToggle = new Gtk.Switch({ active: wifi?.enabled ?? false, valign: Gtk.Align.CENTER })
   if (wifi) {
     bind(wifi, "enabled").subscribe(() => { wifiToggle.active = wifi.enabled })
     wifiToggle.connect("state-set", (_sw: any, state: boolean) => {
@@ -197,18 +223,42 @@ function NetworkPopoverContent() {
     wifiToggle.sensitive = false
   }
 
+  // Wifi scan button (left of toggle)
+  const wifiScanLbl = new Gtk.Label({ label: "󰑐 Scan" })
+  const wifiScanBtn = new Gtk.Button({ css_classes: ["net-scan-btn"] })
+  wifiScanBtn.set_child(wifiScanLbl)
+  if (wifi) {
+    bind(wifi, "scanning").subscribe(() => {
+      wifiScanLbl.label = wifi.scanning ? "Scanning…" : "󰑐 Scan"
+      wifiScanBtn.sensitive = !wifi.scanning
+    })
+    wifiScanBtn.connect("clicked", () => { wifi.scan() })
+  } else {
+    wifiScanBtn.sensitive = false
+  }
+
+  // Wifi expand button (right of toggle)
+  const wifiExpandIcon = new Gtk.Label({ label: "󰅂" })
+  const wifiExpandBtn = new Gtk.Button({ css_classes: ["net-expand-btn"] })
+  wifiExpandBtn.set_child(wifiExpandIcon)
+  wifiExpandBtn.connect("clicked", () => {
+    apRevealerOpen = !apRevealerOpen
+    wifiExpandIcon.label = apRevealerOpen ? "󰅁" : "󰅂"
+    if (apRevealer) apRevealer.revealChild = apRevealerOpen
+  })
+
+  // Wifi header: [icon] [title hexpand] [scan] [toggle] [expand]
   const wifiHeaderBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true })
   wifiHeaderBox.append(new Gtk.Label({ label: "󰖩", css_classes: ["net-section-icon"] }))
   wifiHeaderBox.append(sectionTitle("Wi-Fi"))
-  const wifiHeaderSpacer = new Gtk.Box({ hexpand: true })
-  wifiHeaderBox.append(wifiHeaderSpacer)
+  wifiHeaderBox.append(new Gtk.Box({ hexpand: true })) // spacer
+  wifiHeaderBox.append(wifiScanBtn)
   wifiHeaderBox.append(wifiToggle)
+  wifiHeaderBox.append(wifiExpandBtn)
 
-  // ── Ethernet Toggle Row ───────────────────────────────────────
-  const ethIcon = new Gtk.Label({ label: wiredIcon(wired?.internet === 0), css_classes: ["net-section-icon"] })
-  const ethHeaderBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true })
-  ethHeaderBox.append(ethIcon)
-  ethHeaderBox.append(sectionTitle("Ethernet"))
+  // ── Ethernet section ──────────────────────────────────────────
+
+  const ethIcon = new Gtk.Label({ label: wiredIcon(false), css_classes: ["net-section-icon"] })
   const ethStatus = new Gtk.Label({
     css_classes: ["net-status-badge"],
     halign: Gtk.Align.END,
@@ -216,115 +266,31 @@ function NetworkPopoverContent() {
   })
   if (wired) {
     const updateEth = () => {
-      const connected = wired.internet === 0 // Internet.CONNECTED = 0
+      const connected = wired.internet === 0
       ethIcon.label = wiredIcon(connected)
       ethStatus.label = connected ? "Connected" : "Disconnected"
       ethStatus.css_classes = connected
         ? ["net-status-badge", "connected"]
         : ["net-status-badge", "disconnected"]
     }
-    try { bind(wired, "internet").subscribe(updateEth) } catch { /* fallback */ }
+    try { bind(wired, "internet").subscribe(updateEth) } catch { /* ok */ }
     updateEth()
   } else {
+    ethIcon.label = wiredIcon(false)
     ethStatus.label = "No adapter"
     ethStatus.css_classes = ["net-status-badge", "disconnected"]
   }
+
+  const ethHeaderBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true })
+  ethHeaderBox.append(ethIcon)
+  ethHeaderBox.append(sectionTitle("Ethernet"))
   ethHeaderBox.append(ethStatus)
 
-  // ── Wifi Access Points ────────────────────────────────────────
-  const apBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 2, css_classes: ["net-ap-list"] })
+  // ── Bluetooth section ─────────────────────────────────────────
 
-  const rebuildAps = () => {
-    clearBox(apBox)
-    if (!wifi || !wifi.enabled) {
-      apBox.append(new Gtk.Label({ label: "Wireless disabled", css_classes: ["net-empty"] }))
-      return
-    }
-    const aps: any[] = Array.from(wifi.accessPoints ?? [])
-    // Deduplicate by SSID, prefer stronger signal, exclude hidden (empty ssid)
-    const seen = new Map<string, any>()
-    for (const ap of aps) {
-      const ssid = ap.ssid || ""
-      if (!ssid) continue
-      const existing = seen.get(ssid)
-      if (!existing || (ap.strength ?? 0) > (existing.strength ?? 0)) {
-        seen.set(ssid, ap)
-      }
-    }
-    const unique = Array.from(seen.values()).sort((a, b) => (b.strength ?? 0) - (a.strength ?? 0))
-    if (unique.length === 0) {
-      apBox.append(new Gtk.Label({ label: "No networks found", css_classes: ["net-empty"] }))
-    } else {
-      unique.slice(0, 8).forEach(ap => apBox.append(ApRow({ ap, wifi })))
-    }
-  }
-
-  let apRevealer: Gtk.Revealer | null = null
-  let apRevealerVisible = false
-
-  if (wifi) {
-    apRevealer = new Gtk.Revealer({
-      transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
-      revealChild: false,
-    })
-    apRevealer.set_child(apBox)
-    rebuildAps()
-
-    try { bind(wifi, "accessPoints").subscribe(rebuildAps) } catch { /* may not be available */ }
-    bind(wifi, "enabled").subscribe(rebuildAps)
-  }
-
-  // Scan button
-  const scanBtn = new Gtk.Button({ css_classes: ["net-scan-btn"] })
-  const scanLbl = new Gtk.Label({ label: "󰑐 Scan" })
-  scanBtn.set_child(scanLbl)
-  if (wifi) {
-    bind(wifi, "scanning").subscribe(() => {
-      scanLbl.label = wifi.scanning ? "Scanning…" : "󰑐 Scan"
-      scanBtn.sensitive = !wifi.scanning
-    })
-    scanBtn.connect("clicked", () => { wifi.scan() })
-  } else {
-    scanBtn.sensitive = false
-  }
-
-  // Toggle AP list visibility
-  const wifiExpandIcon = new Gtk.Label({ label: "󰅂" })
-  const wifiExpandBtn = new Gtk.Button({ css_classes: ["net-expand-btn"] })
-  wifiExpandBtn.set_child(wifiExpandIcon)
-  wifiExpandBtn.connect("clicked", () => {
-    apRevealerVisible = !apRevealerVisible
-    wifiExpandIcon.label = apRevealerVisible ? "󰅁" : "󰅂"
-    if (apRevealer) apRevealer.revealChild = apRevealerVisible
-  })
-  wifiHeaderBox.append(wifiExpandBtn)
-
-  // ── Bluetooth Toggle ──────────────────────────────────────────
-  const btToggle = new Gtk.Switch({
-    active: bt?.isPowered ?? false,
-    valign: Gtk.Align.CENTER,
-  })
-  if (bt) {
-    bind(bt, "isPowered").subscribe(() => { btToggle.active = bt.isPowered })
-    btToggle.connect("state-set", (_sw: any, state: boolean) => {
-      try { bt.adapter && (bt.adapter.powered = state) } catch { /* no adapter */ }
-      return false
-    })
-  } else {
-    btToggle.sensitive = false
-  }
-
-  const btHeaderBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true })
-  btHeaderBox.append(new Gtk.Label({ label: "󰂯", css_classes: ["net-section-icon"] }))
-  btHeaderBox.append(sectionTitle("Bluetooth"))
-  const btHeaderSpacer = new Gtk.Box({ hexpand: true })
-  btHeaderBox.append(btHeaderSpacer)
-  btHeaderBox.append(btToggle)
-
-  // BT device list (paired / connected)
   const btBox = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 4, css_classes: ["net-bt-list"] })
   let btRevealer: Gtk.Revealer | null = null
-  let btRevealerVisible = false
+  let btRevealerOpen = false
 
   const rebuildBt = () => {
     clearBox(btBox)
@@ -347,62 +313,114 @@ function NetworkPopoverContent() {
     })
     btRevealer.set_child(btBox)
     rebuildBt()
-
-    try { bind(bt, "devices").subscribe(rebuildBt) } catch { /* may not be available */ }
-    try { bind(bt, "isPowered").subscribe(rebuildBt) } catch { /* fallback */ }
+    try { bind(bt, "devices").subscribe(rebuildBt) } catch { /* ok */ }
+    try { bind(bt, "isPowered").subscribe(rebuildBt) } catch { /* ok */ }
   }
 
+  // BT toggle
+  const btToggle = new Gtk.Switch({ active: bt?.isPowered ?? false, valign: Gtk.Align.CENTER })
+  if (bt) {
+    bind(bt, "isPowered").subscribe(() => { btToggle.active = bt.isPowered })
+    btToggle.connect("state-set", (_sw: any, state: boolean) => {
+      try { if (bt.adapter) bt.adapter.powered = state } catch { /* no adapter */ }
+      return false
+    })
+  } else {
+    btToggle.sensitive = false
+  }
+
+  // BT scan button (left of toggle) — uses adapter StartDiscovery / StopDiscovery
+  const btScanLbl = new Gtk.Label({ label: "󰑐 Scan" })
+  const btScanBtn = new Gtk.Button({ css_classes: ["net-scan-btn"] })
+  btScanBtn.set_child(btScanLbl)
+  if (bt) {
+    const updateBtScan = () => {
+      const discovering = bt.adapter?.discovering ?? false
+      btScanLbl.label = discovering ? "Scanning…" : "󰑐 Scan"
+      btScanBtn.sensitive = bt.isPowered
+    }
+    try { bind(bt, "isPowered").subscribe(updateBtScan) } catch { /* ok */ }
+    updateBtScan()
+
+    btScanBtn.connect("clicked", () => {
+      try {
+        const adapter = bt.adapter
+        if (!adapter) return
+        if (adapter.discovering) {
+          adapter.stop_discovery()
+        } else {
+          adapter.start_discovery()
+          // Auto-stop after 15s
+          GLib.timeout_add(GLib.PRIORITY_DEFAULT, 15000, () => {
+            try { if (adapter.discovering) adapter.stop_discovery() } catch { /* ok */ }
+            btScanLbl.label = "󰑐 Scan"
+            return GLib.SOURCE_REMOVE
+          })
+        }
+      } catch { /* ok */ }
+    })
+  } else {
+    btScanBtn.sensitive = false
+  }
+
+  // BT expand button
   const btExpandIcon = new Gtk.Label({ label: "󰅂" })
   const btExpandBtn = new Gtk.Button({ css_classes: ["net-expand-btn"] })
   btExpandBtn.set_child(btExpandIcon)
   btExpandBtn.connect("clicked", () => {
-    btRevealerVisible = !btRevealerVisible
-    btExpandIcon.label = btRevealerVisible ? "󰅁" : "󰅂"
-    if (btRevealer) btRevealer.revealChild = btRevealerVisible
+    btRevealerOpen = !btRevealerOpen
+    btExpandIcon.label = btRevealerOpen ? "󰅁" : "󰅂"
+    if (btRevealer) btRevealer.revealChild = btRevealerOpen
   })
+
+  // BT icon (reacts to powered/connected state)
+  const btSectionIcon = new Gtk.Label({ css_classes: ["net-section-icon"] })
+  const updateBtIcon = () => {
+    if (!bt || !bt.isPowered) { btSectionIcon.label = "󰂲"; return }
+    btSectionIcon.label = bt.isConnected ? "󰂱" : "󰂯"
+  }
+  updateBtIcon()
+  if (bt) {
+    try { bind(bt, "isPowered").subscribe(updateBtIcon) } catch { /* ok */ }
+    try { bind(bt, "isConnected").subscribe(updateBtIcon) } catch { /* ok */ }
+  }
+
+  // BT header: [icon] [title hexpand] [scan] [toggle] [expand]
+  const btHeaderBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 8, hexpand: true })
+  btHeaderBox.append(btSectionIcon)
+  btHeaderBox.append(sectionTitle("Bluetooth"))
+  btHeaderBox.append(new Gtk.Box({ hexpand: true })) // spacer
+  btHeaderBox.append(btScanBtn)
+  btHeaderBox.append(btToggle)
   btHeaderBox.append(btExpandBtn)
 
   // ── Layout ────────────────────────────────────────────────────
+
   const inner = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
-    spacing: 12,
+    spacing: 14,
     css_classes: ["net-popup-inner"],
   })
 
-  // Wifi section
   inner.append(wifiHeaderBox)
-  const wifiBtnRow = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 4, halign: Gtk.Align.END })
-  wifiBtnRow.append(scanBtn)
-  inner.append(wifiBtnRow)
   if (apRevealer) inner.append(apRevealer)
 
   inner.append(sep())
 
-  // Ethernet section
   inner.append(ethHeaderBox)
 
   inner.append(sep())
 
-  // Bluetooth section
   inner.append(btHeaderBox)
   if (btRevealer) inner.append(btRevealer)
 
-  const scroll = new Gtk.ScrolledWindow({
-    hscrollbar_policy: Gtk.PolicyType.NEVER,
-    vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
-    min_content_width: 320,
-    max_content_width: 320,
-    min_content_height: 200,
-    max_content_height: 520,
-  })
-  scroll.set_child(inner)
-
+  // No fixed height — let the popup grow with content naturally
   const root = new Gtk.Box({
     orientation: Gtk.Orientation.VERTICAL,
     css_classes: ["net-popup", "generic-widget-content"],
     spacing: 0,
   })
-  root.append(scroll)
+  root.append(inner)
   return root
 }
 
@@ -415,50 +433,44 @@ export function NetworkButton({ id: _id }: { id: number }) {
   const bt = getBluetooth()
   const wifi = network?.wifi ?? null
 
-  const iconLabel = new Gtk.Label({ css_classes: ["net-bar-icon"] })
+  const netIcon = new Gtk.Label({ css_classes: ["net-bar-icon"] })
 
-  function updateIcon() {
+  function updateNetIcon() {
     const primary = network?.primary ?? null
-    // primary: 0 = UNKNOWN, 1 = WIRED, 2 = WIFI
-    if (primary === 1) {
-      iconLabel.label = wiredIcon(true)
-      return
-    }
+    if (primary === 1) { netIcon.label = wiredIcon(true); return }
     if (wifi) {
-      iconLabel.label = wifiIcon(wifi.strength ?? 0, wifi.enabled ?? false, wifi.internet === 0)
+      netIcon.label = wifiIcon(wifi.strength ?? 0, wifi.enabled ?? false, wifi.internet === 0)
       return
     }
-    iconLabel.label = "󰖭" // no network
+    netIcon.label = "󰖭"
   }
-  updateIcon()
-
-  if (network) {
-    try { bind(network, "primary").subscribe(updateIcon) } catch { /* ok */ }
-  }
+  updateNetIcon()
+  if (network) try { bind(network, "primary").subscribe(updateNetIcon) } catch { /* ok */ }
   if (wifi) {
-    try { bind(wifi, "strength").subscribe(updateIcon) } catch { /* ok */ }
-    try { bind(wifi, "internet").subscribe(updateIcon) } catch { /* ok */ }
-    try { bind(wifi, "enabled").subscribe(updateIcon) } catch { /* ok */ }
+    try { bind(wifi, "strength").subscribe(updateNetIcon) } catch { /* ok */ }
+    try { bind(wifi, "internet").subscribe(updateNetIcon) } catch { /* ok */ }
+    try { bind(wifi, "enabled").subscribe(updateNetIcon) } catch { /* ok */ }
   }
 
-  // Bluetooth indicator dot
-  const btDot = new Gtk.Label({ css_classes: ["net-bt-dot"] })
-  const updateBtDot = () => {
-    if (!bt) { btDot.label = ""; return }
-    btDot.label = bt.isPowered ? (bt.isConnected ? "󰂱" : "󰂯") : ""
-    btDot.css_classes = bt.isConnected
-      ? ["net-bt-dot", "connected"]
-      : ["net-bt-dot"]
+  // BT indicator — separate label with its own icon
+  const btIcon = new Gtk.Label({ css_classes: ["net-bt-bar-icon"] })
+  const updateBtIcon = () => {
+    if (!bt || !bt.isPowered) { btIcon.label = ""; return }
+    btIcon.label = bt.isConnected ? "󰂱" : "󰂯"
+    btIcon.css_classes = bt.isConnected
+      ? ["net-bt-bar-icon", "connected"]
+      : ["net-bt-bar-icon"]
   }
-  updateBtDot()
+  updateBtIcon()
   if (bt) {
-    try { bind(bt, "isPowered").subscribe(updateBtDot) } catch { /* ok */ }
-    try { bind(bt, "isConnected").subscribe(updateBtDot) } catch { /* ok */ }
+    try { bind(bt, "isPowered").subscribe(updateBtIcon) } catch { /* ok */ }
+    try { bind(bt, "isConnected").subscribe(updateBtIcon) } catch { /* ok */ }
   }
 
-  const iconBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 2 })
-  iconBox.append(iconLabel)
-  iconBox.append(btDot)
+  // A vertical separator between the two icons when BT is visible
+  const iconBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 6 })
+  iconBox.append(netIcon)
+  iconBox.append(btIcon)
 
   const popover = new Gtk.Popover()
   popover.set_has_arrow(false)
