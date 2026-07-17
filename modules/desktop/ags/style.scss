@@ -18,10 +18,26 @@ window.Bar {
     padding: 2px 8px;
     margin: 4px;
     box-shadow: rgba($color0, 0.5) 0px 2px 4px;
+    border: none;
     transition: all 0.3s ease;
 
     &:hover {
       background: rgba($color2, 0.4);
+    }
+  }
+
+  // Prevent GTK MenuButton's internal button from double-rendering backgrounds
+  menubutton > button {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    
+    &:hover {
+      background: transparent;
     }
   }
 
