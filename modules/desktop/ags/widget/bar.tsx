@@ -88,7 +88,7 @@ function SysTray() {
 
 function EndModules({ id }: { id: number }) {
   return (
-    <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={20}>
+    <box $type="end" hexpand halign={Gtk.Align.END} cssClasses={["right-modules"]} spacing={4}>
       <SysTray />
       <NetworkButton id={id} />
       <VolumeButton id={id} />

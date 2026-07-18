@@ -437,11 +437,14 @@ export function NetworkButton({ id: _id }: { id: number }) {
 
   function updateNetIcon() {
     const primary = network?.primary ?? null
+    // AstalNetwork.Primary: NONE=0, WIFI=2, WIRED=1
     if (primary === 1) { netIcon.label = wiredIcon(true); return }
-    if (wifi) {
-      netIcon.label = wifiIcon(wifi.strength ?? 0, wifi.enabled ?? false, wifi.internet === 0)
+    if (wifi && wifi.enabled) {
+      // internet: CONNECTED=0, DISCONNECTED=2
+      netIcon.label = wifiIcon(wifi.strength ?? 0, true, wifi.internet === 0)
       return
     }
+    if (wifi && !wifi.enabled) { netIcon.label = "󰖪"; return }
     netIcon.label = "󰖭"
   }
   updateNetIcon()
