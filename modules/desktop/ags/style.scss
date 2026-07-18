@@ -622,8 +622,6 @@ window.VolumeOSD {
 window.Bar {
   .net-btn {
     color: $color3;
-    // Wide enough to show net icon + BT icon side-by-side
-    min-width: 56px;
 
     .net-bar-icon {
       font-size: 17px;
@@ -635,11 +633,6 @@ window.Bar {
 
       &.connected {
         color: $color3;
-      }
-
-      // Empty string label takes no space
-      &:empty {
-        min-width: 0;
       }
     }
   }

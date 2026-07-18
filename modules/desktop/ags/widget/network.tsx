@@ -432,48 +432,58 @@ export function NetworkButton({ id: _id }: { id: number }) {
   const network = getNetwork()
   const bt = getBluetooth()
   const wifi = network?.wifi ?? null
+  const wired = network?.wired ?? null
 
-  const netIcon = new Gtk.Label({ css_classes: ["net-bar-icon"] })
+  // ── Ethernet icon (always visible when adapter exists) ────────────────────
+  const ethIcon = new Gtk.Label({ css_classes: ["net-bar-icon"] })
+  const updateEth = () => {
+    if (!wired) { ethIcon.visible = false; return }
+    const connected = wired.internet === 0
+    ethIcon.label = wiredIcon(connected)
+    ethIcon.visible = true
+  }
+  updateEth()
+  if (wired) try { bind(wired, "internet").subscribe(updateEth) } catch { /* ok */ }
 
-  function updateNetIcon() {
-    const primary = network?.primary ?? null
-    // AstalNetwork.Primary: NONE=0, WIFI=2, WIRED=1
-    if (primary === 1) { netIcon.label = wiredIcon(true); return }
-    if (wifi && wifi.enabled) {
-      // internet: CONNECTED=0, DISCONNECTED=2
-      netIcon.label = wifiIcon(wifi.strength ?? 0, true, wifi.internet === 0)
+  // ── WiFi icon (visible only when enabled AND connected) ────────────────────
+  const wifiIconLbl = new Gtk.Label({ css_classes: ["net-bar-icon"], visible: false })
+  const updateWifi = () => {
+    if (!wifi || !wifi.enabled || wifi.internet !== 0) {
+      wifiIconLbl.visible = false
       return
     }
-    if (wifi && !wifi.enabled) { netIcon.label = "󰖪"; return }
-    netIcon.label = "󰖭"
+    wifiIconLbl.label = wifiIcon(wifi.strength ?? 0, true, true)
+    wifiIconLbl.visible = true
   }
-  updateNetIcon()
-  if (network) try { bind(network, "primary").subscribe(updateNetIcon) } catch { /* ok */ }
+  updateWifi()
   if (wifi) {
-    try { bind(wifi, "strength").subscribe(updateNetIcon) } catch { /* ok */ }
-    try { bind(wifi, "internet").subscribe(updateNetIcon) } catch { /* ok */ }
-    try { bind(wifi, "enabled").subscribe(updateNetIcon) } catch { /* ok */ }
+    try { bind(wifi, "enabled").subscribe(updateWifi) } catch { /* ok */ }
+    try { bind(wifi, "internet").subscribe(updateWifi) } catch { /* ok */ }
+    try { bind(wifi, "strength").subscribe(updateWifi) } catch { /* ok */ }
   }
 
-  // BT indicator — separate label with its own icon
-  const btIcon = new Gtk.Label({ css_classes: ["net-bt-bar-icon"] })
-  const updateBtIcon = () => {
-    if (!bt || !bt.isPowered) { btIcon.label = ""; return }
-    btIcon.label = bt.isConnected ? "󰂱" : "󰂯"
-    btIcon.css_classes = bt.isConnected
-      ? ["net-bt-bar-icon", "connected"]
-      : ["net-bt-bar-icon"]
+  // ── BT icon (visible only when powered AND a device is connected) ────────────
+  const btIconLbl = new Gtk.Label({ css_classes: ["net-bt-bar-icon"], visible: false })
+  const updateBt = () => {
+    if (!bt || !bt.isPowered || !bt.isConnected) {
+      btIconLbl.visible = false
+      return
+    }
+    btIconLbl.label = "󰂱"
+    btIconLbl.css_classes = ["net-bt-bar-icon", "connected"]
+    btIconLbl.visible = true
   }
-  updateBtIcon()
+  updateBt()
   if (bt) {
-    try { bind(bt, "isPowered").subscribe(updateBtIcon) } catch { /* ok */ }
-    try { bind(bt, "isConnected").subscribe(updateBtIcon) } catch { /* ok */ }
+    try { bind(bt, "isPowered").subscribe(updateBt) } catch { /* ok */ }
+    try { bind(bt, "isConnected").subscribe(updateBt) } catch { /* ok */ }
   }
 
-  // A vertical separator between the two icons when BT is visible
-  const iconBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 6 })
-  iconBox.append(netIcon)
-  iconBox.append(btIcon)
+  // ── Icon box — only visible children contribute to width ───────────────────────
+  const iconBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 4 })
+  iconBox.append(ethIcon)
+  iconBox.append(wifiIconLbl)
+  iconBox.append(btIconLbl)
 
   const popover = new Gtk.Popover()
   popover.set_has_arrow(false)
