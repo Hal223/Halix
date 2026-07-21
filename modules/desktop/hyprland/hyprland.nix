@@ -1,249 +1,48 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
-}: {
+}: let
+  system = pkgs.system;
+  astal = inputs.astal.packages.${system};
+in {
+  # ---------------------------------------------------------------------------
+  # Hyprland – system-level enablement only.
+  # The actual hyprland.conf lives in ~/Dotfiles-halix/hypr/.config/hypr/
+  # and is symlinked into place by the stow activation script.
+  # ---------------------------------------------------------------------------
   programs.hyprland = {
     enable = true;
-    withUWSM = true; # recommended for most users
-    xwayland.enable = true; # Xwayland can be disabled.
+    withUWSM = true;
+    xwayland.enable = true;
   };
-  xdg.portal.extraPortals = with pkgs; [xdg-desktop-portal-hyprland];
+
+  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-hyprland];
 
   environment.systemPackages = [
-    # ... other packages
-    pkgs.kitty # required for the default Hyprland config
+    pkgs.kitty
     pkgs.hyprshot
     pkgs.hyprpaper
     pkgs.pywal
-    pkgs.libpulseaudio # provides paplay for volume sound effects
-  ];
+    pkgs.libpulseaudio # paplay for volume sound effects
 
-  # Optional, hint Electron apps to use Wayland:
-  # environment.sessionVariables.NIXOS_OZONE_WL = "1";
-
-  home-manager.users.hal = {config, ...}: {
-    imports = [inputs.ags.homeManagerModules.default];
-
-    programs.ags = {
-      enable = true;
-      configDir = ../ags;
-      extraPackages = with pkgs; [
-        inputs.astal.packages.${pkgs.system}.astal4
-        inputs.astal.packages.${pkgs.system}.io
-        inputs.astal.packages.${pkgs.system}.hyprland
-        inputs.astal.packages.${pkgs.system}.wireplumber
-        inputs.astal.packages.${pkgs.system}.tray
-        inputs.astal.packages.${pkgs.system}.network
-        inputs.astal.packages.${pkgs.system}.bluetooth
+    # -------------------------------------------------------------------------
+    # AGS + Astal — binaries/GIR typelibs stay in Nix.
+    # The TypeScript config lives in ~/Dotfiles-halix/ags/.config/ags/
+    # and is symlinked by stow.  AGS is started via:
+    #   exec-once = ags run ~/.config/ags   (in hyprland.conf)
+    # -------------------------------------------------------------------------
+    (inputs.ags.packages.${system}.default.override {
+      extraPackages = [
+        astal.astal4
+        astal.io
+        astal.hyprland
+        astal.wireplumber
+        astal.tray
+        astal.network
+        astal.bluetooth
       ];
-    };
-
-    home.stateVersion = "26.05";
-    wayland.windowManager.hyprland = {
-      enable = true;
-      # Set packages to null since we are using the NixOS module to install them
-      package = null;
-      portalPackage = null;
-
-      # Ensure systemd user services have the correct environment
-      systemd.variables = ["--all"];
-
-      configType = "hyprlang";
-      extraConfig = ''
-        ### MONITORS ###
-        $primaryMonitor = DP-1
-        $secondaryMonitor = DP-2
-
-        # Configure monitors (you may need to change the names above to match your `hyprctl monitors`)
-        monitor=$primaryMonitor,preferred,auto,auto
-        monitor=$secondaryMonitor,preferred,auto,auto
-        monitor=,preferred,auto,auto
-
-        ### WORKSPACES ###
-        workspace = 1, monitor:$primaryMonitor, default:true
-        workspace = 2, monitor:$primaryMonitor
-        workspace = 3, monitor:$primaryMonitor
-        workspace = 4, monitor:$primaryMonitor
-        workspace = 5, monitor:$primaryMonitor
-
-        workspace = 6, monitor:$secondaryMonitor, default:true
-        workspace = 7, monitor:$secondaryMonitor
-        workspace = 8, monitor:$secondaryMonitor
-        workspace = 9, monitor:$secondaryMonitor
-        workspace = 10, monitor:$secondaryMonitor
-
-        ### MY PROGRAMS ###
-
-        $terminal = ghostty
-        $fileManager = yazi # Using yazi as you have it configured
-        $menu = wofi --show drun
-
-
-        ### AUTOSTART ###
-        exec-once = ags run
-        exec-once = hyprpaper
-        exec-once = awww img "$(cat .cache/wal/wal)"
-        # exec-once = nm-applet &
-
-
-        ### ENVIRONMENT VARIABLES ###
-
-        env = XCURSOR_SIZE,24
-        env = HYPRCURSOR_SIZE,24
-
-
-        ### LOOK AND FEEL ###
-
-        source = ~/.cache/wal/colors-hyprland.conf
-
-        general {
-            gaps_in = 4
-            gaps_out = 2
-            border_size = 1
-            col.active_border = $color4 $color6 45deg
-            col.inactive_border = $color8
-            resize_on_border = false
-            allow_tearing = false
-            layout = dwindle
-        }
-
-        decoration {
-            rounding = 10
-            active_opacity = 1.0
-            inactive_opacity = 1.0
-            blur {
-                enabled = true
-                size = 3
-                passes = 1
-                vibrancy = 0.1696
-            }
-        }
-
-        animations {
-            enabled = true
-            bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-
-            animation = windows, 1, 7, myBezier
-            animation = windowsOut, 1, 7, default, popin 80%
-            animation = border, 1, 10, default
-            animation = borderangle, 1, 8, default
-            animation = fade, 1, 7, default
-            animation = workspaces, 1, 6, default
-        }
-        #dwindle {
-        #    pseudotile = true # Master switch for pseudotiling. Enabling is bound to mainMod + P in the keybinds section below
-        #    preserve_split = true # You probably want this
-        #}
-        master {
-            new_status = master
-        }
-        misc {
-            force_default_wallpaper = 0 # Set to 0 or 1 to disable the anime mascot wallpapers
-            disable_hyprland_logo = false
-        }
-
-        ### INPUT ###
-        input {
-            kb_layout = us
-            kb_variant =
-            kb_model =
-            kb_options =
-            kb_rules =
-            numlock_by_default = true
-
-            follow_mouse = 1
-            sensitivity = 0
-            touchpad {
-                natural_scroll = false
-            }
-        }
-        #gestures {
-        #    workspace_swipe = false
-        #}
-
-        device {
-            name = epic-mouse-v1
-            sensitivity = -0.5
-        }
-        ### KEYBINDINGSS ###
-        $mainMod = SUPER
-
-        # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
-        bind = $mainMod, Return, exec, $terminal
-        bind = $mainMod, Q, killactive,
-        bind = $mainMod SHIFT, E, exit,
-        bind = $mainMod, E, exec, $fileManager
-        bind = $mainMod, SPACE, togglefloating,
-        bind = $mainMod, D, exec, $menu
-        bind = $mainMod SHIFT, C, exec, hyprctl reload; ags quit; ags run &
-
-        # Screenshots
-        bind = , Print, exec, hyprshot -z -m output -o ~/Pictures/Screenshots
-        bind = $mainMod SHIFT, S, exec, hyprshot -z -m region -o ~/Pictures/Screenshots
-
-        # Audio / Volume keys (XF86 + headset hardware buttons)
-        # bindel allows repeat while held down
-        bindel = , XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+ && ags request volume-up
-        bindel = , XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%- && ags request volume-down
-        bind   = , XF86AudioMute,        exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ags request volume-mute
-        bind   = , XF86AudioMicMute,     exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
-
-        #bind = $mainMod, P, pseudo, # dwindle
-        #bind = $mainMod, J, togglesplit, # dwindle
-
-        # Move focus with mainMod + arrow keys
-        bind = $mainMod, left, movefocus, l
-        bind = $mainMod, right, movefocus, r
-        bind = $mainMod, up, movefocus, u
-        bind = $mainMod, down, movefocus, d
-
-        # Move windows with mainMod + shift + arrow keys
-        bind = $mainMod SHIFT, left, movewindow, l
-        bind = $mainMod SHIFT, right, movewindow, r
-        bind = $mainMod SHIFT, up, movewindow, u
-        bind = $mainMod SHIFT, down, movewindow, d
-
-
-        # Switch workspaces with mainMod + [0-9]
-        bind = $mainMod, 1, workspace, 1
-        bind = $mainMod, 2, workspace, 2
-        bind = $mainMod, 3, workspace, 3
-        bind = $mainMod, 4, workspace, 4
-        bind = $mainMod, 5, workspace, 5
-        bind = $mainMod, 6, workspace, 6
-        bind = $mainMod, 7, workspace, 7
-        bind = $mainMod, 8, workspace, 8
-        bind = $mainMod, 9, workspace, 9
-        bind = $mainMod, 0, workspace, 10
-
-        # Move active window to a workspace with mainMod + SHIFT + [0-9]
-        bind = $mainMod SHIFT, 1, movetoworkspace, 1
-        bind = $mainMod SHIFT, 2, movetoworkspace, 2
-        bind = $mainMod SHIFT, 3, movetoworkspace, 3
-        bind = $mainMod SHIFT, 4, movetoworkspace, 4
-        bind = $mainMod SHIFT, 5, movetoworkspace, 5
-        bind = $mainMod SHIFT, 6, movetoworkspace, 6
-        bind = $mainMod SHIFT, 7, movetoworkspace, 7
-        bind = $mainMod SHIFT, 8, movetoworkspace, 8
-        bind = $mainMod SHIFT, 9, movetoworkspace, 9
-        bind = $mainMod SHIFT, 0, movetoworkspace, 10
-
-        # buffer workspace, cool but like just you another workspace?
-        #bind = $mainMod, S, togglespecialworkspace, magic
-        #bind = $mainMod SHIFT, S, movetoworkspace, special:magic
-
-        # Scroll through existing workspaces with mainMod + scroll
-        bind = $mainMod, mouse_down, workspace, e+1
-        bind = $mainMod, mouse_up, workspace, e-1
-
-        # Move/resize windows with mainMod + LMB/RMB and dragging
-        bindm = $mainMod, mouse:272, movewindow
-        bindm = $mainMod, mouse:273, resizewindow
-      '';
-    };
-
-    # UWSM Best Practice: ensure UWSM reads the Home Manager session variables
-    xdg.configFile."uwsm/env".source = "${config.home.sessionVariablesPackage}/etc/profile.d/hm-session-vars.sh";
-  };
+    })
+  ];
 }

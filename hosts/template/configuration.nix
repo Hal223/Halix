@@ -42,6 +42,9 @@
   # Set the hostName for the new computer
   networking.hostName = "halix-template";
 
+  # Dotfiles: set stow packages appropriate for this host when deploying
+  hal.dotfiles.stowPackages = [];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"

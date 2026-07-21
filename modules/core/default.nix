@@ -6,6 +6,7 @@
   imports = [
     ./audio.nix
     ./boot.nix
+    ./dotfiles.nix
     ./locale.nix
     ./networking.nix
     ./security.nix

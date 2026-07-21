@@ -40,6 +40,10 @@
   # Set the hostName for the new computer
   networking.hostName = "halix-laptop";
 
+  # Dotfiles: add stow packages here as this host grows a dotfiles profile
+  # e.g. hal.dotfiles.stowPackages = [ "hypr" "ags" "sway" ];
+  hal.dotfiles.stowPackages = [];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"

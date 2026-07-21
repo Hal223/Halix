@@ -36,6 +36,9 @@
 
   networking.hostName = "halix";
 
+  # Dotfiles: stow these packages from ~/Dotfiles-halix into ~/
+  hal.dotfiles.stowPackages = ["hypr" "ags"];
+
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
