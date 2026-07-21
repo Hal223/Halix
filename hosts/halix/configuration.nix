@@ -14,8 +14,6 @@
     ../../modules/desktop/wayland.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix
-    ../../modules/desktop/sway/sway.nix
-    ../../modules/desktop/sway/waybar.nix
     ../../modules/desktop/hyprland/hyprland.nix
 
     # Services

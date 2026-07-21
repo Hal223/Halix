@@ -18,9 +18,6 @@
     ../../modules/desktop/wayland.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix
-    ../../modules/desktop/sway/sway.nix
-    ../../modules/desktop/sway/waybar.nix
-
     # Services
     #../../modules/services/docker.nix
     #../../modules/services/syncthing.nix
@@ -41,7 +38,7 @@
   networking.hostName = "halix-laptop";
 
   # Dotfiles: add stow packages here as this host grows a dotfiles profile
-  # e.g. hal.dotfiles.stowPackages = [ "hypr" "ags" "sway" ];
+  # e.g. hal.dotfiles.stowPackages = [ "hypr" "ags" ];
   hal.dotfiles.stowPackages = [];
 
   nix.settings.experimental-features = [

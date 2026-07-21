@@ -16,7 +16,7 @@
   xdg.portal = {
     enable = true;
     wlr = {
-      enable = true; # Required for wlroots-based compositors like Sway
+      enable = true; # Required for wlroots-based compositors like Hyprland
       settings = {
         screencast = {
           max_fps = 30;
@@ -24,10 +24,6 @@
       };
     };
     extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.sway.default = lib.mkForce [
-      "wlr"
-      "gtk"
-    ];
   };
 
   environment.sessionVariables = {

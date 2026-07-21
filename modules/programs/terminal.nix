@@ -28,6 +28,7 @@
     bat
     tree
     nitch # neofetch alternative
+    fresh-editor
     btop
     cowsay
   ];
@@ -38,7 +39,7 @@
     l = "ls -alh";
     ls = "ls --color=tty";
     nnano = "/run/current-system/sw/bin/nano";
-    nano = "/run/current-system/sw/bin/nano";
+    nano = "/run/current-system/sw/bin/fresh";
     ccat = "/run/current-system/sw/bin/cat";
     cat = "bat";
     yy = "yazi";

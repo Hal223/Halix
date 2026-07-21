@@ -15,7 +15,6 @@
     alejandra
     pwvucontrol
     pywal16
-    swaybg
     awww
     grim
     slurp

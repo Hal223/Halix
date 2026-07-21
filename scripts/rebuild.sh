@@ -11,7 +11,7 @@ alejandra .
 git add .
 
 # 2. Show diff
-git diff --staged -U0
+git diff --staged -U0 || true
 
 # 3. Rebuild
 echo "NixOS Rebuilding..."
