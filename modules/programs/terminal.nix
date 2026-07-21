@@ -38,7 +38,7 @@
     l = "ls -alh";
     ls = "ls --color=tty";
     nnano = "/run/current-system/sw/bin/nano";
-    nano = "fresh";
+    nano = "/run/current-system/sw/bin/nano";
     ccat = "/run/current-system/sw/bin/cat";
     cat = "bat";
     yy = "yazi";

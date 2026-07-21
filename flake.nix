@@ -6,9 +6,6 @@
     nixpkgs-master.url = "github:nixos/nixpkgs/master";
 
     wrappers.url = "github:Lassulus/wrappers";
-    fresh.inputs.nixpkgs.follows = "nixpkgs";
-    # Pinned to last known-good rev before web-ui build script breakage (2026-07-20)
-    fresh.url = "github:sinelaw/fresh?rev=e24c5edcdc7d72812087d039872bbae2910ece0f";
 
     yazi-plugins = {
       url = "github:yazi-rs/plugins";

@@ -16,6 +16,7 @@
     gopls
     gotools
     gcc
-    inputs.fresh.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # fresh removed: flake packaging broken on 0.4.x (web-ui assets missing from Nix build sandbox)
+    # Re-add when upstream fixes: github.com/sinelaw/fresh
   ];
 }
