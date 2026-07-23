@@ -37,8 +37,10 @@
     pciutils
     usbutils
     smartmontools
-    qdirstat
     vulnix
+
+    qdirstat
+    baobab
   ];
   systemd.user.services.awww-daemon = {
     description = "Awww Wallpaper Daemon";
