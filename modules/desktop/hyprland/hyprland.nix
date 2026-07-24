@@ -23,7 +23,7 @@ in {
   environment.systemPackages = [
     pkgs.kitty
     pkgs.hyprshot
-    pkgs.hyprpaper
+    pkgs.swww
     pkgs.pywal
     pkgs.libpulseaudio # paplay for volume sound effects
 
