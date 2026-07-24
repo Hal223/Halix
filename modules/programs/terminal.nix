@@ -19,6 +19,7 @@
   environment.systemPackages = with pkgs; [
     # Terminal Emulators & Utilities
     ghostty
+    superfile
     kitty
     zsh
     wget
