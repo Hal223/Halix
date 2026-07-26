@@ -20,7 +20,7 @@
     ../../modules/services/docker.nix
     ../../modules/services/syncthing.nix
     ../../modules/services/ollama.nix
-    #../../modules/services/mullvad-vpn.nix
+    ../../modules/services/mullvad-vpn.nix
 
     # Programs
     ../../modules/programs/common.nix
