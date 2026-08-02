@@ -3,9 +3,9 @@
   pkgs,
   inputs,
   ...
-}: {
+}:
+{
   imports = [
-    # Include the results of the hardware scan (generate on the target machine using: nixos-generate-config)
     ./hardware-configuration.nix
 
     # ThinkPad P52s/T480 hardware quirks and optimizations
@@ -18,9 +18,11 @@
     ../../modules/desktop/wayland.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix
+    ../../modules/programs/hyprland.nix
+
     # Services
     #../../modules/services/docker.nix
-    #../../modules/services/syncthing.nix
+    ../../modules/services/syncthing.nix
     # ../../modules/services/ollama.nix
     #../../modules/services/mullvad-vpn.nix
 
@@ -38,8 +40,10 @@
   networking.hostName = "halix-laptop";
 
   # Dotfiles: add stow packages here as this host grows a dotfiles profile
-  # e.g. hal.dotfiles.stowPackages = [ "hypr" "ags" ];
-  hal.dotfiles.stowPackages = [];
+  hal.dotfiles.stowPackages = [
+    "hypr"
+    "ags"
+  ];
 
   nix.settings.experimental-features = [
     "nix-command"
