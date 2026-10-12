@@ -3,13 +3,13 @@
   pkgs,
   inputs,
   ...
-}:
-{
+}: {
   imports = [
     ./hardware-configuration.nix
 
-    # ThinkPad P52s/T480 hardware quirks and optimizations
-    inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480
+    # Hardware optimizations for Dell Precision (Tiger Lake-H / NVMe SSD)
+    inputs.nixos-hardware.nixosModules.common-cpu-intel
+    inputs.nixos-hardware.nixosModules.common-pc-laptop-ssd
 
     # Core system settings
     ../../modules/core
@@ -18,7 +18,7 @@
     ../../modules/desktop/wayland.nix
     ../../modules/desktop/fonts.nix
     ../../modules/desktop/display-manager.nix
-    ../../modules/programs/hyprland.nix
+    #../../modules/desktop/hyprland/hyprland.nix
 
     # Services
     #../../modules/services/docker.nix
@@ -32,7 +32,7 @@
     ../../modules/programs/media.nix
     ../../modules/programs/development.nix
     ../../modules/programs/yazi.nix
-    # ../../modules/programs/steam.nix
+    ../../modules/programs/steam.nix
     ../../modules/programs/terminal.nix
   ];
 
@@ -55,8 +55,41 @@
   # Change this to the version of NixOS installed on the new machine
   system.stateVersion = "26.05";
 
-  # Performance and thermals for Intel 8th Gen ThinkPads
-  services.throttled.enable = true;
+  # Firmware and microcode
+  hardware.enableRedistributableFirmware = true;
+
+  # Power management & thermals
   services.power-profiles-daemon.enable = true;
-  services.tlp.enable = false;
+  services.thermald.enable = true;
+
+  # Intel Hardware Acceleration (VA-API / QuickSync)
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      intel-media-driver
+      vpl-gpu-rt
+    ];
+  };
+
+  # NVIDIA RTX A3000 Mobile + Intel PRIME Offload
+  services.xserver.videoDrivers = ["nvidia"];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    powerManagement = {
+      enable = true;
+      finegrained = true; # Powers off RTX A3000 when idle to save battery
+    };
+    open = false; # Proprietary drivers recommended for mobile Ampere workstation GPUs
+    nvidiaSettings = true;
+    prime = {
+      offload = {
+        enable = true;
+        enableOffloadCmd = true; # Adds `nvidia-offload` CLI wrapper
+      };
+      intelBusId = "PCI:0:2:0";
+      nvidiaBusId = "PCI:1:0:0";
+    };
+  };
 }

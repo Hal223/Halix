@@ -5,8 +5,8 @@
   ...
 }: {
   services.displayManager.ly.enable = true;
-  services.displayManager.ly.settings.default_session = "hyprland";
-  services.displayManager.defaultSession = "hyprland";
+  #services.displayManager.ly.settings.default_session = "hyprland";
+  #services.displayManager.defaultSession = "hyprland";
 
   #services.displayManager.cosmic-greeter.enable = true;
   services.desktopManager.cosmic.enable = true;
